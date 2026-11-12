@@ -67,11 +67,13 @@ def eda_panel(x, label: str, unit: str, fits: dict, fname: str, bins=None):
     style()
     x = np.asarray(x, dtype=float)
     bins = grid_bins(x) if bins is None else bins
-    fig, ax = plt.subplots(1, 3, figsize=(13, 3.6), gridspec_kw={"width_ratios": [2.2, 1, 1.4]})
+    fig, ax = plt.subplots(1, 3, figsize=(9, 3.6), gridspec_kw={"width_ratios": [2.2, 1, 1.4]})
     ax[0].hist(x, bins=bins, density=True, color=C1, alpha=0.35, edgecolor="white", linewidth=0.5, label="данные")
     grid = np.linspace(x.min(), x.max(), 400)
-    for (name, params), col in zip(fits.items(), [C1, C2, C3]):
-        ax[0].plot(grid, getattr(stats, name).pdf(grid, *params), color=col, label=DIST_RU.get(name, name))
+    # разные линии, а не только цвет: близкие модели иначе сливаются в одну кривую
+    for (name, params), col, ls, lw in zip(fits.items(), [C1, C2, C3], ["-", "-", (0, (5, 3))], [1.6, 2.6, 1.8]):
+        ax[0].plot(grid, getattr(stats, name).pdf(grid, *params), color=col, linestyle=ls, linewidth=lw,
+                   label=DIST_RU.get(name, name))
     ax[0].set(xlabel=f"{label}, {unit}", ylabel="плотность", title=f"{label}: гистограмма и модели")
     ax[0].legend()
     ax[1].boxplot(x, vert=True, widths=0.5, patch_artist=True,
@@ -89,7 +91,7 @@ def eda_panel(x, label: str, unit: str, fits: dict, fname: str, bins=None):
 def consistency_panel(curves: dict, running: dict, label: str, fname: str):
     """Слева: одна траектория оценок при росте n. Справа: P(|оценка - θ| > ε) от n."""
     style()
-    fig, ax = plt.subplots(1, 2, figsize=(12, 3.6))
+    fig, ax = plt.subplots(1, 2, figsize=(9, 3.6))
     for (est, (ns, vals, theta)), col in zip(running.items(), [C1, C2, C3]):
         ax[0].plot(ns, vals / theta, color=col, label=EST_RU.get(est, est), linewidth=1.5)
     ax[0].axhline(1, color=INK2, linewidth=1, linestyle="--")
@@ -101,7 +103,7 @@ def consistency_panel(curves: dict, running: dict, label: str, fname: str):
         ax[1].plot(df["n"], df["p_far"], "o-", color=col, ms=5, label=f"{EST_RU.get(est, est)}, ε = {df['eps'].iloc[0]:.3g}")
     ax[1].set(xscale="log", xlabel="объём выборки n", ylabel="P(|оценка − θ| > ε)",
               title="доля «далёких» оценок, 1000 повторов", ylim=(-0.02, 1.02))
-    ax[1].legend(loc="upper left", fontsize=8)
+    ax[1].legend(loc="upper left", fontsize=9)
     ax[1].set_ylim(top=ax[1].get_ylim()[1] * 1.18)   # место под легенду, чтобы не наезжала на столбцы
     fig.tight_layout()
     return save(fig, fname)
@@ -126,7 +128,7 @@ def sampling_panel(pop, s_with, s_without, label: str, unit: str, fname: str):
 def se_panel(tables: dict, fname: str):
     """Отношение эмпирической СКО среднего к σ/√n для двух способов отбора."""
     style()
-    fig, axes = plt.subplots(1, len(tables), figsize=(4.2 * len(tables), 3.4), sharey=True)
+    fig, axes = plt.subplots(1, len(tables), figsize=(min(9, max(7, 4.2 * len(tables))), 3.4), sharey=True)
     for ax, (label, df) in zip(np.atleast_1d(axes), tables.items()):
         base = df["se_with_theory"]
         ax.plot(df["n/N"], df["se_with_emp"] / base, "o", color=C1, ms=6, label="с возвр., опыт")
@@ -145,7 +147,7 @@ def se_panel(tables: dict, fname: str):
 def normalization_panel(pairs: dict, fname: str):
     """Гистограммы до и после преобразования, поверх них плотность N(0, 1)."""
     style()
-    fig, ax = plt.subplots(1, len(pairs), figsize=(4.2 * len(pairs), 3.4))
+    fig, ax = plt.subplots(1, len(pairs), figsize=(min(9, max(7, 4.2 * len(pairs))), 3.4))
     grid = np.linspace(-4, 4, 300)
     for a, (title, z) in zip(np.atleast_1d(ax), pairs.items()):
         a.hist(z, bins=grid_bins(z), density=True, color=C1, alpha=0.35, edgecolor="white", linewidth=0.5)
@@ -161,7 +163,7 @@ def normalization_panel(pairs: dict, fname: str):
 
 def scatter_dependence(x, y, xl: str, yl: str, title: str, fname: str):
     style()
-    fig, ax = plt.subplots(figsize=(6.2, 4.2))
+    fig, ax = plt.subplots(figsize=(7, 4.6))
     hb = ax.hexbin(x, y, gridsize=35, cmap="Blues", mincnt=1, linewidths=0.2)
     fig.colorbar(hb, ax=ax, label="число вин в ячейке")
     # медиана y в децилях x показывает форму связи
@@ -179,8 +181,8 @@ def corr_heatmap(corr, fname: str):
     style()
     fig, ax = plt.subplots(figsize=(7.5, 6.2))
     im = ax.imshow(corr.values, cmap="RdBu_r", vmin=-1, vmax=1)
-    ax.set_xticks(range(len(corr)), [COL_RU.get(c, c) for c in corr.columns], rotation=60, ha="right", fontsize=8)
-    ax.set_yticks(range(len(corr)), [COL_RU.get(c, c) for c in corr.index], fontsize=8)
+    ax.set_xticks(range(len(corr)), [COL_RU.get(c, c) for c in corr.columns], rotation=60, ha="right", fontsize=9)
+    ax.set_yticks(range(len(corr)), [COL_RU.get(c, c) for c in corr.index], fontsize=9)
     ax.grid(False)
     for i in range(len(corr)):
         for j in range(len(corr)):
@@ -209,7 +211,7 @@ def two_groups(a, b, la: str, lb: str, xlabel: str, title: str, fname: str):
 def stochastic_panel(y, resid, label: str, unit: str, step: float, fname: str):
     """Остатки лучшей линейной модели по остальным 10 измерениям против шага округления прибора."""
     style()
-    fig, ax = plt.subplots(1, 2, figsize=(11, 3.4))
+    fig, ax = plt.subplots(1, 2, figsize=(9, 3.4))
     pred = y - resid
     ax[0].scatter(pred, y, s=4, color=C1, alpha=0.3)
     # оси по 0.1–99.9 % квантилям, чтобы единичные выбросы не сжимали картинку
@@ -222,7 +224,7 @@ def stochastic_panel(y, resid, label: str, unit: str, step: float, fname: str):
     ax[1].hist(resid[(resid >= r_lo) & (resid <= r_hi)], bins=60, color=C1, alpha=0.5, edgecolor="white", linewidth=0.4)
     ax[1].axvspan(-step / 2, step / 2, color=C2, alpha=0.6, label=f"± половина шага прибора ({step:g})")
     ax[1].set(xlabel=f"остаток, {unit}", ylabel="число вин", title="остатки модели (без 0.2 % крайних)")
-    ax[1].legend(loc="upper left", fontsize=8)
+    ax[1].legend(loc="upper left", fontsize=9)
     ax[1].set_ylim(top=ax[1].get_ylim()[1] * 1.18)   # место под легенду, чтобы не наезжала на столбцы
     fig.tight_layout()
     return save(fig, fname)

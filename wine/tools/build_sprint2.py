@@ -109,14 +109,14 @@ r = np.random.default_rng(7)
 v = 2 * r.random((1500, 2)) - 1
 s_ = (v ** 2).sum(1)
 inside = (s_ > 0) & (s_ < 1)
-fig, ax = plt.subplots(figsize=(5.2, 5.2))
+fig, ax = plt.subplots(figsize=(6.5, 6.5))
 ax.plot(v[inside, 0], v[inside, 1], ".", ms=3, color=C1, label=f"приняты ({inside.mean():.1%})")
 ax.plot(v[~inside, 0], v[~inside, 1], ".", ms=3, color=C2, label=f"отброшены ({(~inside).mean():.1%})")
 t_ = np.linspace(0, 2 * np.pi, 300)
 ax.plot(np.cos(t_), np.sin(t_), color=INK2, linewidth=1)
 ax.set(xlabel="$V_1$", ylabel="$V_2$", title="Полярный метод: точки в квадрате", aspect="equal",
        xlim=(-1.05, 1.05), ylim=(-1.05, 1.05))
-ax.legend(loc="upper right", fontsize=8, frameon=True, framealpha=0.9)
+ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.13), ncol=2)
 save(fig, "sp2_polar.png");
 """),
     md('<a id="fig23"></a>\n*Рис. 23. Приняты точки внутри круга, их около 77 % (теоретически $\\pi/4 \\approx 78.5\\%$), остальные отброшены. Отбираются точки с расстоянием до центра меньше единицы: так все направления равновероятны и колокол не перекашивается.*'),
@@ -232,6 +232,7 @@ print(f"Проверка векторной версии: среднее {z_vec.
 метод обратных функций работает быстрее (3.0 мс против 90 мс).
 """),
     code("""
+style()
 xr = np.round(x_polar, 2)
 fig, ax = plt.subplots(figsize=(7, 3.8))
 b = grid_bins(ph)
@@ -243,9 +244,10 @@ save(fig, "sp2_hist.png");
 """),
     md('<a id="fig24"></a>\n*Рис. 24. Синий график показывает реальное распределение pH, оранжевая линия — значения, полученные датчиком. Формы почти совпадают: основная масса значений в центральной части, к краям их становится меньше.*'),
     code("""
+style()
 p_ = np.linspace(0.005, 0.995, 199)
 qd, qg = np.quantile(ph, p_), np.quantile(xr, p_)
-fig, ax = plt.subplots(figsize=(5.6, 5))
+fig, ax = plt.subplots(figsize=(6.5, 5.8))
 ax.plot(qd, qg, "o", ms=3, color=C1)
 ax.plot([qd[0], qd[-1]], [qd[0], qd[-1]], color=C2, linewidth=1.2, label="y = x")
 ax.set(xlabel="квантили данных, ед. pH", ylabel="квантили датчика, ед. pH", title="Q-Q: датчик против данных")
@@ -254,13 +256,14 @@ save(fig, "sp2_qq.png");
 """),
     md('<a id="fig25"></a>\n*Рис. 25. Точки на диагонали показывают, что значения датчика совпадают с распределением данных. На правом конце точки немного ниже прямой: в данных правый хвост длиннее, чем у модели, и самые высокие значения pH датчик выдаёт реже, чем они встречаются на самом деле.*'),
     code("""
+style()
 fig, ax = plt.subplots(figsize=(7, 4))
 for d_, col, lab, lw in ((ph, INK2, "данные (шаг 0.01)", 2), (x_polar, C1, "датчик без округления", 1.4),
                          (xr, C2, "датчик, округлён до 0.01", 1.4)):
     d_ = np.sort(d_)
     ax.step(d_, np.arange(1, d_.size + 1) / d_.size, where="post", color=col, linewidth=lw, label=lab)
 ax.set(xlim=(3.13, 3.23), ylim=(0.35, 0.65), xlabel="pH, ед. pH", ylabel="F(x)", title="ЭФР у медианы: лестница и пандус")
-ax.legend(loc="lower right", fontsize=8)
+ax.legend(loc="lower right")
 save(fig, "sp2_ecdf.png");
 """),
     md('<a id="fig26"></a>\n*Рис. 26. Лестница показывает, что исходные данные записаны с шагом прибора 0.01, поэтому функция распределения прыгает ступенями. Пандус — неокруглённые значения датчика, они меняются плавно. После округления до 0.01 датчик тоже становится лестницей и почти совпадает с данными.*'),
@@ -471,12 +474,12 @@ $x_{k+2} = 6x_{k+1} - 9x_k$: если связь есть, точки лягут
 """ + UP),
     code("""
 style()
-fig, axs = plt.subplots(1, 4, figsize=(13, 3.6))
-for a_, b_ in zip(axs, G.BASES):
+fig, axs = plt.subplots(2, 2, figsize=(7.5, 7.5))
+for a_, b_ in zip(axs.ravel(), G.BASES):
     u_ = G.Uniform(b_, 7)(3002)
-    a_.plot((6 * u_[1:-1] - 9 * u_[:-2]) % 1.0, u_[2:], ".", ms=1.5, color=C2 if b_ == "randu" else C1, alpha=0.6)
+    a_.plot((6 * u_[1:-1] - 9 * u_[:-2]) % 1.0, u_[2:], ".", ms=2, color=C2 if b_ == "randu" else C1, alpha=0.6)
     a_.set(title=G.BASE_RU[b_].split(" (")[0], xlim=(0, 1), ylim=(0, 1), aspect="equal",
-           xlabel="$(6u_{k+1} - 9u_k)\\\\ \\\\mathrm{mod}\\\\ 1$", ylabel="$u_{k+2}$" if b_ == "pcg64" else "")
+           xlabel="$(6u_{k+1} - 9u_k)\\\\ \\\\mathrm{mod}\\\\ 1$", ylabel="$u_{k+2}$")
 fig.tight_layout()
 save(fig, "sp2_triples.png");
 """),
