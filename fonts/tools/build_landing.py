@@ -21,6 +21,9 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 REPO = os.environ.get("LAB_REPO_URL", "").rstrip("/")   # этот репозиторий: https://github.com/<логин>/<репо>
 MAIN = os.environ.get("LAB_MAIN_URL", "").rstrip("/")   # общий репозиторий команды с lab01.ipynb (необязательно)
+REPORT = os.environ.get("LAB_REPORT", "fonts.html")     # отчёт: fonts.html или marimo-приложение report/
+PREFIX = os.environ.get("LAB_PATH_PREFIX", "")         # папка части в общем репозитории, например fonts/
+HUB = os.environ.get("LAB_HUB", "")                      # общая страница Lab01, если сайт собран вместе с основной работой
 
 
 def rng_block():
@@ -63,7 +66,7 @@ def fonts_block():
 
 
 def link(path, text):
-    return f'<a href="{REPO}/blob/main/{path}">{text}</a>' if REPO else f"<code>{path}</code>"
+    return f'<a href="{REPO}/blob/main/{PREFIX}{path}">{text}</a>' if REPO else f"<code>{path}</code>"
 
 
 def main():
@@ -80,8 +83,10 @@ def main():
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False)) \
         .replace("__MARIMO__", marimo) \
         .replace("__L_NB__", f' (<a href="{MAIN}">репозиторий</a>)' if MAIN else "") \
-        .replace("__L_FONTS__", '<a href="fonts.html">отчёт-ноутбук</a> (с кодом: ' + link("fonts.ipynb", "fonts.ipynb") + ")") \
+        .replace("__L_FONTS__", f'<a href="{REPORT}">отчёт-ноутбук</a> (с кодом: ' + link("fonts.ipynb", "fonts.ipynb") + ")") \
         .replace("__L_DATCHIK__", link("datchik.py", "datchik.py")) \
+        .replace("__REPORT__", REPORT) \
+        .replace("__HUB__", f'<p class="note"><a href="{HUB}">← Lab01: все части работы</a> · <a href="{REPORT}">отчёт</a></p>' if HUB else "") \
         .replace("__N_FONTS__", str(data["fonts"]["n"])) \
         .replace("__RHO__", f"{data['fonts']['rho']:.2f}".replace(".", ",")) \
         .replace("__XH_SANS__", f"{data['fonts']['med'].get('sans', float('nan')):.3f}".replace(".", ",")) \
@@ -213,6 +218,7 @@ input[type=text]:hover{border-color:#9aa0a8}
 </head>
 <body>
 <header class="wrap">
+  __HUB__
   <h1 id="title" aria-label="Шрифт как случайная величина"><span class="w">Шрифт как</span><span class="w">случайная</span><span class="w">величина</span></h1>
   <p class="lede text">Это доп. задание КТвД к лабораторной по прикладной статистике. Я собрала датасет шрифтов
   с Google Fonts (в анализе их __N_FONTS__: часть выбрана мной, остальные добавлены случайным отбором, по 20 в каждой категории)
@@ -359,7 +365,7 @@ input[type=text]:hover{border-color:#9aa0a8}
 <footer class="wrap">
   <p>Быкова Кристина Денисовна, ИСУ 501322, группа 27, трек КТвД. Lab01, прикладная статистика, осень 2026:
   доп. задание КТвД — датасет шрифтов, датчик случайных чисел, интерактив и этот сайт.
-  Отчёт: <a href="fonts.html">ноутбук со скрытым кодом</a>.</p>
+  Отчёт: <a href="__REPORT__">ноутбук со скрытым кодом</a>.</p>
   <p>Шрифты: Google Fonts (SIL Open Font License).</p>
 </footer>
 

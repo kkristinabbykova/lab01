@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+__marimo__/
+# собирается на GitHub Actions (tools/build_site.py)
+/docs/
+fonts/docs/datchik/
