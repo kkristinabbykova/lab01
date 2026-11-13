@@ -80,7 +80,7 @@ def main():
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False)) \
         .replace("__MARIMO__", marimo) \
         .replace("__L_NB__", f' (<a href="{MAIN}">репозиторий</a>)' if MAIN else "") \
-        .replace("__L_FONTS__", link("fonts.ipynb", "fonts.ipynb")) \
+        .replace("__L_FONTS__", '<a href="fonts.html">отчёт-ноутбук</a> (с кодом: ' + link("fonts.ipynb", "fonts.ipynb") + ")") \
         .replace("__L_DATCHIK__", link("datchik.py", "datchik.py")) \
         .replace("__N_FONTS__", str(data["fonts"]["n"])) \
         .replace("__RHO__", f"{data['fonts']['rho']:.2f}".replace(".", ",")) \
@@ -358,7 +358,8 @@ input[type=text]:hover{border-color:#9aa0a8}
 
 <footer class="wrap">
   <p>Быкова Кристина Денисовна, ИСУ 501322, группа 27, трек КТвД. Lab01, прикладная статистика, осень 2026:
-  доп. задание КТвД — датасет шрифтов, датчик случайных чисел, интерактив и этот сайт.</p>
+  доп. задание КТвД — датасет шрифтов, датчик случайных чисел, интерактив и этот сайт.
+  Отчёт: <a href="fonts.html">ноутбук со скрытым кодом</a>.</p>
   <p>Шрифты: Google Fonts (SIL Open Font License).</p>
 </footer>
 

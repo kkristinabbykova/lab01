@@ -30,6 +30,8 @@ def main():
         print(" ".join(cmd))
         code = subprocess.call(cmd)
     subprocess.call([sys.executable, str(ROOT / "tools" / "build_landing.py")])   # лендинг docs/index.html
+    # отчёт: ноутбук без кода, с работающими якорями и формулами (GitHub так не умеет)
+    subprocess.call([sys.executable, str(ROOT / "tools" / "export_nb.py"), str(ROOT / "fonts.ipynb"), str(ROOT / "docs" / "fonts.html")])
     return code
 
 

@@ -7,6 +7,8 @@
 интерактив на marimo и сайт. Основная часть лабораторной лежит в общем репозитории команды.
 
 **Сайт:** https://kkristinabbykova.github.io/lab01-ktvd/  
+**Отчёт (ноутбук со скрытым кодом, якоря работают):** https://kkristinabbykova.github.io/lab01-ktvd/fonts.html  
+**Открыть в Colab:** https://colab.research.google.com/github/kkristinabbykova/lab01-ktvd/blob/main/fonts.ipynb  
 **Репозиторий:** https://github.com/kkristinabbykova/lab01-ktvd
 
 ## Что здесь
