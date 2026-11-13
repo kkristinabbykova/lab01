@@ -3,13 +3,13 @@
 Быкова Кристина Денисовна (ИСУ 501322), группа 27, трек «Компьютерные технологии в дизайне».
 Прикладная статистика, осень 2026. Доп. задание КТвД к лабораторной работе 01.
 
-Здесь только доп. задание КТвД: собственный датасет шрифтов, датчик случайных чисел для их пропорций,
-интерактив на marimo и сайт. Основная часть лабораторной лежит в общем репозитории команды.
+Это папка доп. задания КТвД: собственный датасет шрифтов, датчик случайных чисел для их пропорций,
+интерактив на marimo и сайт. Основная часть лабораторной (вино) лежит рядом, в папке `wine/`.
 
-**Сайт:** https://kkristinabbykova.github.io/lab01-ktvd/  
-**Отчёт (ноутбук со скрытым кодом, якоря работают):** https://kkristinabbykova.github.io/lab01-ktvd/fonts.html  
-**Открыть в Colab:** https://colab.research.google.com/github/kkristinabbykova/lab01-ktvd/blob/main/fonts.ipynb  
-**Репозиторий:** https://github.com/kkristinabbykova/lab01-ktvd
+**Сайт про шрифты:** https://kkristinabbykova.github.io/lab01/fonts/  
+**Отчёт (marimo, живые блоки):** https://kkristinabbykova.github.io/lab01/fonts/report/  
+**Открыть в Colab:** https://colab.research.google.com/github/kkristinabbykova/lab01/blob/main/fonts/fonts.ipynb  
+**Вся работа:** https://kkristinabbykova.github.io/lab01/
 
 ## Что здесь
 
@@ -24,7 +24,7 @@
 | `tests/` | автотесты: датчики, измеритель шрифтов, сборка сайта |
 | `data/` | `fonts.csv` (измерения 106 семейств, 100 в анализе — по 20 в каждой категории), `font_categories.csv` (категория и источник: выбор автора или случайный отбор), образец шрифта для схемы |
 | `tools/` | сборка: случайный отбор шрифтов (`sample_google_fonts.py`), ноутбук шрифтов, исполнитель ноутбуков, сайт |
-| `.github/workflows/site.yml` | на каждый push: тесты → экспорт marimo → публикация сайта |
+| `docs/` | сайт этой части: лендинг и `fonts.html`; в общий сайт копируется корневым `tools/build_site.py` |
 
 ## Критерии КТвД
 
@@ -35,7 +35,7 @@
 | Масштабы, единицы, единый стиль графиков | все графики в стиле `labstat.plots`, единицы на осях, подписи «Рис. N» |
 | Формулы в LaTeX | весь текст ноутбуков |
 | Доп. задание: датасет, 2 величины, случайность, (не)зависимость, EDA | `fonts.ipynb`, разделы 1–4 |
-| Интерактивность для генератора, marimo | `datchik.py`, сайт |
+| Интерактивность для генератора, marimo | `datchik.py`, отчёт `site/fonts_app.py` в корне, сайт |
 | Доп. баллы: автотесты генератора, таблицы метрик, итеративные коммиты, литература | `tests/`, таблицы в ноутбуке и датчике, история git |
 
 Тексты в `fonts.ipynb` (природа событий, что видно на графиках, вывод о зависимости, общие выводы) написаны автором;
@@ -44,6 +44,7 @@
 ## Запуск у себя
 
 ```bash
+cd fonts
 pip install -r requirements.txt
 python -m pytest -q              # автотесты
 marimo edit datchik.py           # интерактивный датчик (откроется в браузере)
@@ -51,26 +52,9 @@ jupyter notebook fonts.ipynb     # ноутбук (нужен pip install jupyte
 python tools/build_site.py       # собрать сайт в docs/ (с marimo-датчиком в docs/datchik/)
 ```
 
-## Публикация на GitHub (один раз)
+## Публикация
 
-1. Зарегистрируйся на github.com, нажми **New repository**, имя например `lab01-ktvd`,
-   **Private**, без README (он уже есть).
-2. В папке этого репозитория выполни (подставь свою почту от GitHub и логин):
-
-   ```bash
-   git config user.email "ПОЧТА_ОТ_GITHUB"
-   git filter-branch -f --env-filter 'export GIT_AUTHOR_EMAIL="ПОЧТА_ОТ_GITHUB"; export GIT_COMMITTER_EMAIL="ПОЧТА_ОТ_GITHUB"' -- --all
-   git remote add origin https://github.com/kkristinabbykova/lab01-ktvd.git
-   git push -u origin main
-   ```
-
-   Вторая строка заменяет временную почту в уже сделанных коммитах на твою, чтобы GitHub показал их как твои.
-3. На GitHub: **Settings → Pages → Source: GitHub Actions**.
-4. Вкладка **Actions**: через 2–3 минуты сборка станет зелёной, ссылка на сайт появится в Settings → Pages.
-   Если сайт приватного репозитория недоступен на бесплатном тарифе, сделай репозиторий публичным
-   или покажи преподавателю ноутбуки и `datchik.py` прямо в репозитории.
-5. Когда преподаватель пришлёт приглашение в учебную организацию, репозиторий можно перенести туда:
-   Settings → Danger Zone → **Transfer**. История коммитов сохранится.
+Сайт собирается и публикуется для всего репозитория сразу: см. `README.md` в корне.
 
 ## Как добавить шрифты
 
