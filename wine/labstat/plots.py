@@ -1,6 +1,7 @@
 """Графики в одном стиле. Каждый график сохраняется в figures/ и возвращает fig."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -11,6 +12,11 @@ FIG_DIR = Path(__file__).resolve().parent.parent / "figures"
 
 C1, C2, C3 = "#2a78d6", "#eb6834", "#1baf7a"   # синий, оранжевый, бирюзовый
 INK, INK2, GRID = "#0b0b0b", "#52514e", "#e6e5e0"
+BOX_FACE, CMAP_SEQ, CMAP_DIV = "#d6e6f8", "Blues", "RdBu_r"
+if os.environ.get("LAB_THEME") == "gray":   # серая тема для сайта: графитовый, винный акцент, светло-серый
+    C1, C2, C3 = "#4a5160", "#8e3b46", "#9aa1ab"
+    INK, INK2, GRID = "#16181d", "#5a5f69", "#e4e4e4"
+    BOX_FACE, CMAP_SEQ, CMAP_DIV = "#e3e5e8", "Greys", "RdGy_r"
 
 # Подписи на графиках только по-русски: имена распределений scipy и оценок -> русские
 DIST_RU = {"norm": "нормальное", "lognorm": "логнормальное", "skewnorm": "скошенное нормальное",
@@ -77,7 +83,7 @@ def eda_panel(x, label: str, unit: str, fits: dict, fname: str, bins=None):
     ax[0].set(xlabel=f"{label}, {unit}", ylabel="плотность", title=f"{label}: гистограмма и модели")
     ax[0].legend()
     ax[1].boxplot(x, vert=True, widths=0.5, patch_artist=True,
-                  boxprops={"facecolor": "#d6e6f8", "edgecolor": C1}, medianprops={"color": C2},
+                  boxprops={"facecolor": BOX_FACE, "edgecolor": C1}, medianprops={"color": C2},
                   flierprops={"marker": "o", "markersize": 3, "markerfacecolor": C1, "markeredgecolor": "none", "alpha": .5})
     ax[1].set(ylabel=f"{label}, {unit}", xticks=[], title="ящик с усами")
     (osm, osr), (slope, inter, _) = stats.probplot(x, dist="norm")
@@ -164,7 +170,7 @@ def normalization_panel(pairs: dict, fname: str):
 def scatter_dependence(x, y, xl: str, yl: str, title: str, fname: str):
     style()
     fig, ax = plt.subplots(figsize=(7, 4.6))
-    hb = ax.hexbin(x, y, gridsize=35, cmap="Blues", mincnt=1, linewidths=0.2)
+    hb = ax.hexbin(x, y, gridsize=35, cmap=CMAP_SEQ, mincnt=1, linewidths=0.2)
     fig.colorbar(hb, ax=ax, label="число вин в ячейке")
     # медиана y в децилях x показывает форму связи
     edges = np.quantile(x, np.linspace(0, 1, 11))
@@ -180,7 +186,7 @@ def scatter_dependence(x, y, xl: str, yl: str, title: str, fname: str):
 def corr_heatmap(corr, fname: str):
     style()
     fig, ax = plt.subplots(figsize=(7.5, 6.2))
-    im = ax.imshow(corr.values, cmap="RdBu_r", vmin=-1, vmax=1)
+    im = ax.imshow(corr.values, cmap=CMAP_DIV, vmin=-1, vmax=1)
     ax.set_xticks(range(len(corr)), [COL_RU.get(c, c) for c in corr.columns], rotation=60, ha="right", fontsize=9)
     ax.set_yticks(range(len(corr)), [COL_RU.get(c, c) for c in corr.index], fontsize=9)
     ax.grid(False)
