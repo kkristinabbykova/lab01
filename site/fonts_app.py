@@ -5,13 +5,14 @@
 import marimo
 
 __generated_with = "0.16.0"
-app = marimo.App(width="medium", app_title="Lab01 · КТвД · Шрифт как случайная величина", css_file="fonts.css")
+app = marimo.App(width="medium", app_title="Lab01 · КТвД · Шрифт как случайная величина", css_file="fonts.css", html_head_file="head.html")
 
 
 @app.cell(hide_code=True)
 def _():
     import marimo as mo
     T = {"head_font": "\"Roboto Flex\", \"Golos Text\", sans-serif", "bg": "#fafaf7", "card": "#ffffff", "ink": "#1a1d24", "ink2": "#5c6170", "line": "#e6e5e0", "acc": "#2a78d6", "acc2": "#a9c8ef", "soft": "#f1f0eb", "grid": "#e6e5e0", "c1": "#2a78d6", "c2": "#eb6834", "c3": "#1baf7a", "cover": "radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%)", "cover_ink": "#fafaf7"}
+    STYLE = "@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap');\n:root { --marimo-text-font: \"Golos Text\", system-ui, sans-serif; --marimo-heading-font: \"Roboto Flex\", \"Golos Text\", sans-serif; }\nbody, .markdown, .prose { font-family: \"Golos Text\", system-ui, sans-serif; }\n.markdown h1, .markdown h2, .markdown h3, .markdown h4 { font-family: \"Roboto Flex\", \"Golos Text\", sans-serif !important; font-weight: 700 !important; }\n.markdown h1 { font-size: 2.1rem !important; letter-spacing: -.02em; margin: .3rem 0 .6rem; }\n.markdown h2 { font-size: 1.65rem !important; }\n.markdown h3 { font-size: 1.25rem !important; margin-top: 1.8rem; padding-left: .7rem; border-left: 4px solid var(--lab-acc); }\n.markdown h4 { font-size: 1.05rem !important; margin-top: 1.3rem; color: var(--lab-ink2) !important; }\n.markdown p, .markdown li { line-height: 1.6; }\n.markdown ul, .lab-guide ul { list-style: disc; padding-left: 1.3rem; }\n.markdown ol { list-style: decimal; padding-left: 1.3rem; }\n.markdown table td, .markdown table th { text-align: left !important; vertical-align: top; }\n.markdown table { font-size: .9rem; }\n.lab-fig img { max-width: 900px; margin: 0 auto; }\n:root { --lab-bg:#fafaf7; --lab-card:#ffffff; --lab-ink:#1a1d24; --lab-ink2:#5c6170;\n        --lab-line:#e6e5e0; --lab-acc:#2a78d6; --lab-acc2:#a9c8ef; --lab-soft:#f1f0eb; }\nbody, #App, .mo-app, [data-testid=\"app\"] { background: var(--lab-bg) !important; }\n.markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: var(--lab-ink); letter-spacing: -.01em; }\n.markdown h2 { font-size: 1.6rem; margin-top: .3rem; }\n.markdown h3 { font-size: 1.22rem; margin-top: 1.6rem; }\n.markdown a { color: var(--lab-acc); }\n.lab-cover { background: radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%); color: #fafaf7; border-radius: 18px; padding: 2.2rem 2rem 1.8rem;\n             margin-bottom: .6rem; position: relative; overflow: hidden; }\n.lab-cover .kicker { text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; opacity: .75; }\n.lab-cover h1 { font-size: clamp(1.8rem, 4.6vw, 3rem); line-height: 1.08; margin: .5rem 0 .8rem; color: inherit; border: 0; }\n.lab-cover p { max-width: 46rem; opacity: .9; margin: .3rem 0; }\n.lab-cover .meta { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; margin-top: 1.2rem; font-size: .88rem; opacity: .85; }\n.lab-cover .meta b { font-weight: 600; }\n.lab-guide { background: var(--lab-card); border: 1px solid var(--lab-line); border-radius: 14px; padding: 1rem 1.2rem; }\n.lab-guide h4 { margin: 0 0 .4rem; }\n.lab-guide ul { margin: .2rem 0 0 1.1rem; padding: 0; }\n.lab-fig { margin: .4rem 0; background: #fff; border: 1px solid var(--lab-line); border-radius: 12px; padding: .5rem; }\n.lab-fig img { display: block; width: 100%; height: auto; }\n.lab-fig.live { border-color: var(--lab-acc2); }\n.lab-tbl { overflow-x: auto; }\n.lab-tbl table { border-collapse: collapse; font-size: .86rem; background: #fff; border: 1px solid var(--lab-line); }\n.lab-tbl th, .lab-tbl td { border-bottom: 1px solid var(--lab-line); padding: .32rem .6rem; text-align: right; }\n.lab-tbl th { background: var(--lab-soft); color: var(--lab-ink); font-weight: 600; }\n.lab-out { background: #fff; border: 1px solid var(--lab-line); border-radius: 10px; padding: .6rem .8rem;\n           font-size: .8rem; line-height: 1.45; overflow-x: auto; color: var(--lab-ink); margin: .2rem 0; }\n.lab-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .6rem; margin: .3rem 0; }\n.lab-card { background: var(--lab-card); border: 1px solid var(--lab-line); border-radius: 12px; padding: .7rem .85rem;\n            display: flex; flex-direction: column; gap: .1rem; }\n.lab-card span { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--lab-ink2); }\n.lab-card b { font-size: 1.45rem; font-variant-numeric: tabular-nums; color: var(--lab-ink); }\n.lab-card small { color: var(--lab-ink2); font-size: .78rem; }\n.lab-live { padding: 0; }\n.lab-live .tag { display: inline-block; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em;\n                  background: var(--lab-acc); color: #fff; border-radius: 999px; padding: .12rem .55rem; }\n.lab-live h4 { margin: .35rem 0 .15rem; font-size: 1.08rem; color: var(--lab-ink); }\n.lab-live p { margin: 0; color: var(--lab-ink2); font-size: .9rem; }\n.lab-toc a { text-decoration: none; }\n.lab-toc ul { padding-left: 1rem; }\n/* обложка: числа */\n.lab-stats { display: flex; flex-wrap: wrap; gap: 1.6rem 2.4rem; margin-top: 1.4rem; }\n.lab-stats div b { display: block; font-size: 2rem; line-height: 1; font-weight: 700; }\n.lab-stats div span { font-size: .78rem; opacity: .75; }\n.lab-cover a { color: inherit; }\n.lab-tbl table { margin: .2rem 0; }\n@media (max-width: 640px) { .lab-cover { padding: 1.5rem 1.2rem; } .lab-stats div b { font-size: 1.5rem; } }"
     ASSETS = "fonts"
 
     import base64
@@ -35,6 +36,9 @@ def _():
             return open_url(str(p)).read()
 
     PUB = mo.notebook_location() / "public"
+    # marimo показывает каждый вывод отдельно, и стиль из одной ячейки не доходит до другой:
+    # поэтому оформление кладётся прямо в каждый кусок HTML
+    ST = f"<style>{STYLE}</style>"
 
     def fig(name):
         """Рисунок из выполненного ноутбука: локально встраивается, в браузере грузится по ссылке."""
@@ -43,17 +47,17 @@ def _():
             src = "data:image/png;base64," + base64.b64encode(Path(str(p)).read_bytes()).decode()
         except Exception:
             src = str(p)
-        return mo.Html(f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
 
     def table_html(h):
-        return mo.Html(f'<div class="lab-tbl">{h}</div>')
+        return mo.Html(ST + f'<div class="lab-tbl">{h}</div>')
 
     def df_html(df, digits=4):
         """Таблица pandas в оформлении отчёта (без служебных колонок интерактивной таблицы)."""
         return table_html(df.to_html(index=False, border=0, float_format=lambda v: f"{v:.{digits}g}" if abs(v) < 1e-3 and v else f"{v:.{digits}f}"))
 
     def out_text(t):
-        return mo.Html(f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
+        return mo.Html(ST + f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
 
     def code_block(code):
         return mo.accordion({"Код этого раздела": mo.md(f"```python\n{code}\n```")})
@@ -63,23 +67,23 @@ def _():
         buf = io.BytesIO()
         f.savefig(buf, format="png", dpi=140, bbox_inches="tight")
         plt.close(f)
-        return mo.Html(f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
 
     def cards(items):
         """Карточки с числами: [(подпись, значение, пояснение), ...]."""
         cells = "".join(f'<div class="lab-card"><span>{a}</span><b>{b}</b><small>{c}</small></div>' for a, b, c in items)
-        return mo.Html(f'<div class="lab-cards">{cells}</div>')
+        return mo.Html(ST + f'<div class="lab-cards">{cells}</div>')
 
     def section(*items):
         """Раздел отчёта в рамке-карточке."""
-        return mo.vstack(list(items), gap=0.6).style({
+        return mo.vstack([mo.Html(ST)] + list(items), gap=0.6).style({
             "background": T["card"], "border": f"1px solid {T['line']}", "border-radius": "18px",
             "padding": "1.3rem 1.5rem 1.1rem", "box-shadow": "0 1px 2px rgba(0,0,0,.04), 0 6px 22px rgba(0,0,0,.05)"})
 
     def live(title, note, *controls):
         """Заголовок живого блока и его элементы управления, в цветной рамке."""
         acc = T["acc"]
-        return mo.vstack([mo.Html(f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
+        return mo.vstack([mo.Html(ST + f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
                           mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.5).style({
             "background": T["soft"], "border": f"1px solid {T['acc2']}", "border-left": f"6px solid {acc}",
             "border-radius": "16px", "padding": ".9rem 1.2rem 1rem"})

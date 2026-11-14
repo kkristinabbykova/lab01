@@ -10,7 +10,7 @@ def header(title: str, css_file: str = "") -> str:
 import marimo
 
 __generated_with = "0.16.0"
-app = marimo.App(width="medium", app_title={json.dumps(title, ensure_ascii=False)}{f', css_file="{css_file}"' if css_file else ""})
+app = marimo.App(width="medium", app_title={json.dumps(title, ensure_ascii=False)}{f', css_file="{css_file}"' if css_file else ""}, html_head_file="head.html")
 
 
 '''
@@ -39,6 +39,9 @@ HELPERS = r'''
             return open_url(str(p)).read()
 
     PUB = mo.notebook_location() / "public"
+    # marimo показывает каждый вывод отдельно, и стиль из одной ячейки не доходит до другой:
+    # поэтому оформление кладётся прямо в каждый кусок HTML
+    ST = f"<style>{STYLE}</style>"
 
     def fig(name):
         """Рисунок из выполненного ноутбука: локально встраивается, в браузере грузится по ссылке."""
@@ -47,17 +50,17 @@ HELPERS = r'''
             src = "data:image/png;base64," + base64.b64encode(Path(str(p)).read_bytes()).decode()
         except Exception:
             src = str(p)
-        return mo.Html(f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
 
     def table_html(h):
-        return mo.Html(f'<div class="lab-tbl">{h}</div>')
+        return mo.Html(ST + f'<div class="lab-tbl">{h}</div>')
 
     def df_html(df, digits=4):
         """Таблица pandas в оформлении отчёта (без служебных колонок интерактивной таблицы)."""
         return table_html(df.to_html(index=False, border=0, float_format=lambda v: f"{v:.{digits}g}" if abs(v) < 1e-3 and v else f"{v:.{digits}f}"))
 
     def out_text(t):
-        return mo.Html(f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
+        return mo.Html(ST + f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
 
     def code_block(code):
         return mo.accordion({"Код этого раздела": mo.md(f"```python\n{code}\n```")})
@@ -67,23 +70,23 @@ HELPERS = r'''
         buf = io.BytesIO()
         f.savefig(buf, format="png", dpi=140, bbox_inches="tight")
         plt.close(f)
-        return mo.Html(f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
 
     def cards(items):
         """Карточки с числами: [(подпись, значение, пояснение), ...]."""
         cells = "".join(f'<div class="lab-card"><span>{a}</span><b>{b}</b><small>{c}</small></div>' for a, b, c in items)
-        return mo.Html(f'<div class="lab-cards">{cells}</div>')
+        return mo.Html(ST + f'<div class="lab-cards">{cells}</div>')
 
     def section(*items):
         """Раздел отчёта в рамке-карточке."""
-        return mo.vstack(list(items), gap=0.6).style({
+        return mo.vstack([mo.Html(ST)] + list(items), gap=0.6).style({
             "background": T["card"], "border": f"1px solid {T['line']}", "border-radius": "18px",
             "padding": "1.3rem 1.5rem 1.1rem", "box-shadow": "0 1px 2px rgba(0,0,0,.04), 0 6px 22px rgba(0,0,0,.05)"})
 
     def live(title, note, *controls):
         """Заголовок живого блока и его элементы управления, в цветной рамке."""
         acc = T["acc"]
-        return mo.vstack([mo.Html(f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
+        return mo.vstack([mo.Html(ST + f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
                           mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.5).style({
             "background": T["soft"], "border": f"1px solid {T['acc2']}", "border-left": f"6px solid {acc}",
             "border-radius": "16px", "padding": ".9rem 1.2rem 1rem"})

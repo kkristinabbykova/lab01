@@ -134,8 +134,15 @@ def _(code_block, fig, mo, out_text, section, table_html):
     print(f"{out_py.relative_to(ROOT)}: {text.count('@app.cell')} ячеек, рисунков {len(list(asset_dir.glob(prefix + '*.png')))}")
 
 
+HEAD_HTML = """<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap">
+"""
+
+
 def main() -> None:
     PUB.mkdir(parents=True, exist_ok=True)
+    (SITE / "head.html").write_text(HEAD_HTML, encoding="utf-8")   # шрифты для всей страницы (в <head>)
     # данные и код для живых блоков
     for src, dst in ((ROOT / "wine/data/winequality-white.csv", "winequality-white.csv"),
                      (ROOT / "wine/data/winequality-red.csv", "winequality-red.csv"),

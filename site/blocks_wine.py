@@ -19,6 +19,7 @@ SETUP = '''@app.cell(hide_code=True)
 def _():
     import marimo as mo
     T = ''' + json.dumps(THEME) + '''
+    STYLE = ''' + json.dumps(C.css_body(THEME), ensure_ascii=False) + '''
     ASSETS = "wine"
 ''' + C.HELPERS + r'''
     # ---- данные: белые и красные вина (Wine Quality, UCI) ----

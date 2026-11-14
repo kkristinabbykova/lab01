@@ -5,13 +5,14 @@
 import marimo
 
 __generated_with = "0.16.0"
-app = marimo.App(width="medium", app_title="Lab01 · Белое вино", css_file="wine.css")
+app = marimo.App(width="medium", app_title="Lab01 · Белое вино", css_file="wine.css", html_head_file="head.html")
 
 
 @app.cell(hide_code=True)
 def _():
     import marimo as mo
     T = {"head_font": "\"Golos Text\", system-ui, sans-serif", "bg": "#f2f2f0", "card": "#ffffff", "ink": "#16181d", "ink2": "#5a5f69", "line": "#e1e1de", "acc": "#8e3b46", "acc2": "#c9a3a9", "soft": "#ecebe8", "grid": "#e4e4e4", "c1": "#4a5160", "c2": "#8e3b46", "c3": "#9aa1ab", "cover": "linear-gradient(135deg,#2b2e35 0%,#4a4f59 55%,#6b6f78 100%)", "cover_ink": "#f4f4f2"}
+    STYLE = "@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap');\n:root { --marimo-text-font: \"Golos Text\", system-ui, sans-serif; --marimo-heading-font: \"Golos Text\", system-ui, sans-serif; }\nbody, .markdown, .prose { font-family: \"Golos Text\", system-ui, sans-serif; }\n.markdown h1, .markdown h2, .markdown h3, .markdown h4 { font-family: \"Golos Text\", system-ui, sans-serif !important; font-weight: 700 !important; }\n.markdown h1 { font-size: 2.1rem !important; letter-spacing: -.02em; margin: .3rem 0 .6rem; }\n.markdown h2 { font-size: 1.65rem !important; }\n.markdown h3 { font-size: 1.25rem !important; margin-top: 1.8rem; padding-left: .7rem; border-left: 4px solid var(--lab-acc); }\n.markdown h4 { font-size: 1.05rem !important; margin-top: 1.3rem; color: var(--lab-ink2) !important; }\n.markdown p, .markdown li { line-height: 1.6; }\n.markdown ul, .lab-guide ul { list-style: disc; padding-left: 1.3rem; }\n.markdown ol { list-style: decimal; padding-left: 1.3rem; }\n.markdown table td, .markdown table th { text-align: left !important; vertical-align: top; }\n.markdown table { font-size: .9rem; }\n.lab-fig img { max-width: 900px; margin: 0 auto; }\n:root { --lab-bg:#f2f2f0; --lab-card:#ffffff; --lab-ink:#16181d; --lab-ink2:#5a5f69;\n        --lab-line:#e1e1de; --lab-acc:#8e3b46; --lab-acc2:#c9a3a9; --lab-soft:#ecebe8; }\nbody, #App, .mo-app, [data-testid=\"app\"] { background: var(--lab-bg) !important; }\n.markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: var(--lab-ink); letter-spacing: -.01em; }\n.markdown h2 { font-size: 1.6rem; margin-top: .3rem; }\n.markdown h3 { font-size: 1.22rem; margin-top: 1.6rem; }\n.markdown a { color: var(--lab-acc); }\n.lab-cover { background: linear-gradient(135deg,#2b2e35 0%,#4a4f59 55%,#6b6f78 100%); color: #f4f4f2; border-radius: 18px; padding: 2.2rem 2rem 1.8rem;\n             margin-bottom: .6rem; position: relative; overflow: hidden; }\n.lab-cover .kicker { text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; opacity: .75; }\n.lab-cover h1 { font-size: clamp(1.8rem, 4.6vw, 3rem); line-height: 1.08; margin: .5rem 0 .8rem; color: inherit; border: 0; }\n.lab-cover p { max-width: 46rem; opacity: .9; margin: .3rem 0; }\n.lab-cover .meta { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; margin-top: 1.2rem; font-size: .88rem; opacity: .85; }\n.lab-cover .meta b { font-weight: 600; }\n.lab-guide { background: var(--lab-card); border: 1px solid var(--lab-line); border-radius: 14px; padding: 1rem 1.2rem; }\n.lab-guide h4 { margin: 0 0 .4rem; }\n.lab-guide ul { margin: .2rem 0 0 1.1rem; padding: 0; }\n.lab-fig { margin: .4rem 0; background: #fff; border: 1px solid var(--lab-line); border-radius: 12px; padding: .5rem; }\n.lab-fig img { display: block; width: 100%; height: auto; }\n.lab-fig.live { border-color: var(--lab-acc2); }\n.lab-tbl { overflow-x: auto; }\n.lab-tbl table { border-collapse: collapse; font-size: .86rem; background: #fff; border: 1px solid var(--lab-line); }\n.lab-tbl th, .lab-tbl td { border-bottom: 1px solid var(--lab-line); padding: .32rem .6rem; text-align: right; }\n.lab-tbl th { background: var(--lab-soft); color: var(--lab-ink); font-weight: 600; }\n.lab-out { background: #fff; border: 1px solid var(--lab-line); border-radius: 10px; padding: .6rem .8rem;\n           font-size: .8rem; line-height: 1.45; overflow-x: auto; color: var(--lab-ink); margin: .2rem 0; }\n.lab-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .6rem; margin: .3rem 0; }\n.lab-card { background: var(--lab-card); border: 1px solid var(--lab-line); border-radius: 12px; padding: .7rem .85rem;\n            display: flex; flex-direction: column; gap: .1rem; }\n.lab-card span { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--lab-ink2); }\n.lab-card b { font-size: 1.45rem; font-variant-numeric: tabular-nums; color: var(--lab-ink); }\n.lab-card small { color: var(--lab-ink2); font-size: .78rem; }\n.lab-live { padding: 0; }\n.lab-live .tag { display: inline-block; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em;\n                  background: var(--lab-acc); color: #fff; border-radius: 999px; padding: .12rem .55rem; }\n.lab-live h4 { margin: .35rem 0 .15rem; font-size: 1.08rem; color: var(--lab-ink); }\n.lab-live p { margin: 0; color: var(--lab-ink2); font-size: .9rem; }\n.lab-toc a { text-decoration: none; }\n.lab-toc ul { padding-left: 1rem; }\n/* обложка: числа */\n.lab-stats { display: flex; flex-wrap: wrap; gap: 1.6rem 2.4rem; margin-top: 1.4rem; }\n.lab-stats div b { display: block; font-size: 2rem; line-height: 1; font-weight: 700; }\n.lab-stats div span { font-size: .78rem; opacity: .75; }\n.lab-cover a { color: inherit; }\n.lab-tbl table { margin: .2rem 0; }\n@media (max-width: 640px) { .lab-cover { padding: 1.5rem 1.2rem; } .lab-stats div b { font-size: 1.5rem; } }"
     ASSETS = "wine"
 
     import base64
@@ -35,6 +36,9 @@ def _():
             return open_url(str(p)).read()
 
     PUB = mo.notebook_location() / "public"
+    # marimo показывает каждый вывод отдельно, и стиль из одной ячейки не доходит до другой:
+    # поэтому оформление кладётся прямо в каждый кусок HTML
+    ST = f"<style>{STYLE}</style>"
 
     def fig(name):
         """Рисунок из выполненного ноутбука: локально встраивается, в браузере грузится по ссылке."""
@@ -43,17 +47,17 @@ def _():
             src = "data:image/png;base64," + base64.b64encode(Path(str(p)).read_bytes()).decode()
         except Exception:
             src = str(p)
-        return mo.Html(f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
 
     def table_html(h):
-        return mo.Html(f'<div class="lab-tbl">{h}</div>')
+        return mo.Html(ST + f'<div class="lab-tbl">{h}</div>')
 
     def df_html(df, digits=4):
         """Таблица pandas в оформлении отчёта (без служебных колонок интерактивной таблицы)."""
         return table_html(df.to_html(index=False, border=0, float_format=lambda v: f"{v:.{digits}g}" if abs(v) < 1e-3 and v else f"{v:.{digits}f}"))
 
     def out_text(t):
-        return mo.Html(f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
+        return mo.Html(ST + f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
 
     def code_block(code):
         return mo.accordion({"Код этого раздела": mo.md(f"```python\n{code}\n```")})
@@ -63,23 +67,23 @@ def _():
         buf = io.BytesIO()
         f.savefig(buf, format="png", dpi=140, bbox_inches="tight")
         plt.close(f)
-        return mo.Html(f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
 
     def cards(items):
         """Карточки с числами: [(подпись, значение, пояснение), ...]."""
         cells = "".join(f'<div class="lab-card"><span>{a}</span><b>{b}</b><small>{c}</small></div>' for a, b, c in items)
-        return mo.Html(f'<div class="lab-cards">{cells}</div>')
+        return mo.Html(ST + f'<div class="lab-cards">{cells}</div>')
 
     def section(*items):
         """Раздел отчёта в рамке-карточке."""
-        return mo.vstack(list(items), gap=0.6).style({
+        return mo.vstack([mo.Html(ST)] + list(items), gap=0.6).style({
             "background": T["card"], "border": f"1px solid {T['line']}", "border-radius": "18px",
             "padding": "1.3rem 1.5rem 1.1rem", "box-shadow": "0 1px 2px rgba(0,0,0,.04), 0 6px 22px rgba(0,0,0,.05)"})
 
     def live(title, note, *controls):
         """Заголовок живого блока и его элементы управления, в цветной рамке."""
         acc = T["acc"]
-        return mo.vstack([mo.Html(f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
+        return mo.vstack([mo.Html(ST + f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
                           mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.5).style({
             "background": T["soft"], "border": f"1px solid {T['acc2']}", "border-left": f"6px solid {acc}",
             "border-radius": "16px", "padding": ".9rem 1.2rem 1rem"})
@@ -926,9 +930,9 @@ def _(code_block, fig, mo, out_text, section, table_html):
         out_text("Эксцесс данных: 0.529; теоретический эксцесс логнормальной модели: 0.305"),
         mo.md("**Что показала проверка на 300 запусках.** Результат одного запуска зависит от воли случая, и предугадать его нельзя,\nпоэтому мы запускаем датчик много раз: так появляется общая картина и статистика. Критерий отверг совпадение только\nв 4 % запусков у полярного метода и в 2 % у метода обратных функций. Это ложные тревоги критерия: при $\\alpha = 0.05$\nих ожидается около 5 %, а у нас не больше, значит, датчик ведёт себя так же, как настоящие данные.\n\n**Эксцесс.** В одном запуске эксцесс датчика (0.43 и 0.28) отличается от эксцесса данных (0.53), но это не проблема:\nот запуска к запуску он сильно скачет — в 95 % запусков от 0.10 до 0.59, — а значение у данных попадает в этот обычный\nдиапазон датчика."),
         mo.md("**Автотесты** (`tests/test_ph_generator.py`, запуск `python -m pytest tests/test_ph_generator.py -v`): среднее полярного метода около 0, доля принятых точек около $\\pi/4$, воспроизводимость при одинаковом seed, совпадение с данными по критерию КС; полярный метод даёт СКО около 1 и проходит критерий против $N(0, 1)$; метод обратных функций совпадает с данными; при $Z = 0$ датчик выдаёт медиану данных."),
-        out_text("tests/test_ph_generator.py::test_polar_mean PASSED                       [ 14%]\ntests/test_ph_generator.py::test_acceptance PASSED                       [ 28%]\ntests/test_ph_generator.py::test_seed PASSED                             [ 42%]\ntests/test_ph_generator.py::test_like_data PASSED                        [ 57%]\ntests/test_ph_generator.py::test_polar_is_standard_normal PASSED         [ 71%]\ntests/test_ph_generator.py::test_inverse_like_data PASSED                [ 85%]\ntests/test_ph_generator.py::test_median_at_zero PASSED                   [100%]\n============================== 7 passed in 0.87s ==============================="),
+        out_text("tests/test_ph_generator.py::test_polar_mean PASSED                       [ 14%]\ntests/test_ph_generator.py::test_acceptance PASSED                       [ 28%]\ntests/test_ph_generator.py::test_seed PASSED                             [ 42%]\ntests/test_ph_generator.py::test_like_data PASSED                        [ 57%]\ntests/test_ph_generator.py::test_polar_is_standard_normal PASSED         [ 71%]\ntests/test_ph_generator.py::test_inverse_like_data PASSED                [ 85%]\ntests/test_ph_generator.py::test_median_at_zero PASSED                   [100%]\n============================== 7 passed in 0.82s ==============================="),
         mo.md("**Скорость.** Время на 100 000 значений (лучшее из 3 замеров). В модуле `ph_generator.py` полярный метод перебирает точки\nпо одной в цикле Python; для честного сравнения рядом та же формула, записанная сразу для всех точек (векторно, средствами numpy)."),
-        table_html("<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>время, мс</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>полярный (цикл, ph_generator.py)</th>\n      <td>82.3</td>\n    </tr>\n    <tr>\n      <th>полярный (векторно)</th>\n      <td>1.8</td>\n    </tr>\n    <tr>\n      <th>обратные функции</th>\n      <td>2.8</td>\n    </tr>\n  </tbody>\n</table>\n</div>"),
+        table_html("<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>время, мс</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>полярный (цикл, ph_generator.py)</th>\n      <td>84.8</td>\n    </tr>\n    <tr>\n      <th>полярный (векторно)</th>\n      <td>1.8</td>\n    </tr>\n    <tr>\n      <th>обратные функции</th>\n      <td>2.9</td>\n    </tr>\n  </tbody>\n</table>\n</div>"),
         out_text("Проверка векторной версии: среднее -0.002, СКО 1.002, КС против N(0,1): p = 0.48"),
         mo.md("**Вывод о скорости.** Если бы полярный метод в моём коде обрабатывал не по одной точке, а все точки разом, он был бы\nсамым быстрым (1.8 мс против 3.0 мс у метода обратных функций). Но в моём коде точки перебираются по одной, поэтому\nметод обратных функций работает быстрее (3.0 мс против 90 мс)."),
         fig("w040_98.png"),
@@ -1016,7 +1020,7 @@ def _(mo):
 def _(code_block, fig, mo, out_text, section, table_html):
     section(
         mo.md("<a id=\"sp2-algo-ph\"></a>\n### 7.4 Пример: все шесть методов на pH\n\nКаждый метод выдаёт 4898 значений pH (базовый датчик PCG64, округление до 0.01). Методы «через модель» используют ту же\nлогнормальную модель со сдвигом, что и раздел 6. Для каждого метода: $p$ критерия Колмогорова–Смирнова при одном запуске,\nдоля запусков с $p < 0.05$ из 100 (ожидается около 5 %), доля принятых точек и время."),
-        table_html("<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>КС p (seed 2026)</th>\n      <th>доля запусков с p &lt; 0.05</th>\n      <th>доля принятых точек</th>\n      <th>время, мс</th>\n    </tr>\n    <tr>\n      <th>метод</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Квантильное преобразование (эмпирическая F⁻¹)</th>\n      <td>0.927</td>\n      <td>0.00</td>\n      <td>1.000</td>\n      <td>0.908</td>\n    </tr>\n    <tr>\n      <th>Метод обратной функции по модели</th>\n      <td>0.367</td>\n      <td>0.02</td>\n      <td>1.000</td>\n      <td>1.954</td>\n    </tr>\n    <tr>\n      <th>Бокс–Мюллер → модель</th>\n      <td>0.367</td>\n      <td>0.01</td>\n      <td>1.000</td>\n      <td>1.331</td>\n    </tr>\n    <tr>\n      <th>Полярный метод Марсальи → модель</th>\n      <td>0.304</td>\n      <td>0.03</td>\n      <td>0.787</td>\n      <td>1.501</td>\n    </tr>\n    <tr>\n      <th>Метод отношений (Киндерман–Монахан) → модель</th>\n      <td>0.797</td>\n      <td>0.04</td>\n      <td>0.729</td>\n      <td>1.435</td>\n    </tr>\n    <tr>\n      <th>Метод Неймана (отбор) по гистограмме</th>\n      <td>0.547</td>\n      <td>0.07</td>\n      <td>0.291</td>\n      <td>1.324</td>\n    </tr>\n  </tbody>\n</table>\n</div>"),
+        table_html("<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>КС p (seed 2026)</th>\n      <th>доля запусков с p &lt; 0.05</th>\n      <th>доля принятых точек</th>\n      <th>время, мс</th>\n    </tr>\n    <tr>\n      <th>метод</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Квантильное преобразование (эмпирическая F⁻¹)</th>\n      <td>0.927</td>\n      <td>0.00</td>\n      <td>1.000</td>\n      <td>1.145</td>\n    </tr>\n    <tr>\n      <th>Метод обратной функции по модели</th>\n      <td>0.367</td>\n      <td>0.02</td>\n      <td>1.000</td>\n      <td>1.338</td>\n    </tr>\n    <tr>\n      <th>Бокс–Мюллер → модель</th>\n      <td>0.367</td>\n      <td>0.01</td>\n      <td>1.000</td>\n      <td>1.264</td>\n    </tr>\n    <tr>\n      <th>Полярный метод Марсальи → модель</th>\n      <td>0.304</td>\n      <td>0.03</td>\n      <td>0.787</td>\n      <td>1.237</td>\n    </tr>\n    <tr>\n      <th>Метод отношений (Киндерман–Монахан) → модель</th>\n      <td>0.797</td>\n      <td>0.04</td>\n      <td>0.729</td>\n      <td>1.463</td>\n    </tr>\n    <tr>\n      <th>Метод Неймана (отбор) по гистограмме</th>\n      <td>0.547</td>\n      <td>0.07</td>\n      <td>0.291</td>\n      <td>1.487</td>\n    </tr>\n  </tbody>\n</table>\n</div>"),
         code_block("from labrng import generators as G\nimport time\nrows_ = []\nfor m_ in G.METHODS:\n    t0 = time.perf_counter()\n    x_, info_ = G.generate(ph, len(ph), method=m_, family=\"lognorm\", base=\"pcg64\", seed=2026, step=0.01)\n    dt_ = (time.perf_counter() - t0) * 1e3\n    rej_ = np.mean([stats.ks_2samp(G.generate(ph, len(ph), method=m_, family=\"lognorm\", base=\"pcg64\",\n                                              seed=20_000 + k, step=0.01)[0], ph).pvalue < 0.05 for k in range(100)])\n    rows_.append({\"метод\": G.METHOD_RU[m_], \"КС p (seed 2026)\": stats.ks_2samp(x_, ph).pvalue,\n                  \"доля запусков с p < 0.05\": rej_, \"доля принятых точек\": info_[\"accept\"], \"время, мс\": dt_})\nalgo_tab = pd.DataFrame(rows_).set_index(\"метод\").round(3)\nalgo_tab"),
     )
     return

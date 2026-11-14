@@ -5,13 +5,14 @@
 import marimo
 
 __generated_with = "0.16.0"
-app = marimo.App(width="medium", app_title="Lab01 КТвД: шрифт как случайная величина", css_file="fonts_site.css")
+app = marimo.App(width="medium", app_title="Lab01 КТвД: шрифт как случайная величина", css_file="fonts_site.css", html_head_file="head.html")
 
 
 @app.cell(hide_code=True)
 def _():
     import marimo as mo
     T = {"bg": "#f6f7f5", "card": "#ffffff", "ink": "#1a1d24", "ink2": "#5c6170", "line": "#dcdfd8", "acc": "#2a78d6", "acc2": "#a9c8ef", "soft": "#eceee9", "grid": "#e6e5e0", "c1": "#2a78d6", "c2": "#eb6834", "c3": "#1baf7a", "cover": "", "cover_ink": "", "head_font": "Golos Text"}
+    STYLE = "@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');\n:root{ --paper:#f6f7f5; --ink:#1a1d24; --muted:#5c6170; --rule:#dcdfd8;\n  --blue:#2a78d6; --orange:#eb6834; --straw:#d8c56a; --green:#1baf7a; --measure:68ch;\n  --marimo-text-font:\"Golos Text\",system-ui,sans-serif; --marimo-heading-font:\"Golos Text\",system-ui,sans-serif; }\nbody, #App, .mo-app, [data-testid=\"app\"]{background:var(--paper) !important;color:var(--ink)}\nbody, .markdown, .prose{font-family:\"Golos Text\",system-ui,-apple-system,\"Segoe UI\",sans-serif}\n.fs a{color:var(--blue);text-underline-offset:.18em}\n.fs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:#e9ebe6;padding:.08em .35em;border-radius:3px}\n.fs{font-size:1.0625rem;line-height:1.6;color:var(--ink)}\n.fs .text{max-width:var(--measure)}\n.fs p{margin:0 0 1rem !important}\n.fs, .fs *{font-family:\"Golos Text\",system-ui,sans-serif}\n.fs-hero{padding-top:clamp(2rem,6vw,5rem);padding-bottom:1rem}\n.fs-hero h1{font-family:\"Golos Text\",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}\n.fs-hero h1 .w{display:block !important}\n.fs-hero h1 span.l{transition:font-weight .5s cubic-bezier(.2,.7,.2,1)}\n.fs .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--muted);margin:0 0 1.4rem;max-width:var(--measure)}\n.fs .note{color:var(--muted);font-size:.95rem}\n.fs-sec{padding-top:3rem;border-top:1px solid var(--rule);margin-top:2rem}\n.fs h2{font-family:\"Golos Text\",sans-serif !important;font-size:clamp(1.7rem,3.4vw,2.6rem) !important;line-height:1.1 !important;font-weight:750 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}\n.fs h3{font-family:\"Golos Text\",sans-serif !important;font-size:1.15rem !important;font-weight:650 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}\n.fs figure{margin:1.4rem 0}\n.fs figure img{width:100%;height:auto;background:#fff;border-radius:6px}\n.fs figcaption{color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:var(--measure)}\n.fs .chart{background:#fff;border-radius:8px;padding:.6rem}\n.fs .chart svg{display:block;width:100%;height:auto}\n.fs .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.4rem 2rem;margin:1.6rem 0;max-width:900px}\n.fs .fact strong{display:block;font-size:2.4rem;line-height:1.05;font-weight:800;font-variant-numeric:tabular-nums}\n.fs .fact span{color:var(--muted);font-size:.95rem}\n.fs .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}\n.fs .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;margin-right:.35em;vertical-align:-.05em}\n.fs .rho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:820px}\n.fs .lab{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:1.6rem;align-items:start;margin-top:.6rem}\n.fs .readout{font-variant-numeric:tabular-nums;margin-top:.7rem;font-size:.95rem}\n.fs .readout b{font-weight:650}\n.fs .specimen{background:#fff;border-radius:8px;padding:1.2rem 1.4rem;overflow:hidden}\n.fs .cmp-row{background:#fff;border-radius:8px;padding:.8rem 1rem 1rem;margin:0 0 1rem}\n.fs .cmp-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:.3rem}\n.fs .cmp-head b{font-weight:650}\n.fs .bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.6rem 1.4rem;margin-top:.6rem}\n.fs .bar{font-size:.85rem;color:var(--muted)}\n.fs .bar .track{position:relative;height:8px;border-radius:4px;background:#eceee9;margin-top:.25rem}\n.fs .bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}\n.fs .bar .med{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.7}\n.fs .newfonts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:.8rem}\n.fs .newfonts div.c{background:#fff;border-radius:8px;padding:.8rem 1rem}\n.fs .newfonts small{color:var(--muted);font-size:.82rem}\n.fs-foot{border-top:1px solid var(--rule);margin-top:2.5rem;padding:2rem 0 3rem;color:var(--muted);font-size:.95rem}\n.fs-foot p{max-width:var(--measure)}\n.fs-ctrl{font-size:.9rem;color:var(--muted)}\n@media (max-width:640px){.fs .rho-grid,.fs .lab{grid-template-columns:1fr}}\n"
 
     import base64
     import io
@@ -34,6 +35,9 @@ def _():
             return open_url(str(p)).read()
 
     PUB = mo.notebook_location() / "public"
+    # marimo показывает каждый вывод отдельно, и стиль из одной ячейки не доходит до другой:
+    # поэтому оформление кладётся прямо в каждый кусок HTML
+    ST = f"<style>{STYLE}</style>"
 
     def fig(name):
         """Рисунок из выполненного ноутбука: локально встраивается, в браузере грузится по ссылке."""
@@ -42,17 +46,17 @@ def _():
             src = "data:image/png;base64," + base64.b64encode(Path(str(p)).read_bytes()).decode()
         except Exception:
             src = str(p)
-        return mo.Html(f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
 
     def table_html(h):
-        return mo.Html(f'<div class="lab-tbl">{h}</div>')
+        return mo.Html(ST + f'<div class="lab-tbl">{h}</div>')
 
     def df_html(df, digits=4):
         """Таблица pandas в оформлении отчёта (без служебных колонок интерактивной таблицы)."""
         return table_html(df.to_html(index=False, border=0, float_format=lambda v: f"{v:.{digits}g}" if abs(v) < 1e-3 and v else f"{v:.{digits}f}"))
 
     def out_text(t):
-        return mo.Html(f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
+        return mo.Html(ST + f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
 
     def code_block(code):
         return mo.accordion({"Код этого раздела": mo.md(f"```python\n{code}\n```")})
@@ -62,23 +66,23 @@ def _():
         buf = io.BytesIO()
         f.savefig(buf, format="png", dpi=140, bbox_inches="tight")
         plt.close(f)
-        return mo.Html(f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
 
     def cards(items):
         """Карточки с числами: [(подпись, значение, пояснение), ...]."""
         cells = "".join(f'<div class="lab-card"><span>{a}</span><b>{b}</b><small>{c}</small></div>' for a, b, c in items)
-        return mo.Html(f'<div class="lab-cards">{cells}</div>')
+        return mo.Html(ST + f'<div class="lab-cards">{cells}</div>')
 
     def section(*items):
         """Раздел отчёта в рамке-карточке."""
-        return mo.vstack(list(items), gap=0.6).style({
+        return mo.vstack([mo.Html(ST)] + list(items), gap=0.6).style({
             "background": T["card"], "border": f"1px solid {T['line']}", "border-radius": "18px",
             "padding": "1.3rem 1.5rem 1.1rem", "box-shadow": "0 1px 2px rgba(0,0,0,.04), 0 6px 22px rgba(0,0,0,.05)"})
 
     def live(title, note, *controls):
         """Заголовок живого блока и его элементы управления, в цветной рамке."""
         acc = T["acc"]
-        return mo.vstack([mo.Html(f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
+        return mo.vstack([mo.Html(ST + f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
                           mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.5).style({
             "background": T["soft"], "border": f"1px solid {T['acc2']}", "border-left": f"6px solid {acc}",
             "border-radius": "16px", "padding": ".9rem 1.2rem 1rem"})
@@ -165,7 +169,7 @@ def _():
 
     def H(s):
         """Кусок страницы в оформлении прежнего сайта."""
-        return mo.Html(f'<div class="fs">{s}</div>')
+        return mo.Html(ST + f'<div class="fs">{s}</div>')
 
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
@@ -342,7 +346,7 @@ font-size:{pl_size.value}px;font-variation-settings:'wght' {pl_wght.value},'wdth
 
 
 @app.cell(hide_code=True)
-def _(CAT, fonts, mo):
+def _(CAT, H, fonts, mo):
     _opts = {f"{r.family} · {CAT[r.category][0]}": r.family for r in fonts.sort_values(["category", "family"]).itertuples()}
     _key = {v: k for k, v in _opts.items()}
     _pick = lambda name, i: _key.get(name, list(_opts)[i * 7])   # noqa: E731
@@ -350,9 +354,9 @@ def _(CAT, fonts, mo):
     cmp2 = mo.ui.dropdown(options=_opts, value=_pick("Playfair", 1), label="Шрифт 2", searchable=True)
     cmp3 = mo.ui.dropdown(options=_opts, value=_pick("Indie Flower", 2), label="Шрифт 3", searchable=True)
     cmp_text = mo.ui.text(value="Hxlno шрифт", label="Текст", max_length=40)
-    mo.vstack([mo.Html("""<div class="fs"><h3>Сравнение шрифтов</h3><div class="text"><p>Выбери до трёх шрифтов из датасета
+    mo.vstack([H("""<h3>Сравнение шрифтов</h3><div class="text"><p>Выбери до трёх шрифтов из датасета
 и введи любой текст. Все строки набраны одним кеглем: сразу видно, у какого шрифта строчные выше и штрих толще.
-Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div></div>"""),
+Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div>"""),
                mo.hstack([cmp1, cmp2, cmp3, cmp_text], justify="start", gap=1.2, wrap=True)], gap=0.4)
     return (cmp1, cmp2, cmp3, cmp_text,)
 

@@ -75,6 +75,7 @@ def _():
     T = ''' + json.dumps(dict(bg="#f6f7f5", card="#ffffff", ink="#1a1d24", ink2="#5c6170", line="#dcdfd8", acc="#2a78d6",
                               acc2="#a9c8ef", soft="#eceee9", grid="#e6e5e0", c1="#2a78d6", c2="#eb6834", c3="#1baf7a",
                               cover="", cover_ink="", head_font="Golos Text")) + '''
+    STYLE = ''' + json.dumps(CSS, ensure_ascii=False) + '''
 ''' + C.HELPERS + r'''
     import html as htmlmod
     fonts_all = pd.read_csv(io.StringIO(read_text(PUB / "fonts.csv")))
@@ -148,7 +149,7 @@ def _():
 
     def H(s):
         """Кусок страницы в оформлении прежнего сайта."""
-        return mo.Html(f'<div class="fs">{s}</div>')
+        return mo.Html(ST + f'<div class="fs">{s}</div>')
 
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
@@ -276,16 +277,16 @@ PLAY = [
 font-size:{pl_size.value}px;font-variation-settings:'wght' {pl_wght.value},'wdth' {pl_wdth.value},'YTLC' {pl_ytlc.value}">{esc(pl_text.value or " ")}</div></div>
 <p class="note">Для сравнения: у шрифтов из датасета (начертание Regular, вес 400) толщина штриха от {nfc(_s.min())} до {nfc(_s.max())} кегля,
 медиана {nfc(_s.median())}. При кегле {pl_size.value} px это от {nfc(_s.min() * pl_size.value, 1)} до {nfc(_s.max() * pl_size.value, 1)} px.</p>""")'''),
-    _cell("CAT, fonts, mo", r'''    _opts = {f"{r.family} · {CAT[r.category][0]}": r.family for r in fonts.sort_values(["category", "family"]).itertuples()}
+    _cell("CAT, H, fonts, mo", r'''    _opts = {f"{r.family} · {CAT[r.category][0]}": r.family for r in fonts.sort_values(["category", "family"]).itertuples()}
     _key = {v: k for k, v in _opts.items()}
     _pick = lambda name, i: _key.get(name, list(_opts)[i * 7])   # noqa: E731
     cmp1 = mo.ui.dropdown(options=_opts, value=_pick("Inter", 0), label="Шрифт 1", searchable=True)
     cmp2 = mo.ui.dropdown(options=_opts, value=_pick("Playfair", 1), label="Шрифт 2", searchable=True)
     cmp3 = mo.ui.dropdown(options=_opts, value=_pick("Indie Flower", 2), label="Шрифт 3", searchable=True)
     cmp_text = mo.ui.text(value="Hxlno шрифт", label="Текст", max_length=40)
-    mo.vstack([mo.Html("""<div class="fs"><h3>Сравнение шрифтов</h3><div class="text"><p>Выбери до трёх шрифтов из датасета
+    mo.vstack([H("""<h3>Сравнение шрифтов</h3><div class="text"><p>Выбери до трёх шрифтов из датасета
 и введи любой текст. Все строки набраны одним кеглем: сразу видно, у какого шрифта строчные выше и штрих толще.
-Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div></div>"""),
+Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div>"""),
                mo.hstack([cmp1, cmp2, cmp3, cmp_text], justify="start", gap=1.2, wrap=True)], gap=0.4)''',
           "cmp1, cmp2, cmp3, cmp_text"),
     _cell("CAT, H, cmp1, cmp2, cmp3, cmp_text, esc, fonts, gfont, nfc, svg", r'''    _txt = (cmp_text.value or "Hxlno").strip() or "Hxlno"
