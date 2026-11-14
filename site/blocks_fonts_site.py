@@ -20,16 +20,17 @@ body, .markdown, .prose{font-family:"Golos Text",system-ui,-apple-system,"Segoe 
 .fs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:#e9ebe6;padding:.08em .35em;border-radius:3px}
 .fs{font-size:1.0625rem;line-height:1.6;color:var(--ink)}
 .fs .text{max-width:var(--measure)}
-.fs p{margin:0 0 1rem}
+.fs p{margin:0 0 1rem !important}
+.fs, .fs *{font-family:"Golos Text",system-ui,sans-serif}
 .fs-hero{padding-top:clamp(2rem,6vw,5rem);padding-bottom:1rem}
-.fs-hero h1{font-family:"Golos Text",sans-serif;font-size:clamp(2.9rem,9.2vw,7.4rem);line-height:.98;letter-spacing:-.02em;margin:.4rem 0 1.6rem;font-weight:400}
-.fs-hero h1 .w{display:block}
+.fs-hero h1{font-family:"Golos Text",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}
+.fs-hero h1 .w{display:block !important}
 .fs-hero h1 span.l{transition:font-weight .5s cubic-bezier(.2,.7,.2,1)}
 .fs .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--muted);margin:0 0 1.4rem;max-width:var(--measure)}
 .fs .note{color:var(--muted);font-size:.95rem}
 .fs-sec{padding-top:3rem;border-top:1px solid var(--rule);margin-top:2rem}
-.fs h2{font-family:"Golos Text",sans-serif;font-size:clamp(1.7rem,3.4vw,2.6rem);line-height:1.1;font-weight:750;letter-spacing:-.01em;margin:0 0 1rem}
-.fs h3{font-family:"Golos Text",sans-serif;font-size:1.15rem;font-weight:650;margin:1.6rem 0 .5rem}
+.fs h2{font-family:"Golos Text",sans-serif !important;font-size:clamp(1.7rem,3.4vw,2.6rem) !important;line-height:1.1 !important;font-weight:750 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}
+.fs h3{font-family:"Golos Text",sans-serif !important;font-size:1.15rem !important;font-weight:650 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}
 .fs figure{margin:1.4rem 0}
 .fs figure img{width:100%;height:auto;background:#fff;border-radius:6px}
 .fs figcaption{color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:var(--measure)}
@@ -400,5 +401,6 @@ RNG = [
 
 def app_text() -> str:
     head = C.header(TITLE, CSS_FILE)
-    cells = [SETUP] + HERO + FONTS + PLAY + RNG
+    style = _cell("mo", "    mo.Html(" + json.dumps("<style>" + CSS + "</style>", ensure_ascii=False) + ")")
+    cells = [SETUP, style] + HERO + FONTS + PLAY + RNG
     return head + "\n\n".join(cells) + '\n\nif __name__ == "__main__":\n    app.run()\n'
