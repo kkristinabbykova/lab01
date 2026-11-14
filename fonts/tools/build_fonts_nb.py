@@ -147,7 +147,7 @@ def build(df, r, sample_font: str | None, excluded=(), n_raw=None, n_user=0, n_r
 | Категории | {cats} |
 | Случайные величины | RV01 **x-height**, RV02 **толщина штриха «l»**; обе в долях кегля |
 | Запуск | [открыть в Google Colab](https://colab.research.google.com/github/kkristinabbykova/lab01/blob/main/fonts/fonts.ipynb) (первая ячейка сама скачает репозиторий) или локально: `jupyter notebook fonts.ipynb` |
-| Автор | Быкова Кристина Денисовна (ИСУ 501322), группа 27, трек КТвД |
+| Автор | Быкова Кристина Денисовна (ИСУ 501322), команда 27, трек КТвД |
 | Код | `labfont/` (измерения, схема), `labstat/` (статистические функции из основной части, автор Нефедьева А. С.), тесты `tests/test_labfont.py` |
 
 <a id="toc"></a>
