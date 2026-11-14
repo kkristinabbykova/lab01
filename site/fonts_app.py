@@ -5,13 +5,13 @@
 import marimo
 
 __generated_with = "0.16.0"
-app = marimo.App(width="medium", app_title="Lab01 · КТвД · Шрифт как случайная величина")
+app = marimo.App(width="medium", app_title="Lab01 · КТвД · Шрифт как случайная величина", css_file="fonts.css")
 
 
 @app.cell(hide_code=True)
 def _():
     import marimo as mo
-    T = {"bg": "#fafaf7", "card": "#ffffff", "ink": "#1a1d24", "ink2": "#5c6170", "line": "#e6e5e0", "acc": "#2a78d6", "acc2": "#a9c8ef", "soft": "#f1f0eb", "grid": "#e6e5e0", "c1": "#2a78d6", "c2": "#eb6834", "c3": "#1baf7a", "cover": "radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%)", "cover_ink": "#fafaf7"}
+    T = {"head_font": "\"Roboto Flex\", \"Golos Text\", sans-serif", "bg": "#fafaf7", "card": "#ffffff", "ink": "#1a1d24", "ink2": "#5c6170", "line": "#e6e5e0", "acc": "#2a78d6", "acc2": "#a9c8ef", "soft": "#f1f0eb", "grid": "#e6e5e0", "c1": "#2a78d6", "c2": "#eb6834", "c3": "#1baf7a", "cover": "radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%)", "cover_ink": "#fafaf7"}
     ASSETS = "fonts"
 
     import base64
@@ -48,6 +48,10 @@ def _():
     def table_html(h):
         return mo.Html(f'<div class="lab-tbl">{h}</div>')
 
+    def df_html(df, digits=4):
+        """Таблица pandas в оформлении отчёта (без служебных колонок интерактивной таблицы)."""
+        return table_html(df.to_html(index=False, border=0, float_format=lambda v: f"{v:.{digits}g}" if abs(v) < 1e-3 and v else f"{v:.{digits}f}"))
+
     def out_text(t):
         return mo.Html(f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
 
@@ -78,7 +82,7 @@ def _():
         "figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True,
         "grid.color": T["grid"], "grid.linewidth": 0.8, "axes.edgecolor": T["ink2"], "axes.labelcolor": T["ink"],
         "xtick.color": T["ink2"], "ytick.color": T["ink2"], "legend.frameon": False, "lines.linewidth": 2,
-        "axes.titlesize": 11, "axes.labelsize": 10, "legend.fontsize": 9, "font.size": 10,
+        "axes.titlesize": 10.5, "axes.labelsize": 9.5, "legend.fontsize": 8.5, "font.size": 9.5,
     })
 
     fonts_all = pd.read_csv(io.StringIO(read_text(PUB / "fonts.csv")))
@@ -140,13 +144,13 @@ def _():
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
     return (C1, C2, C3, CAT, CAT_RU, FAMS, FCOLS, FRU, G, T, describe_cards, fit_view, fonts, scatter_view,
-            Path, PUB, base64, cards, code_block, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
+            Path, PUB, base64, cards, code_block, df_html, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
             read_text, scipy, stats, table_html, types)
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.vstack([mo.Html("<style>\n:root { --lab-bg:#fafaf7; --lab-card:#ffffff; --lab-ink:#1a1d24; --lab-ink2:#5c6170;\n        --lab-line:#e6e5e0; --lab-acc:#2a78d6; --lab-acc2:#a9c8ef; --lab-soft:#f1f0eb; }\nbody, #App, .mo-app, [data-testid=\"app\"] { background: var(--lab-bg) !important; }\n.markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: var(--lab-ink); letter-spacing: -.01em; }\n.markdown h2 { font-size: 1.6rem; margin-top: 2.4rem; padding-top: 1rem; border-top: 2px solid var(--lab-line); }\n.markdown h3 { font-size: 1.22rem; margin-top: 1.6rem; }\n.markdown a { color: var(--lab-acc); }\n.lab-cover { background: radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%); color: #fafaf7; border-radius: 18px; padding: 2.2rem 2rem 1.8rem;\n             margin-bottom: .6rem; position: relative; overflow: hidden; }\n.lab-cover .kicker { text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; opacity: .75; }\n.lab-cover h1 { font-size: clamp(1.8rem, 4.6vw, 3rem); line-height: 1.08; margin: .5rem 0 .8rem; color: inherit; border: 0; }\n.lab-cover p { max-width: 46rem; opacity: .9; margin: .3rem 0; }\n.lab-cover .meta { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; margin-top: 1.2rem; font-size: .88rem; opacity: .85; }\n.lab-cover .meta b { font-weight: 600; }\n.lab-guide { background: var(--lab-card); border: 1px solid var(--lab-line); border-radius: 14px; padding: 1rem 1.2rem; }\n.lab-guide h4 { margin: 0 0 .4rem; }\n.lab-guide ul { margin: .2rem 0 0 1.1rem; padding: 0; }\n.lab-fig { margin: .4rem 0; background: #fff; border: 1px solid var(--lab-line); border-radius: 12px; padding: .5rem; }\n.lab-fig img { display: block; width: 100%; height: auto; }\n.lab-fig.live { border-color: var(--lab-acc2); }\n.lab-tbl { overflow-x: auto; }\n.lab-tbl table { border-collapse: collapse; font-size: .86rem; background: #fff; border: 1px solid var(--lab-line); }\n.lab-tbl th, .lab-tbl td { border-bottom: 1px solid var(--lab-line); padding: .32rem .6rem; text-align: right; }\n.lab-tbl th { background: var(--lab-soft); color: var(--lab-ink); font-weight: 600; }\n.lab-out { background: #fff; border: 1px solid var(--lab-line); border-radius: 10px; padding: .6rem .8rem;\n           font-size: .8rem; line-height: 1.45; overflow-x: auto; color: var(--lab-ink); margin: .2rem 0; }\n.lab-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .6rem; margin: .3rem 0; }\n.lab-card { background: var(--lab-card); border: 1px solid var(--lab-line); border-radius: 12px; padding: .7rem .85rem;\n            display: flex; flex-direction: column; gap: .1rem; }\n.lab-card span { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--lab-ink2); }\n.lab-card b { font-size: 1.45rem; font-variant-numeric: tabular-nums; color: var(--lab-ink); }\n.lab-card small { color: var(--lab-ink2); font-size: .78rem; }\n.lab-live { border-left: 4px solid var(--lab-acc); padding: .2rem 0 .1rem .9rem; margin-top: 1rem; }\n.lab-live .tag { display: inline-block; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em;\n                  background: var(--lab-acc); color: #fff; border-radius: 999px; padding: .12rem .55rem; }\n.lab-live h4 { margin: .35rem 0 .15rem; font-size: 1.08rem; color: var(--lab-ink); }\n.lab-live p { margin: 0; color: var(--lab-ink2); font-size: .9rem; }\n.lab-toc a { text-decoration: none; }\n.lab-toc ul { padding-left: 1rem; }\n@media (max-width: 640px) { .lab-cover { padding: 1.5rem 1.2rem; } }\n</style>\n<div class=\"lab-cover\">\n  <div class=\"kicker\">Lab01 · доп. задание КТвД · Быкова Кристина Денисовна, команда 27</div>\n  <h1>Шрифт как случайная величина</h1>\n  <p>100 семейств Google Fonts, по 20 в каждой категории. Две случайные величины одной природы — высота строчных\n  (x-height) и толщина основного штриха — измерены по контурам букв. Случайность, распределения, зависимость,\n  гипотеза про гротески и датчик, который выдаёт пропорции «нового» шрифта.</p>\n  <div class=\"meta\"><span><b>Данные:</b> собственный датасет, 106 измерено, 100 в анализе</span>\n  <span><b>Код:</b> labfont (fontTools), labrng, labstat</span></div>\n</div>\n<div class=\"lab-guide\"><h4>Как читать отчёт</h4><ul>\n  <li><b>☰ Содержание</b> — панель слева (на телефоне — кнопка вверху): переход к любому разделу.</li>\n  <li><b>«Код этого раздела»</b> под каждым разделом — код, которым посчитаны таблицы и рисунки.</li>\n  <li><b>Живые блоки</b> с синей полоской — фильтры по категориям, подбор моделей, датчик: всё считается в браузере.</li>\n  <li>Интерактивная витрина шрифтов (ползунки толщины, сравнение шрифтов) — на <a href=\"../\" target=\"_top\">главной странице шрифтов</a>.</li>\n  <li><a href=\"../../\" target=\"_top\">← Lab01: все части работы</a> · <a href=\"../../wine/\" target=\"_top\">основная работа (вино)</a></li>\n</ul></div>"), mo.md("# Lab01 · КТвД · доп. задание: пропорции шрифтов\n\n**Две случайные величины одной природы: высота строчных (x-height) и толщина основного штриха.**\n\n| | |\n|---|---|\n| Датасет | собственный: шрифты Google Fonts, измерены по контурам букв скриптом `labfont` (fontTools) |\n| Генеральная совокупность | собранная коллекция, $N = 100$ семейств; одно начертание на семейство, ближайшее к Regular |\n| Категории | display 20, serif 20, mono 20, handwriting 20, sans 20 |\n| Случайные величины | RV01 **x-height**, RV02 **толщина штриха «l»**; обе в долях кегля |\n| Запуск | [открыть в Google Colab](https://colab.research.google.com/github/kkristinabbykova/lab01/blob/main/fonts/fonts.ipynb) (первая ячейка сама скачает репозиторий) или локально: `jupyter notebook fonts.ipynb` |\n| Автор | Быкова Кристина Денисовна (ИСУ 501322), команда 27, трек КТвД |\n| Код | `labfont/` (измерения, схема), `labstat/` (статистические функции из основной части, автор Нефедьева А. С.), тесты `tests/test_labfont.py` |")])
+    mo.vstack([mo.Html("<style>\n@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap');\n:root { --marimo-text-font: \"Golos Text\", system-ui, sans-serif; --marimo-heading-font: \"Roboto Flex\", \"Golos Text\", sans-serif; }\nbody, .markdown, .prose { font-family: \"Golos Text\", system-ui, sans-serif; }\n.markdown h1, .markdown h2, .markdown h3, .markdown h4 { font-family: \"Roboto Flex\", \"Golos Text\", sans-serif !important; font-weight: 700 !important; }\n.markdown h1 { font-size: 2.1rem !important; letter-spacing: -.02em; margin: 2.6rem 0 .6rem; }\n.markdown h2 { font-size: 1.65rem !important; }\n.markdown h3 { font-size: 1.25rem !important; margin-top: 1.8rem; padding-left: .7rem; border-left: 4px solid var(--lab-acc); }\n.markdown h4 { font-size: 1.05rem !important; margin-top: 1.3rem; color: var(--lab-ink2) !important; }\n.markdown p, .markdown li { line-height: 1.6; }\n.markdown ul, .lab-guide ul { list-style: disc; padding-left: 1.3rem; }\n.markdown ol { list-style: decimal; padding-left: 1.3rem; }\n.markdown table td, .markdown table th { text-align: left !important; vertical-align: top; }\n.markdown table { font-size: .9rem; }\n.lab-fig img { max-width: 900px; margin: 0 auto; }\n:root { --lab-bg:#fafaf7; --lab-card:#ffffff; --lab-ink:#1a1d24; --lab-ink2:#5c6170;\n        --lab-line:#e6e5e0; --lab-acc:#2a78d6; --lab-acc2:#a9c8ef; --lab-soft:#f1f0eb; }\nbody, #App, .mo-app, [data-testid=\"app\"] { background: var(--lab-bg) !important; }\n.markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: var(--lab-ink); letter-spacing: -.01em; }\n.markdown h2 { font-size: 1.6rem; margin-top: 2.4rem; padding-top: 1rem; border-top: 2px solid var(--lab-line); }\n.markdown h3 { font-size: 1.22rem; margin-top: 1.6rem; }\n.markdown a { color: var(--lab-acc); }\n.lab-cover { background: radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%); color: #fafaf7; border-radius: 18px; padding: 2.2rem 2rem 1.8rem;\n             margin-bottom: .6rem; position: relative; overflow: hidden; }\n.lab-cover .kicker { text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; opacity: .75; }\n.lab-cover h1 { font-size: clamp(1.8rem, 4.6vw, 3rem); line-height: 1.08; margin: .5rem 0 .8rem; color: inherit; border: 0; }\n.lab-cover p { max-width: 46rem; opacity: .9; margin: .3rem 0; }\n.lab-cover .meta { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; margin-top: 1.2rem; font-size: .88rem; opacity: .85; }\n.lab-cover .meta b { font-weight: 600; }\n.lab-guide { background: var(--lab-card); border: 1px solid var(--lab-line); border-radius: 14px; padding: 1rem 1.2rem; }\n.lab-guide h4 { margin: 0 0 .4rem; }\n.lab-guide ul { margin: .2rem 0 0 1.1rem; padding: 0; }\n.lab-fig { margin: .4rem 0; background: #fff; border: 1px solid var(--lab-line); border-radius: 12px; padding: .5rem; }\n.lab-fig img { display: block; width: 100%; height: auto; }\n.lab-fig.live { border-color: var(--lab-acc2); }\n.lab-tbl { overflow-x: auto; }\n.lab-tbl table { border-collapse: collapse; font-size: .86rem; background: #fff; border: 1px solid var(--lab-line); }\n.lab-tbl th, .lab-tbl td { border-bottom: 1px solid var(--lab-line); padding: .32rem .6rem; text-align: right; }\n.lab-tbl th { background: var(--lab-soft); color: var(--lab-ink); font-weight: 600; }\n.lab-out { background: #fff; border: 1px solid var(--lab-line); border-radius: 10px; padding: .6rem .8rem;\n           font-size: .8rem; line-height: 1.45; overflow-x: auto; color: var(--lab-ink); margin: .2rem 0; }\n.lab-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .6rem; margin: .3rem 0; }\n.lab-card { background: var(--lab-card); border: 1px solid var(--lab-line); border-radius: 12px; padding: .7rem .85rem;\n            display: flex; flex-direction: column; gap: .1rem; }\n.lab-card span { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--lab-ink2); }\n.lab-card b { font-size: 1.45rem; font-variant-numeric: tabular-nums; color: var(--lab-ink); }\n.lab-card small { color: var(--lab-ink2); font-size: .78rem; }\n.lab-live { border-left: 4px solid var(--lab-acc); padding: .2rem 0 .1rem .9rem; margin-top: 1rem; }\n.lab-live .tag { display: inline-block; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em;\n                  background: var(--lab-acc); color: #fff; border-radius: 999px; padding: .12rem .55rem; }\n.lab-live h4 { margin: .35rem 0 .15rem; font-size: 1.08rem; color: var(--lab-ink); }\n.lab-live p { margin: 0; color: var(--lab-ink2); font-size: .9rem; }\n.lab-toc a { text-decoration: none; }\n.lab-toc ul { padding-left: 1rem; }\n/* обложка: числа */\n.lab-stats { display: flex; flex-wrap: wrap; gap: 1.6rem 2.4rem; margin-top: 1.4rem; }\n.lab-stats div b { display: block; font-size: 2rem; line-height: 1; font-weight: 700; }\n.lab-stats div span { font-size: .78rem; opacity: .75; }\n.lab-cover a { color: inherit; }\n.lab-tbl table { margin: .2rem 0; }\n@media (max-width: 640px) { .lab-cover { padding: 1.5rem 1.2rem; } .lab-stats div b { font-size: 1.5rem; } }\n</style>\n<div class=\"lab-cover\">\n  <div class=\"kicker\">Lab01 · команда 27 · доп. задание КТвД · Быкова Кристина Денисовна</div>\n  <h1>Шрифт как случайная величина</h1>\n  <p>Собственный датасет: 100 семейств Google Fonts, по 20 в каждой категории. Две случайные величины одной природы,\n  высота строчных (x-height) и толщина основного штриха, измерены по контурам букв. Случайность, распределения,\n  зависимость, гипотеза про гротески и датчик, который выдаёт пропорции «нового» шрифта.</p>\n  <div class=\"lab-stats\">\n    <div><b>100</b><span>шрифтов</span></div><div><b>5</b><span>категорий</span></div>\n    <div><b>2</b><span>случайные величины</span></div><div><b>6</b><span>методов датчика</span></div>\n    <div><b>6</b><span>живых блоков</span></div>\n  </div>\n</div>\n<div class=\"lab-guide\"><h4>Как читать отчёт</h4><ul>\n  <li><b>☰ Содержание</b> в панели слева (на телефоне кнопка вверху): переход к любому разделу.</li>\n  <li><b>«Код этого раздела»</b> под каждым разделом: код, которым посчитаны таблицы и рисунки.</li>\n  <li><b>Живые блоки</b> с синей полоской: фильтры по категориям, подбор моделей, датчик. Всё считается в браузере.</li>\n  <li>Живая витрина шрифтов с ползунками толщины: <a href=\"../\" target=\"_top\">сайт про шрифты</a>.</li>\n  <li><a href=\"../../\" target=\"_top\">← Lab01: обе части работы</a> · <a href=\"../../wine/\" target=\"_top\">основная работа (вино)</a></li>\n</ul></div>"), mo.md("# Lab01 · КТвД · доп. задание: пропорции шрифтов\n\n**Две случайные величины одной природы: высота строчных (x-height) и толщина основного штриха.**\n\n| | |\n|---|---|\n| Датасет | собственный: шрифты Google Fonts, измерены по контурам букв скриптом `labfont` (fontTools) |\n| Генеральная совокупность | собранная коллекция, $N = 100$ семейств; одно начертание на семейство, ближайшее к Regular |\n| Категории | display 20, serif 20, mono 20, handwriting 20, sans 20 |\n| Случайные величины | RV01 **x-height**, RV02 **толщина штриха «l»**; обе в долях кегля |\n| Запуск | [открыть в Google Colab](https://colab.research.google.com/github/kkristinabbykova/lab01/blob/main/fonts/fonts.ipynb) (первая ячейка сама скачает репозиторий) или локально: `jupyter notebook fonts.ipynb` |\n| Автор | Быкова Кристина Денисовна (ИСУ 501322), команда 27, трек КТвД |\n| Код | `labfont/` (измерения, схема), `labstat/` (статистические функции из основной части, автор Нефедьева А. С.), тесты `tests/test_labfont.py` |")])
     return
 
 
@@ -258,10 +262,10 @@ def _(FAMS, live, mo):
 
 
 @app.cell(hide_code=True)
-def _(FCOLS, fit_bins_xh, fit_fams_xh, fit_view, fonts, mo):
+def _(df_html, FCOLS, fit_bins_xh, fit_fams_xh, fit_view, fonts, mo):
     _label, _unit = FCOLS["x_height"]
     _img, _tab = fit_view(fonts["x_height"].dropna().to_numpy(float), fit_fams_xh.value, fit_bins_xh.value, _label, _unit, "xh")
-    mo.vstack([_img, mo.ui.table(_tab, selection=None, pagination=False) if len(_tab) else mo.md("_Выберите хотя бы одну модель._")])
+    mo.vstack([_img, df_html(_tab) if len(_tab) else mo.md("_Выберите хотя бы одну модель._")])
     return
 
 
@@ -312,10 +316,10 @@ def _(FAMS, live, mo):
 
 
 @app.cell(hide_code=True)
-def _(FCOLS, fit_bins_stem, fit_fams_stem, fit_view, fonts, mo):
+def _(df_html, FCOLS, fit_bins_stem, fit_fams_stem, fit_view, fonts, mo):
     _label, _unit = FCOLS["stem"]
     _img, _tab = fit_view(fonts["stem"].dropna().to_numpy(float), fit_fams_stem.value, fit_bins_stem.value, _label, _unit, "stem")
-    mo.vstack([_img, mo.ui.table(_tab, selection=None, pagination=False) if len(_tab) else mo.md("_Выберите хотя бы одну модель._")])
+    mo.vstack([_img, df_html(_tab) if len(_tab) else mo.md("_Выберите хотя бы одну модель._")])
     return
 
 
@@ -407,7 +411,7 @@ def _(mo):
 def _(FCOLS, G, live, mo):
     gen_var = mo.ui.dropdown(options={v[0]: k for k, v in FCOLS.items() if k in ("x_height", "stem", "contrast", "width_o")},
                              value="толщина штриха", label="Величина")
-    gen_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод")
+    gen_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["quantile"], label="Метод")
     gen_base = mo.ui.dropdown(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик")
     gen_family = mo.ui.dropdown(options={"логнормальное": "lognorm", "скошенное нормальное": "skewnorm", "нормальное": "norm"},
                                 value="логнормальное", label="Модель (для методов через модель)")
@@ -443,7 +447,7 @@ def _(C1, C2, FCOLS, G, cards, fonts, gen_base, gen_family, gen_method, gen_n, g
 
 
 @app.cell(hide_code=True)
-def _(G, fonts, gen_base, gen_family, gen_n, gen_seed, gen_var, mo, pd, time_mod):
+def _(df_html, fonts, G, gen_base, gen_family, gen_n, gen_seed, gen_var, mo, pd, time_mod):
     _real = fonts[gen_var.value].dropna().to_numpy(float)
     _rows = []
     for _m in G.METHODS:
@@ -455,7 +459,7 @@ def _(G, fonts, gen_base, gen_family, gen_n, gen_seed, gen_var, mo, pd, time_mod
         _rows.append({"метод": G.METHOD_RU[_m], "Δ среднего": _c["gen"]["среднее"] - _c["real"]["среднее"],
                       "Δ СКО": _c["gen"]["СКО"] - _c["real"]["СКО"], "КС p": _c["ks_p"], "доля принятых": _i["accept"], "время, мс": _dt})
     mo.vstack([mo.md("**Все шесть методов на выбранной величине**"),
-               mo.ui.table(pd.DataFrame(_rows).round(4), selection=None, pagination=False)])
+               df_html(pd.DataFrame(_rows))])
     return
 
 

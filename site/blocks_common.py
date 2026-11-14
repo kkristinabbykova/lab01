@@ -2,7 +2,7 @@
 import json
 
 
-def header(title: str) -> str:
+def header(title: str, css_file: str = "") -> str:
     return f'''# /// script
 # requires-python = ">=3.10"
 # dependencies = ["marimo", "numpy", "pandas", "matplotlib", "scipy"]
@@ -10,7 +10,7 @@ def header(title: str) -> str:
 import marimo
 
 __generated_with = "0.16.0"
-app = marimo.App(width="medium", app_title={json.dumps(title, ensure_ascii=False)})
+app = marimo.App(width="medium", app_title={json.dumps(title, ensure_ascii=False)}{f', css_file="{css_file}"' if css_file else ""})
 
 
 '''
@@ -52,6 +52,10 @@ HELPERS = r'''
     def table_html(h):
         return mo.Html(f'<div class="lab-tbl">{h}</div>')
 
+    def df_html(df, digits=4):
+        """Таблица pandas в оформлении отчёта (без служебных колонок интерактивной таблицы)."""
+        return table_html(df.to_html(index=False, border=0, float_format=lambda v: f"{v:.{digits}g}" if abs(v) < 1e-3 and v else f"{v:.{digits}f}"))
+
     def out_text(t):
         return mo.Html(f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
 
@@ -82,17 +86,37 @@ HELPERS = r'''
         "figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True,
         "grid.color": T["grid"], "grid.linewidth": 0.8, "axes.edgecolor": T["ink2"], "axes.labelcolor": T["ink"],
         "xtick.color": T["ink2"], "ytick.color": T["ink2"], "legend.frameon": False, "lines.linewidth": 2,
-        "axes.titlesize": 11, "axes.labelsize": 10, "legend.fontsize": 9, "font.size": 10,
+        "axes.titlesize": 10.5, "axes.labelsize": 9.5, "legend.fontsize": 8.5, "font.size": 9.5,
     })
 '''
 
-HELPER_NAMES = ("Path PUB base64 cards code_block fig io live mo nf np out_text pd plot_html plt read_text scipy "
+HELPER_NAMES = ("Path PUB base64 cards code_block df_html fig io live mo nf np out_text pd plot_html plt read_text scipy "
                 "stats table_html types").split()
 
 
-def css(t: dict) -> str:
-    """Оформление страницы: общий каркас, цвета из темы t."""
-    return f'''<style>
+def css(t: dict, tags: bool = True) -> str:
+    """Оформление страницы: общий каркас, цвета и шрифты из темы t.
+
+    tags=False: тот же текст без <style>, для css_file приложения (marimo подключает его ко всей странице).
+    """
+    return f"<style>\n{css_body(t)}\n</style>" if tags else css_body(t)
+
+
+def css_body(t: dict) -> str:
+    return f'''@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap');
+:root {{ --marimo-text-font: "Golos Text", system-ui, sans-serif; --marimo-heading-font: {t["head_font"]}; }}
+body, .markdown, .prose {{ font-family: "Golos Text", system-ui, sans-serif; }}
+.markdown h1, .markdown h2, .markdown h3, .markdown h4 {{ font-family: {t["head_font"]} !important; font-weight: 700 !important; }}
+.markdown h1 {{ font-size: 2.1rem !important; letter-spacing: -.02em; margin: 2.6rem 0 .6rem; }}
+.markdown h2 {{ font-size: 1.65rem !important; }}
+.markdown h3 {{ font-size: 1.25rem !important; margin-top: 1.8rem; padding-left: .7rem; border-left: 4px solid var(--lab-acc); }}
+.markdown h4 {{ font-size: 1.05rem !important; margin-top: 1.3rem; color: var(--lab-ink2) !important; }}
+.markdown p, .markdown li {{ line-height: 1.6; }}
+.markdown ul, .lab-guide ul {{ list-style: disc; padding-left: 1.3rem; }}
+.markdown ol {{ list-style: decimal; padding-left: 1.3rem; }}
+.markdown table td, .markdown table th {{ text-align: left !important; vertical-align: top; }}
+.markdown table {{ font-size: .9rem; }}
+.lab-fig img {{ max-width: 900px; margin: 0 auto; }}
 :root {{ --lab-bg:{t["bg"]}; --lab-card:{t["card"]}; --lab-ink:{t["ink"]}; --lab-ink2:{t["ink2"]};
         --lab-line:{t["line"]}; --lab-acc:{t["acc"]}; --lab-acc2:{t["acc2"]}; --lab-soft:{t["soft"]}; }}
 body, #App, .mo-app, [data-testid="app"] {{ background: var(--lab-bg) !important; }}
@@ -132,8 +156,13 @@ body, #App, .mo-app, [data-testid="app"] {{ background: var(--lab-bg) !important
 .lab-live p {{ margin: 0; color: var(--lab-ink2); font-size: .9rem; }}
 .lab-toc a {{ text-decoration: none; }}
 .lab-toc ul {{ padding-left: 1rem; }}
-@media (max-width: 640px) {{ .lab-cover {{ padding: 1.5rem 1.2rem; }} }}
-</style>'''
+/* обложка: числа */
+.lab-stats {{ display: flex; flex-wrap: wrap; gap: 1.6rem 2.4rem; margin-top: 1.4rem; }}
+.lab-stats div b {{ display: block; font-size: 2rem; line-height: 1; font-weight: 700; }}
+.lab-stats div span {{ font-size: .78rem; opacity: .75; }}
+.lab-cover a {{ color: inherit; }}
+.lab-tbl table {{ margin: .2rem 0; }}
+@media (max-width: 640px) {{ .lab-cover {{ padding: 1.5rem 1.2rem; }} .lab-stats div b {{ font-size: 1.5rem; }} }}'''
 
 
 def toc_cell(toc_md: str, extra: str) -> str:

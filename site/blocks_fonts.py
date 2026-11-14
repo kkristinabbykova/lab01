@@ -3,13 +3,16 @@ import json
 
 import blocks_common as C
 
-THEME = dict(bg="#fafaf7", card="#ffffff", ink="#1a1d24", ink2="#5c6170", line="#e6e5e0", acc="#2a78d6",
+THEME = dict(head_font='"Roboto Flex", "Golos Text", sans-serif', bg="#fafaf7", card="#ffffff", ink="#1a1d24", ink2="#5c6170", line="#e6e5e0", acc="#2a78d6",
              acc2="#a9c8ef", soft="#f1f0eb", grid="#e6e5e0", c1="#2a78d6", c2="#eb6834", c3="#1baf7a",
              cover="radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%)", cover_ink="#fafaf7")
 
 
+CSS_FILE = "fonts.css"
+
+
 def header(title):
-    return C.header(title)
+    return C.header(title, CSS_FILE)
 
 
 SETUP = '''@app.cell(hide_code=True)
@@ -77,7 +80,7 @@ def _():
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
     return (C1, C2, C3, CAT, CAT_RU, FAMS, FCOLS, FRU, G, T, describe_cards, fit_view, fonts, scatter_view,
-            Path, PUB, base64, cards, code_block, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
+            Path, PUB, base64, cards, code_block, df_html, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
             read_text, scipy, stats, table_html, types)
 '''
 
@@ -85,20 +88,23 @@ def _():
 def cover(head_md: str) -> str:
     html = C.css(THEME) + '''
 <div class="lab-cover">
-  <div class="kicker">Lab01 · доп. задание КТвД · Быкова Кристина Денисовна, команда 27</div>
+  <div class="kicker">Lab01 · команда 27 · доп. задание КТвД · Быкова Кристина Денисовна</div>
   <h1>Шрифт как случайная величина</h1>
-  <p>100 семейств Google Fonts, по 20 в каждой категории. Две случайные величины одной природы — высота строчных
-  (x-height) и толщина основного штриха — измерены по контурам букв. Случайность, распределения, зависимость,
-  гипотеза про гротески и датчик, который выдаёт пропорции «нового» шрифта.</p>
-  <div class="meta"><span><b>Данные:</b> собственный датасет, 106 измерено, 100 в анализе</span>
-  <span><b>Код:</b> labfont (fontTools), labrng, labstat</span></div>
+  <p>Собственный датасет: 100 семейств Google Fonts, по 20 в каждой категории. Две случайные величины одной природы,
+  высота строчных (x-height) и толщина основного штриха, измерены по контурам букв. Случайность, распределения,
+  зависимость, гипотеза про гротески и датчик, который выдаёт пропорции «нового» шрифта.</p>
+  <div class="lab-stats">
+    <div><b>100</b><span>шрифтов</span></div><div><b>5</b><span>категорий</span></div>
+    <div><b>2</b><span>случайные величины</span></div><div><b>6</b><span>методов датчика</span></div>
+    <div><b>6</b><span>живых блоков</span></div>
+  </div>
 </div>
 <div class="lab-guide"><h4>Как читать отчёт</h4><ul>
-  <li><b>☰ Содержание</b> — панель слева (на телефоне — кнопка вверху): переход к любому разделу.</li>
-  <li><b>«Код этого раздела»</b> под каждым разделом — код, которым посчитаны таблицы и рисунки.</li>
-  <li><b>Живые блоки</b> с синей полоской — фильтры по категориям, подбор моделей, датчик: всё считается в браузере.</li>
-  <li>Интерактивная витрина шрифтов (ползунки толщины, сравнение шрифтов) — на <a href="../" target="_top">главной странице шрифтов</a>.</li>
-  <li><a href="../../" target="_top">← Lab01: все части работы</a> · <a href="../../wine/" target="_top">основная работа (вино)</a></li>
+  <li><b>☰ Содержание</b> в панели слева (на телефоне кнопка вверху): переход к любому разделу.</li>
+  <li><b>«Код этого раздела»</b> под каждым разделом: код, которым посчитаны таблицы и рисунки.</li>
+  <li><b>Живые блоки</b> с синей полоской: фильтры по категориям, подбор моделей, датчик. Всё считается в браузере.</li>
+  <li>Живая витрина шрифтов с ползунками толщины: <a href="../" target="_top">сайт про шрифты</a>.</li>
+  <li><a href="../../" target="_top">← Lab01: обе части работы</a> · <a href="../../wine/" target="_top">основная работа (вино)</a></li>
 </ul></div>'''
     return f'''@app.cell(hide_code=True)
 def _(mo):
@@ -157,10 +163,10 @@ def _(FAMS, live, mo):
 '''
     view = f'''
 @app.cell(hide_code=True)
-def _(FCOLS, fit_bins_{sfx}, fit_fams_{sfx}, fit_view, fonts, mo):
+def _(df_html, FCOLS, fit_bins_{sfx}, fit_fams_{sfx}, fit_view, fonts, mo):
     _label, _unit = FCOLS[{json.dumps(col)}]
     _img, _tab = fit_view(fonts[{json.dumps(col)}].dropna().to_numpy(float), fit_fams_{sfx}.value, fit_bins_{sfx}.value, _label, _unit, {json.dumps(sfx)})
-    mo.vstack([_img, mo.ui.table(_tab, selection=None, pagination=False) if len(_tab) else mo.md("_Выберите хотя бы одну модель._")])
+    mo.vstack([_img, df_html(_tab) if len(_tab) else mo.md("_Выберите хотя бы одну модель._")])
     return
 '''
     return _cells(ui, view)
@@ -228,7 +234,7 @@ def _(mo):
 def _(FCOLS, G, live, mo):
     gen_var = mo.ui.dropdown(options={v[0]: k for k, v in FCOLS.items() if k in ("x_height", "stem", "contrast", "width_o")},
                              value="толщина штриха", label="Величина")
-    gen_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод")
+    gen_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["quantile"], label="Метод")
     gen_base = mo.ui.dropdown(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик")
     gen_family = mo.ui.dropdown(options={"логнормальное": "lognorm", "скошенное нормальное": "skewnorm", "нормальное": "norm"},
                                 value="логнормальное", label="Модель (для методов через модель)")
@@ -262,7 +268,7 @@ def _(C1, C2, FCOLS, G, cards, fonts, gen_base, gen_family, gen_method, gen_n, g
     return
 ''', '''
 @app.cell(hide_code=True)
-def _(G, fonts, gen_base, gen_family, gen_n, gen_seed, gen_var, mo, pd, time_mod):
+def _(df_html, fonts, G, gen_base, gen_family, gen_n, gen_seed, gen_var, mo, pd, time_mod):
     _real = fonts[gen_var.value].dropna().to_numpy(float)
     _rows = []
     for _m in G.METHODS:
@@ -274,7 +280,7 @@ def _(G, fonts, gen_base, gen_family, gen_n, gen_seed, gen_var, mo, pd, time_mod
         _rows.append({"метод": G.METHOD_RU[_m], "Δ среднего": _c["gen"]["среднее"] - _c["real"]["среднее"],
                       "Δ СКО": _c["gen"]["СКО"] - _c["real"]["СКО"], "КС p": _c["ks_p"], "доля принятых": _i["accept"], "время, мс": _dt})
     mo.vstack([mo.md("**Все шесть методов на выбранной величине**"),
-               mo.ui.table(pd.DataFrame(_rows).round(4), selection=None, pagination=False)])
+               df_html(pd.DataFrame(_rows))])
     return
 ''', '''
 @app.cell(hide_code=True)

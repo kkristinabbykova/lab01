@@ -123,6 +123,7 @@ def _(code_block, fig, mo, out_text, table_html):
             cells.extend(module.BLOCKS.get(a, []))
     text = module.header(title) + "\n\n".join(cells) + '\n\nif __name__ == "__main__":\n    app.run()\n'
     out_py.write_text(text, encoding="utf-8")
+    (out_py.parent / module.CSS_FILE).write_text(blocks_common.css(module.THEME, tags=False), encoding="utf-8")
     compile(text, str(out_py), "exec")
     print(f"{out_py.relative_to(ROOT)}: {text.count('@app.cell')} ячеек, рисунков {len(list(asset_dir.glob(prefix + '*.png')))}")
 

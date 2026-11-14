@@ -3,13 +3,16 @@ import json
 
 import blocks_common as C
 
-THEME = dict(bg="#f2f2f0", card="#ffffff", ink="#16181d", ink2="#5a5f69", line="#e1e1de", acc="#8e3b46",
+THEME = dict(head_font='"Golos Text", system-ui, sans-serif', bg="#f2f2f0", card="#ffffff", ink="#16181d", ink2="#5a5f69", line="#e1e1de", acc="#8e3b46",
              acc2="#c9a3a9", soft="#ecebe8", grid="#e4e4e4", c1="#4a5160", c2="#8e3b46", c3="#9aa1ab",
              cover="linear-gradient(135deg,#2b2e35 0%,#4a4f59 55%,#6b6f78 100%)", cover_ink="#f4f4f2")
 
 
+CSS_FILE = "wine.css"
+
+
 def header(title):
-    return C.header(title)
+    return C.header(title, CSS_FILE)
 
 
 SETUP = '''@app.cell(hide_code=True)
@@ -171,7 +174,7 @@ def _():
     exec(read_text(PUB / "generators.py"), G.__dict__)
     return (C1, C2, C3, COLS, EST, FAMS, G, RU2COL, T, cons_view, dep_view, describe_cards, fit_view, gen_ph,
             grid_edges, hist_view, ph, red, sample_view, white,
-            Path, PUB, base64, cards, code_block, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
+            Path, PUB, base64, cards, code_block, df_html, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
             read_text, scipy, stats, table_html, types)
 '''
 
@@ -179,21 +182,26 @@ def _():
 def cover(head_md: str) -> str:
     html = C.css(THEME) + '''
 <div class="lab-cover">
-  <div class="kicker">Прикладная статистика · Lab01 · Инфохимия + КТвД</div>
+  <div class="kicker">Прикладная статистика · Lab01 · команда 27 · основная работа</div>
   <h1>Белое вино как случайный эксперимент</h1>
-  <p>4898 португальских белых вин Vinho Verde. Три случайные величины — pH, фиксированная кислотность и спирт:
-  почему их нельзя вычислить заранее, как они распределены, как связаны между собой.
-  Во втором спринте — датчик, который выдаёт новые «вина» с правильным pH, и исследование 10 алгоритмов датчиков.</p>
+  <p>4898 португальских белых вин Vinho Verde. Три случайные величины: pH, фиксированная кислотность и спирт.
+  Почему их нельзя вычислить заранее, как они распределены и как связаны между собой. Во втором спринте датчик,
+  который выдаёт новые «вина» с правильным pH, и исследование 10 алгоритмов датчиков.</p>
+  <div class="lab-stats">
+    <div><b>4 898</b><span>белых вин</span></div><div><b>3</b><span>случайные величины</span></div>
+    <div><b>2</b><span>спринта</span></div><div><b>10</b><span>алгоритмов датчика</span></div>
+    <div><b>12</b><span>живых блоков</span></div>
+  </div>
   <div class="meta"><span><b>Спринт 1:</b> Нефедьева А. С. (Инфохимия)</span>
-  <span><b>Спринт 2, оформление, выводы спринта 1:</b> Быкова К. Д. (КТвД, команда 27)</span>
-  <span><b>Данные:</b> Wine Quality, UCI, N = 4898</span></div>
+  <span><b>Спринт 2, оформление, выводы спринта 1:</b> Быкова К. Д. (КТвД)</span>
+  <span><b>Данные:</b> Wine Quality, UCI</span></div>
 </div>
 <div class="lab-guide"><h4>Как читать отчёт</h4><ul>
-  <li><b>☰ Содержание</b> — панель слева (на телефоне — кнопка вверху): переход к любому разделу.</li>
-  <li><b>«Код этого раздела»</b> под каждым разделом — раскрыть код, которым посчитаны таблицы и рисунки.</li>
-  <li><b>Живые блоки</b> с полоской слева — ползунки и переключатели, графики пересчитываются прямо в браузере.</li>
-  <li>Рисунки и таблицы — из выполненного ноутбука <code>wine/lab01.ipynb</code>, тексты те же.</li>
-  <li><a href="../" target="_top">← Lab01: все части работы</a> · <a href="../fonts/" target="_top">доп. задание КТвД (шрифты)</a></li>
+  <li><b>☰ Содержание</b> в панели слева (на телефоне кнопка вверху): переход к любому разделу.</li>
+  <li><b>«Код этого раздела»</b> под каждым разделом: код, которым посчитаны таблицы и рисунки.</li>
+  <li><b>Живые блоки</b> с полоской слева: ползунки и переключатели, графики пересчитываются прямо в браузере.</li>
+  <li>Тексты, рисунки и таблицы взяты из выполненного ноутбука <code>wine/lab01.ipynb</code>.</li>
+  <li><a href="../" target="_top">← Lab01: обе части работы</a> · <a href="../fonts/" target="_top">доп. задание КТвД (шрифты)</a></li>
 </ul></div>'''
     return f'''@app.cell(hide_code=True)
 def _(mo):
@@ -252,10 +260,10 @@ def _(FAMS, live, mo):
 '''
     view = f'''
 @app.cell(hide_code=True)
-def _(COLS, fit_bins_{sfx}, fit_fams_{sfx}, fit_view, mo, white):
+def _(COLS, df_html, fit_bins_{sfx}, fit_fams_{sfx}, fit_view, mo, white):
     _label, _unit, _step = COLS[{json.dumps(col)}]
     _img, _tab = fit_view(white[{json.dumps(col)}].to_numpy(float), fit_fams_{sfx}.value, fit_bins_{sfx}.value, _step, _label, _unit, {json.dumps(sfx)})
-    mo.vstack([_img, mo.ui.table(_tab, selection=None, pagination=False) if len(_tab) else mo.md("_Выберите хотя бы одну модель._")])
+    mo.vstack([_img, df_html(_tab) if len(_tab) else mo.md("_Выберите хотя бы одну модель._")])
     return
 '''
     return _cells(ui, view)
