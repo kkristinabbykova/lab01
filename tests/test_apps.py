@@ -38,6 +38,6 @@ def test_public_generators_in_sync():
 def test_fonts_site_app():
     src = (ROOT / "site" / "fonts_site_app.py").read_text(encoding="utf-8")
     compile(src, "fonts_site_app.py", "exec")
-    for anchor in ("collection", "play", "rng"):
+    for anchor in ("fonts", "play", "rng"):
         assert f'id="{anchor}"' in src
     assert (ROOT / "site" / "public" / "fonts_measure.png").exists()

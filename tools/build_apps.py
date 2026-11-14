@@ -163,6 +163,7 @@ def main() -> None:
     text = blocks_fonts_site.app_text()
     compile(text, "fonts_site_app.py", "exec")
     (SITE / "fonts_site_app.py").write_text(text, encoding="utf-8")
+    (SITE / blocks_fonts_site.CSS_FILE).write_text(blocks_fonts_site.CSS, encoding="utf-8")
     print(f"site/fonts_site_app.py: {text.count('@app.cell')} ячеек")
 
 
