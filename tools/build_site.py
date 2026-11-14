@@ -4,7 +4,7 @@
 
 docs/                — общая страница: две части работы
 docs/wine/           — основная работа (вино): marimo-приложение, серый стиль
-docs/fonts/          — доп. задание КТвД: сайт про шрифты (лендинг, датчик)
+docs/fonts/          — доп. задание КТвД: сайт про шрифты (marimo)
 docs/fonts/report/   — отчёт по шрифтам: marimo-приложение
 docs/fonts/datchik/  — полный датчик на marimo
 
@@ -39,16 +39,17 @@ def main() -> int:
         shutil.rmtree(DOCS)
     DOCS.mkdir()
 
-    # 1. шрифты: собственный сайт части (лендинг + датчик), ссылки ведут на marimo-отчёт и на общую страницу
-    env = dict(os.environ, LAB_REPORT="report/", LAB_HUB="../", LAB_PATH_PREFIX="fonts/")
-    code |= subprocess.call([sys.executable, str(ROOT / "fonts" / "tools" / "build_site.py")], env=env)
-    shutil.copytree(ROOT / "fonts" / "docs", DOCS / "fonts")
-
-    # 2. marimo-приложения: вино и отчёт по шрифтам
+    # marimo-приложения: вино, сайт про шрифты, отчёт по шрифтам, полный датчик шрифтов
     code |= export(ROOT / "site" / "wine_app.py", DOCS / "wine")
+    code |= export(ROOT / "site" / "fonts_site_app.py", DOCS / "fonts")
     code |= export(ROOT / "site" / "fonts_app.py", DOCS / "fonts" / "report")
+    fpub = ROOT / "fonts" / "public"                      # датчик берёт код и данные из своей папки public/
+    fpub.mkdir(exist_ok=True)
+    shutil.copy(ROOT / "fonts" / "labrng" / "generators.py", fpub / "generators.py")
+    shutil.copy(ROOT / "fonts" / "data" / "fonts.csv", fpub / "fonts.csv")
+    code |= export(ROOT / "fonts" / "datchik.py", DOCS / "fonts" / "datchik")
 
-    # 3. общая страница
+    # общая страница
     (DOCS / "index.html").write_text(hub(), encoding="utf-8")
     (DOCS / ".nojekyll").write_text("")
     print("docs/ собран")
@@ -173,7 +174,7 @@ footer{max-width:1180px;margin:0 auto;padding:1rem 1.4rem 2.5rem;color:#5a5f69;f
       <a class="btn ghost" href="fonts/report/">Отчёт</a>
       <a class="btn ghost" href="fonts/datchik/">Датчик</a>
     </div>
-    <p class="small">Сайт с живыми шрифтами и датчиком, отчёт на marimo с живыми блоками. Ноутбук: __NB_FONTS__.</p>
+    <p class="small">Всё на marimo: сайт с живыми шрифтами и датчиком, отчёт с живыми блоками. Ноутбук: __NB_FONTS__.</p>
   </section>
 </main>
 

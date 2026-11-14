@@ -33,3 +33,11 @@ def test_app_figures_exist(name):
 
 def test_public_generators_in_sync():
     assert (ROOT / "site" / "public" / "generators.py").read_text() == (ROOT / "fonts" / "labrng" / "generators.py").read_text()
+
+
+def test_fonts_site_app():
+    src = (ROOT / "site" / "fonts_site_app.py").read_text(encoding="utf-8")
+    compile(src, "fonts_site_app.py", "exec")
+    for anchor in ("collection", "play", "rng"):
+        assert f'id="{anchor}"' in src
+    assert (ROOT / "site" / "public" / "fonts_measure.png").exists()

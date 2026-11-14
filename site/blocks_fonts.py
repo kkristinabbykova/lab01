@@ -80,7 +80,7 @@ def _():
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
     return (C1, C2, C3, CAT, CAT_RU, FAMS, FCOLS, FRU, G, T, describe_cards, fit_view, fonts, scatter_view,
-            Path, PUB, base64, cards, code_block, df_html, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
+            Path, PUB, base64, cards, code_block, df_html, fig, section, io, live, mo, nf, np, out_text, pd, plot_html, plt,
             read_text, scipy, stats, table_html, types)
 '''
 

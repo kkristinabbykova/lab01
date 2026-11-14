@@ -1,0 +1,403 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["marimo", "numpy", "pandas", "matplotlib", "scipy"]
+# ///
+import marimo
+
+__generated_with = "0.16.0"
+app = marimo.App(width="medium", app_title="Шрифт как случайная величина · Lab01 · КТвД", css_file="fonts.css")
+
+
+@app.cell(hide_code=True)
+def _():
+    import marimo as mo
+    T = {"head_font": "\"Roboto Flex\", \"Golos Text\", sans-serif", "bg": "#fafaf7", "card": "#ffffff", "ink": "#1a1d24", "ink2": "#5c6170", "line": "#e6e5e0", "acc": "#2a78d6", "acc2": "#a9c8ef", "soft": "#f1f0eb", "grid": "#e6e5e0", "c1": "#2a78d6", "c2": "#eb6834", "c3": "#1baf7a", "cover": "radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%)", "cover_ink": "#fafaf7"}
+
+    import base64
+    import io
+    import types
+    from pathlib import Path
+
+    import matplotlib
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
+    import scipy                      # нужен и коду датчиков: явный импорт, чтобы marimo установил scipy в браузере
+    from scipy import stats
+
+    def read_text(p):
+        """Файл из public/: локально это путь, в браузере (WebAssembly) это URL."""
+        try:
+            return Path(str(p)).read_text(encoding="utf-8")
+        except Exception:
+            from pyodide.http import open_url
+            return open_url(str(p)).read()
+
+    PUB = mo.notebook_location() / "public"
+
+    def fig(name):
+        """Рисунок из выполненного ноутбука: локально встраивается, в браузере грузится по ссылке."""
+        p = PUB / ASSETS / name
+        try:
+            src = "data:image/png;base64," + base64.b64encode(Path(str(p)).read_bytes()).decode()
+        except Exception:
+            src = str(p)
+        return mo.Html(f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
+
+    def table_html(h):
+        return mo.Html(f'<div class="lab-tbl">{h}</div>')
+
+    def df_html(df, digits=4):
+        """Таблица pandas в оформлении отчёта (без служебных колонок интерактивной таблицы)."""
+        return table_html(df.to_html(index=False, border=0, float_format=lambda v: f"{v:.{digits}g}" if abs(v) < 1e-3 and v else f"{v:.{digits}f}"))
+
+    def out_text(t):
+        return mo.Html(f'<pre class="lab-out">{t.replace("&", "&amp;").replace("<", "&lt;")}</pre>')
+
+    def code_block(code):
+        return mo.accordion({"Код этого раздела": mo.md(f"```python\n{code}\n```")})
+
+    def plot_html(f):
+        """Matplotlib → картинка; так рисунок одинаково выглядит локально и в браузере."""
+        buf = io.BytesIO()
+        f.savefig(buf, format="png", dpi=140, bbox_inches="tight")
+        plt.close(f)
+        return mo.Html(f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
+
+    def cards(items):
+        """Карточки с числами: [(подпись, значение, пояснение), ...]."""
+        cells = "".join(f'<div class="lab-card"><span>{a}</span><b>{b}</b><small>{c}</small></div>' for a, b, c in items)
+        return mo.Html(f'<div class="lab-cards">{cells}</div>')
+
+    def section(*items):
+        """Раздел отчёта в рамке-карточке."""
+        return mo.vstack(list(items), gap=0.6).style({
+            "background": T["card"], "border": f"1px solid {T['line']}", "border-radius": "18px",
+            "padding": "1.3rem 1.5rem 1.1rem", "box-shadow": "0 1px 2px rgba(0,0,0,.04), 0 6px 22px rgba(0,0,0,.05)"})
+
+    def live(title, note, *controls):
+        """Заголовок живого блока и его элементы управления, в цветной рамке."""
+        acc = T["acc"]
+        return mo.vstack([mo.Html(f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
+                          mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.5).style({
+            "background": T["soft"], "border": f"1px solid {T['acc2']}", "border-left": f"6px solid {acc}",
+            "border-radius": "16px", "padding": ".9rem 1.2rem 1rem"})
+
+    def nf(v, d=3):
+        return f"{v:.{d}f}"
+
+    plt.rcParams.update({
+        "figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True,
+        "grid.color": T["grid"], "grid.linewidth": 0.8, "axes.edgecolor": T["ink2"], "axes.labelcolor": T["ink"],
+        "xtick.color": T["ink2"], "ytick.color": T["ink2"], "legend.frameon": False, "lines.linewidth": 2,
+        "axes.titlesize": 10.5, "axes.labelsize": 9.5, "legend.fontsize": 8.5, "font.size": 9.5,
+    })
+
+    fonts_all = pd.read_csv(io.StringIO(read_text(PUB / "fonts.csv")))
+    fonts = fonts_all[~fonts_all["no_lowercase"].astype(str).eq("True")].copy().reset_index(drop=True)
+    CAT = {"sans": ("гротески", "#2a78d6"), "serif": ("антиквы", "#eb6834"), "display": ("акцидентные", "#1baf7a"),
+           "handwriting": ("рукописные", "#9b59b6"), "mono": ("моноширинные", "#5c6170")}
+    CAT_RU = {v[0]: k for k, v in CAT.items()}
+    C1, C2 = T["c1"], T["c2"]
+
+    def gfont(family, text="", wght=400):
+        """Подключить шрифт Google Fonts (только нужные буквы, чтобы грузилось быстро)."""
+        q = family.replace(" ", "+")
+        t = ("&text=" + "".join(sorted(set(text))).replace("&", "")) if text else ""
+        return f'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family={q}{t}&display=swap">'
+
+    def to_wght(stem):
+        """Толщина штриха (доли кегля) → ось wght Roboto Flex: 0.09 ≈ Regular 400."""
+        return float(np.clip(np.interp(stem, [0.02, 0.09, 0.22], [100, 400, 1000]), 100, 1000))
+
+    def to_ytlc(xh):
+        """x-height (доли кегля) → ось YTLC Roboto Flex (высота строчных, 416…570)."""
+        return float(np.clip(xh * 1000, 416, 570))
+
+    def flex(text, wght=400, wdth=100, size=64, ytlc=514, color=None):
+        return (f'<div style="font-family:\'Roboto Flex\',sans-serif;font-size:{size}px;line-height:1.05;'
+                f'font-variation-settings:\'wght\' {wght:.0f},\'wdth\' {wdth:.0f},\'YTLC\' {ytlc:.0f};'
+                f'color:{color or T["ink"]};overflow-wrap:anywhere">{text}</div>')
+
+    G = types.ModuleType("generators")
+    exec(read_text(PUB / "generators.py"), G.__dict__)
+    return (C1, C2, CAT, CAT_RU, G, T, flex, fonts, gfont, to_wght, to_ytlc,
+            Path, PUB, base64, cards, code_block, df_html, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
+            read_text, scipy, section, stats, table_html, types)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.Html('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap">')
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    reroll = mo.ui.button(value=0, on_click=lambda v: v + 1, label="Перебросить толщину букв")
+    return (reroll,)
+
+
+@app.cell(hide_code=True)
+def _(T, fonts, mo, np, reroll, to_wght):
+    _rng = np.random.default_rng(int(reroll.value) + 7)
+    _stems = _rng.choice(fonts["stem"].to_numpy(float), size=40)
+    _title = "".join(
+        f'<span style="font-variation-settings:\'wght\' {to_wght(s):.0f};transition:font-variation-settings .5s">{ch}</span>'
+        for ch, s in zip("Шрифт как случайная величина", _stems))
+    mo.vstack([mo.Html(f"""
+<div class="lab-cover fonts-hero">
+  <div class="kicker">Lab01 · команда 27 · доп. задание КТвД · Быкова Кристина Денисовна</div>
+  <h1 style="font-family:'Roboto Flex',sans-serif;font-size:clamp(2.4rem,7vw,5rem);line-height:1;margin:.6rem 0 1rem">{_title}</h1>
+  <p>Доп. задание КТвД к лабораторной по прикладной статистике. Я собрала датасет шрифтов с Google Fonts
+  (в анализе {len(fonts)}: часть выбрана мной, остальные добавлены случайным отбором, по 20 в каждой категории)
+  и измерила у каждого две вещи: высоту строчных букв (x-height) и толщину штриха. Эти размеры нельзя вычислить
+  по формуле, у каждого шрифта они свои, поэтому их можно изучать как случайные величины.</p>
+  <p>Нажми кнопку: толщина каждой буквы в заголовке выпадет случайно, из тех же значений, что у настоящих шрифтов.</p>
+  <div class="lab-stats"><div><b>{len(fonts)}</b><span>шрифтов</span></div><div><b>5</b><span>категорий</span></div>
+  <div><b>2</b><span>случайные величины</span></div><div><b>6</b><span>методов датчика</span></div></div>
+</div>"""), reroll,
+        mo.Html('<div class="lab-guide"><h4>Что здесь</h4><ul>'
+                '<li><a href="#collection">Шрифты</a>: коллекция, что измерено, как читать ρ.</li>'
+                '<li><a href="#play">Попробуй сам</a>: толщина и ширина вариативного шрифта, сравнение шрифтов.</li>'
+                '<li><a href="#rng">Датчик</a>: случайные «новые» шрифты, похожие на настоящие.</li>'
+                '<li>Полный отчёт с кодом и формулами: <a href="report/" target="_top">отчёт</a> · '
+                '<a href="../" target="_top">← Lab01: обе части работы</a>.</li></ul></div>')], gap=0.8)
+    return
+
+
+@app.cell(hide_code=True)
+def _(CAT, fonts, mo, np, section, stats):
+    _rho = stats.spearmanr(fonts.x_height, fonts.stem)[0]
+    _med = fonts.groupby("category").x_height.median()
+    section(
+        mo.md("""<a id="collection"></a>
+## Шрифты: высота строчных и толщина штриха
+
+Датасет собран самостоятельно: шрифтовые семейства из Google Fonts, по 20 гротесков, антикв, акцидентных,
+рукописных и моноширинных. У каждого измерено начертание Regular прямо по контурам букв. Все размеры даны в долях
+кегля, то есть не зависят от размера, которым набран текст."""),
+        mo.Html('<figure class="lab-fig"><img src="public/fonts_measure.png" alt="Буквы H x l n o с линиями измерений">'
+                '<figcaption style="font-size:.85rem;color:#5c6170;padding:.3rem">Что измеряется: x-height (верх строчной «x»), '
+                'высота прописных, толщина вертикали «l» и контраст «o».</figcaption></figure>'),
+        mo.Html(f"""<div class="lab-cards">
+  <div class="lab-card"><span>гротески</span><b>{_med["sans"]:.3f}</b><small>медианная x-height</small></div>
+  <div class="lab-card"><span>антиквы</span><b>{_med["serif"]:.3f}</b><small>строчные ниже: Манн–Уитни подтверждает</small></div>
+  <div class="lab-card"><span>связь</span><b>ρ = {_rho:.2f}</b><small>чем выше строчные, тем толще штрих</small></div>
+</div>"""),
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _(CAT, live, mo):
+    sc_cats = mo.ui.multiselect(options=[v[0] for v in CAT.values()], value=[v[0] for v in CAT.values()], label="Категории")
+    sc_x = mo.ui.range_slider(start=0.15, stop=0.65, step=0.01, value=[0.15, 0.65], label="x-height от и до", show_value=True)
+    sc_y = mo.ui.range_slider(start=0.0, stop=0.44, step=0.01, value=[0.0, 0.44], label="толщина штриха от и до", show_value=True)
+    sc_find = mo.ui.text(placeholder="например, Roboto", label="Найти шрифт")
+    live("Коллекция шрифтов с приближением",
+         "Сузьте диапазоны ползунками, и график приблизится. Когда точек на экране немного, у них появляются названия.",
+         sc_cats, sc_x, sc_y, sc_find)
+    return (sc_cats, sc_find, sc_x, sc_y,)
+
+
+@app.cell(hide_code=True)
+def _(CAT, CAT_RU, T, cards, fonts, mo, plot_html, plt, sc_cats, sc_find, sc_x, sc_y):
+    _d = fonts[fonts.category.isin([CAT_RU[c] for c in sc_cats.value])]
+    _d = _d[_d.x_height.between(*sc_x.value) & _d.stem.between(*sc_y.value)]
+    _q = (sc_find.value or "").strip().lower()
+    _f, _ax = plt.subplots(figsize=(8.5, 4.8))
+    for _k, (_ru, _col) in CAT.items():
+        _p = _d[_d.category == _k]
+        if len(_p):
+            _ax.scatter(_p.x_height, _p.stem, s=46, color=_col, alpha=.85, edgecolor="white", linewidth=.7, label=f"{_ru} ({len(_p)})")
+    _lab = len(_d) <= 30
+    for _, _r in _d.iterrows():
+        _hit = bool(_q) and _q in _r.family.lower()
+        if _lab or _hit:
+            _ax.annotate(_r.family, (_r.x_height, _r.stem), xytext=(4, 3), textcoords="offset points",
+                         fontsize=9 if _hit else 7.5, color=T["c2"] if _hit else T["ink2"], weight="bold" if _hit else "normal")
+        if _hit:
+            _ax.scatter([_r.x_height], [_r.stem], s=160, facecolor="none", edgecolor=T["c2"], linewidth=2)
+    _ax.set(xlim=sc_x.value, ylim=sc_y.value, xlabel="x-height, доли кегля", ylabel="толщина штриха, доли кегля",
+            title="Каждая точка — шрифт")
+    if len(_d):
+        _ax.legend(fontsize=8, ncol=3, loc="upper left")
+    mo.vstack([cards([("на графике", f"{len(_d)}", "шрифтов"),
+                      ("x-height", f"{_d.x_height.median():.3f}" if len(_d) else "—", "медиана"),
+                      ("штрих", f"{_d.stem.median():.3f}" if len(_d) else "—", "медиана")]), plot_html(_f)])
+    return
+
+
+@app.cell(hide_code=True)
+def _(live, mo):
+    rho_s = mo.ui.slider(start=-1, stop=1, step=0.05, value=0.4, label="Сила связи ρ", show_value=True)
+    live("Как читать ρ",
+         "ρ Спирмена показывает, насколько согласованно растут две величины: 0 значит связи нет, 1 значит чем больше одна, "
+         "тем больше другая, без исключений. Слева облако из 100 случайных точек с выбранной силой связи, справа наши шрифты в рангах.",
+         rho_s)
+    return (rho_s,)
+
+
+@app.cell(hide_code=True)
+def _(C1, C2, fonts, mo, np, plot_html, plt, rho_s, stats):
+    _r = float(rho_s.value)
+    _rp = 2 * np.sin(np.pi * _r / 6)          # корреляция Пирсона, при которой ρ Спирмена равна _r
+    _z = np.random.default_rng(1).standard_normal((100, 2))
+    _y = _rp * _z[:, 0] + np.sqrt(max(1 - _rp ** 2, 0)) * _z[:, 1]
+    _f, _ax = plt.subplots(1, 2, figsize=(9, 3.6))
+    _ax[0].scatter(stats.rankdata(_z[:, 0]), stats.rankdata(_y), s=14, color=C2, alpha=.8)
+    _ax[0].set(title=f"случайное облако, ρ = {stats.spearmanr(_z[:, 0], _y)[0]:.2f}", xlabel="ранг X", ylabel="ранг Y")
+    _ax[1].scatter(stats.rankdata(fonts.x_height), stats.rankdata(fonts.stem), s=14, color=C1, alpha=.8)
+    _ax[1].set(title=f"наши шрифты, ρ = {stats.spearmanr(fonts.x_height, fonts.stem)[0]:.2f}",
+               xlabel="место по x-height", ylabel="место по толщине")
+    _f.tight_layout()
+    plot_html(_f)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo, section):
+    section(mo.md("""<a id="play"></a>
+## Попробуй сам
+
+### Толщина и ширина
+
+Этот текст набран вариативным шрифтом Roboto Flex: толщину штриха, ширину букв и даже высоту строчных у него можно
+менять плавно. Подвигай ползунки и посмотри, как меняется характер текста."""))
+    return
+
+
+@app.cell(hide_code=True)
+def _(live, mo):
+    pl_text = mo.ui.text(value="Шрифт как случайная величина", label="Текст", full_width=True)
+    pl_wght = mo.ui.slider(start=100, stop=1000, step=10, value=400, label="Толщина (вес)", show_value=True)
+    pl_wdth = mo.ui.slider(start=25, stop=151, step=1, value=100, label="Ширина, %", show_value=True)
+    pl_ytlc = mo.ui.slider(start=416, stop=570, step=2, value=514, label="Высота строчных", show_value=True)
+    pl_size = mo.ui.slider(start=16, stop=140, step=2, value=72, label="Кегль, px", show_value=True)
+    live("Вариативный шрифт", "Все оси меняются плавно, как в настоящем шрифтовом редакторе.",
+         pl_text, pl_wght, pl_wdth, pl_ytlc, pl_size)
+    return (pl_size, pl_text, pl_wdth, pl_wght, pl_ytlc,)
+
+
+@app.cell(hide_code=True)
+def _(T, flex, fonts, mo, np, pl_size, pl_text, pl_wdth, pl_wght, pl_ytlc):
+    _stem = float(np.interp(pl_wght.value, [100, 400, 1000], [0.02, 0.09, 0.22]))
+    _share = float((fonts.stem <= _stem).mean())
+    mo.vstack([
+        mo.Html(f'<div class="lab-fig" style="padding:1.2rem 1.4rem">{flex(pl_text.value or " ", pl_wght.value, pl_wdth.value, pl_size.value, pl_ytlc.value)}</div>'),
+        mo.md(f"При весе {pl_wght.value} толщина штриха примерно **{_stem:.3f}** кегля: тоньше или так же у "
+              f"**{_share:.0%}** шрифтов коллекции. Высота строчных {pl_ytlc.value / 1000:.3f} кегля."),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def _(fonts, live, mo):
+    _names = sorted(fonts.family)
+    cmp1 = mo.ui.dropdown(options=_names, value="Roboto" if "Roboto" in _names else _names[0], label="Шрифт 1", searchable=True)
+    cmp2 = mo.ui.dropdown(options=_names, value="Playfair Display" if "Playfair Display" in _names else _names[1], label="Шрифт 2", searchable=True)
+    cmp3 = mo.ui.dropdown(options=_names, value="Caveat" if "Caveat" in _names else _names[2], label="Шрифт 3", searchable=True)
+    cmp_text = mo.ui.text(value="Hxlno шрифт", label="Текст", max_length=40)
+    mo.vstack([mo.md("### Сравнение шрифтов"),
+               live("Три шрифта одним кеглем", "Сразу видно, у какого шрифта строчные выше и штрих толще. "
+                    "Справа наши измерения этого шрифта.", cmp1, cmp2, cmp3, cmp_text)])
+    return (cmp1, cmp2, cmp3, cmp_text,)
+
+
+@app.cell(hide_code=True)
+def _(CAT, T, cmp1, cmp2, cmp3, cmp_text, fonts, gfont, mo):
+    _rows = []
+    _txt = cmp_text.value or "Hxlno"
+    for _name in (cmp1.value, cmp2.value, cmp3.value):
+        _r = fonts[fonts.family == _name].iloc[0]
+        _ru, _col = CAT[_r.category]
+        _rows.append(f"""{gfont(_name, _txt)}
+<div style="display:grid;grid-template-columns:1fr 13rem;gap:1rem;align-items:center;border-top:1px solid {T['line']};padding:.7rem 0">
+  <div style="font-family:'{_name}',serif;font-size:64px;line-height:1.15;overflow-wrap:anywhere">{_txt}</div>
+  <div style="font-size:.85rem;color:{T['ink2']}"><b style="color:{T['ink']};font-size:1rem">{_name}</b><br>
+  <span style="color:{_col}">● {_ru}</span><br>x-height {_r.x_height:.3f} · прописные {_r.cap_height:.3f}<br>
+  штрих {_r.stem:.3f} · контраст {_r.contrast:.2f}</div></div>""")
+    mo.Html('<div class="lab-fig" style="padding:.4rem 1.2rem">' + "".join(_rows) + "</div>")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo, section):
+    section(mo.md(r"""<a id="rng"></a>
+## Датчик: случайный шрифт, похожий на настоящий
+
+Датчик случайных чисел выдаёт значения, распределённые так же, как пропорции моих шрифтов. Сначала базовый датчик даёт
+равномерное число $U$ от 0 до 1, потом метод превращает его в нужную величину:
+$U \sim U(0, 1) \xrightarrow{\text{метод}} X \sim F_{\text{данных}}$.
+
+**Полярный метод Марсальи:** точка бросается в квадрат, остаются только точки внутри круга, и из них получаются
+нормальные числа $Z$. Дальше $Z$ переводится в модель: для x-height это скошенное нормальное распределение, для толщины
+штриха логнормальное $X = \theta + e^{\mu + \sigma Z}$. **Квантильный метод** модель не использует: он берёт $U$ и
+находит значение, ниже которого лежит такая же доля шрифтов."""))
+    return
+
+
+@app.cell(hide_code=True)
+def _(G, live, mo):
+    rg_var = mo.ui.radio(options={"x-height": "x_height", "толщина штриха": "stem"}, value="x-height", label="Величина", inline=True)
+    rg_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод")
+    rg_base = mo.ui.dropdown(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик")
+    rg_n = mo.ui.slider(start=100, stop=20000, step=100, value=1000, label="Сколько чисел", show_value=True)
+    rg_go = mo.ui.button(value=0, on_click=lambda v: v + 1, label="Сгенерировать заново")
+    live("Датчик вживую", "Справа точки базового датчика: у RANDU тройки чисел ложатся на прямые, у хороших датчиков облако ровное.",
+         rg_var, rg_method, rg_base, rg_n, rg_go)
+    return (rg_base, rg_go, rg_method, rg_n, rg_var,)
+
+
+@app.cell(hide_code=True)
+def _(C1, C2, G, cards, fonts, mo, np, plot_html, plt, rg_base, rg_go, rg_method, rg_n, rg_var):
+    _real = fonts[rg_var.value].to_numpy(float)
+    _fam = "skewnorm" if rg_var.value == "x_height" else "lognorm"
+    _seed = 2026 + int(rg_go.value)
+    rg_x, _info = G.generate(_real, rg_n.value, method=rg_method.value, family=_fam, base=rg_base.value, seed=_seed)
+    _c = G.compare(_real, rg_x)
+    _u = G.Uniform(rg_base.value, _seed)(3002)
+    _f, _ax = plt.subplots(1, 2, figsize=(9.5, 3.6), gridspec_kw={"width_ratios": [2.2, 1]})
+    _lo, _hi = np.quantile(np.concatenate([_real, rg_x]), [0.005, 0.995])
+    _e = np.linspace(_lo, _hi, 28)
+    _ax[0].hist(_real, bins=_e, density=True, color="#bcd6f3", label="мои шрифты")
+    _ax[0].hist(rg_x, bins=_e, density=True, histtype="step", color=C2, linewidth=1.8, label="датчик")
+    _ax[0].set(xlabel=("x-height" if rg_var.value == "x_height" else "толщина штриха") + ", доли кегля", ylabel="плотность",
+               title=G.METHOD_RU[rg_method.value])
+    _ax[0].legend()
+    _ax[1].plot((6 * _u[1:-1] - 9 * _u[:-2]) % 1.0, _u[2:], ".", ms=1.5, color=C2 if rg_base.value == "randu" else C1)
+    _ax[1].set(aspect="equal", xlim=(0, 1), ylim=(0, 1), title="тройки базового датчика")
+    _f.tight_layout()
+    mo.vstack([cards([("среднее", f"{_c['gen']['среднее']:.3f}", f"шрифты {_c['real']['среднее']:.3f}"),
+                      ("СКО", f"{_c['gen']['СКО']:.3f}", f"шрифты {_c['real']['СКО']:.3f}"),
+                      ("КС p", f"{_c['ks_p']:.3f}", "> 0.05: не отличается от шрифтов"),
+                      ("принято точек", f"{_info['accept']:.3f}", "у полярного метода π/4 ≈ 0.785")]), plot_html(_f)])
+    return (rg_x,)
+
+
+@app.cell(hide_code=True)
+def _(G, T, flex, fonts, mo, np, rg_base, rg_go, section, to_wght, to_ytlc):
+    _seed = 99 + int(rg_go.value)
+    _xs = G.generate(fonts.x_height.to_numpy(float), 6, method="polar", family="skewnorm", base=rg_base.value, seed=_seed)[0]
+    _ss = G.generate(fonts.stem.to_numpy(float), 6, method="polar", family="lognorm", base=rg_base.value, seed=_seed + 1)[0]
+    _cardsf = "".join(
+        f'<div class="lab-card" style="gap:.4rem">{flex("Hxlno", to_wght(s), 100, 54, to_ytlc(x))}'
+        f'<small>x-height {x:.3f} · штрих {s:.3f}</small></div>' for x, s in zip(_xs, _ss))
+    section(mo.md("### Шесть «новых» шрифтов\n\nДатчик выдал шесть пар (x-height, толщина штриха), и они наложены на "
+                  "вариативный Roboto Flex: толщина задаёт вес, x-height задаёт высоту строчных. Кнопка «Сгенерировать заново» "
+                  "выше даёт новые шрифты."),
+            mo.Html(f'<div class="lab-cards" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">{_cardsf}</div>'))
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.Html("""<div style="color:#5c6170;font-size:.85rem;padding:1rem 0 2rem">
+Быкова Кристина Денисовна, ИСУ 501322, трек КТвД, команда 27. Lab01, прикладная статистика, осень 2026.
+Полный отчёт с кодом: <a href="report/" target="_top">отчёт</a>. Шрифты: Google Fonts (SIL Open Font License).</div>""")
+    return
+
+
+if __name__ == "__main__":
+    app.run()

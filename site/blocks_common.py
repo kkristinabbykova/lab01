@@ -74,10 +74,19 @@ HELPERS = r'''
         cells = "".join(f'<div class="lab-card"><span>{a}</span><b>{b}</b><small>{c}</small></div>' for a, b, c in items)
         return mo.Html(f'<div class="lab-cards">{cells}</div>')
 
+    def section(*items):
+        """Раздел отчёта в рамке-карточке."""
+        return mo.vstack(list(items), gap=0.6).style({
+            "background": T["card"], "border": f"1px solid {T['line']}", "border-radius": "18px",
+            "padding": "1.3rem 1.5rem 1.1rem", "box-shadow": "0 1px 2px rgba(0,0,0,.04), 0 6px 22px rgba(0,0,0,.05)"})
+
     def live(title, note, *controls):
-        """Заголовок живого блока и его элементы управления."""
+        """Заголовок живого блока и его элементы управления, в цветной рамке."""
+        acc = T["acc"]
         return mo.vstack([mo.Html(f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
-                          mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.4)
+                          mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.5).style({
+            "background": T["soft"], "border": f"1px solid {T['acc2']}", "border-left": f"6px solid {acc}",
+            "border-radius": "16px", "padding": ".9rem 1.2rem 1rem"})
 
     def nf(v, d=3):
         return f"{v:.{d}f}"
@@ -90,7 +99,7 @@ HELPERS = r'''
     })
 '''
 
-HELPER_NAMES = ("Path PUB base64 cards code_block df_html fig io live mo nf np out_text pd plot_html plt read_text scipy "
+HELPER_NAMES = ("Path PUB base64 cards code_block df_html fig io live mo nf np out_text pd plot_html plt read_text scipy section "
                 "stats table_html types").split()
 
 
@@ -107,7 +116,7 @@ def css_body(t: dict) -> str:
 :root {{ --marimo-text-font: "Golos Text", system-ui, sans-serif; --marimo-heading-font: {t["head_font"]}; }}
 body, .markdown, .prose {{ font-family: "Golos Text", system-ui, sans-serif; }}
 .markdown h1, .markdown h2, .markdown h3, .markdown h4 {{ font-family: {t["head_font"]} !important; font-weight: 700 !important; }}
-.markdown h1 {{ font-size: 2.1rem !important; letter-spacing: -.02em; margin: 2.6rem 0 .6rem; }}
+.markdown h1 {{ font-size: 2.1rem !important; letter-spacing: -.02em; margin: .3rem 0 .6rem; }}
 .markdown h2 {{ font-size: 1.65rem !important; }}
 .markdown h3 {{ font-size: 1.25rem !important; margin-top: 1.8rem; padding-left: .7rem; border-left: 4px solid var(--lab-acc); }}
 .markdown h4 {{ font-size: 1.05rem !important; margin-top: 1.3rem; color: var(--lab-ink2) !important; }}
@@ -121,7 +130,7 @@ body, .markdown, .prose {{ font-family: "Golos Text", system-ui, sans-serif; }}
         --lab-line:{t["line"]}; --lab-acc:{t["acc"]}; --lab-acc2:{t["acc2"]}; --lab-soft:{t["soft"]}; }}
 body, #App, .mo-app, [data-testid="app"] {{ background: var(--lab-bg) !important; }}
 .markdown h1, .markdown h2, .markdown h3, .markdown h4 {{ color: var(--lab-ink); letter-spacing: -.01em; }}
-.markdown h2 {{ font-size: 1.6rem; margin-top: 2.4rem; padding-top: 1rem; border-top: 2px solid var(--lab-line); }}
+.markdown h2 {{ font-size: 1.6rem; margin-top: .3rem; }}
 .markdown h3 {{ font-size: 1.22rem; margin-top: 1.6rem; }}
 .markdown a {{ color: var(--lab-acc); }}
 .lab-cover {{ background: {t["cover"]}; color: {t["cover_ink"]}; border-radius: 18px; padding: 2.2rem 2rem 1.8rem;
@@ -149,7 +158,7 @@ body, #App, .mo-app, [data-testid="app"] {{ background: var(--lab-bg) !important
 .lab-card span {{ font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--lab-ink2); }}
 .lab-card b {{ font-size: 1.45rem; font-variant-numeric: tabular-nums; color: var(--lab-ink); }}
 .lab-card small {{ color: var(--lab-ink2); font-size: .78rem; }}
-.lab-live {{ border-left: 4px solid var(--lab-acc); padding: .2rem 0 .1rem .9rem; margin-top: 1rem; }}
+.lab-live {{ padding: 0; }}
 .lab-live .tag {{ display: inline-block; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em;
                   background: var(--lab-acc); color: #fff; border-radius: 999px; padding: .12rem .55rem; }}
 .lab-live h4 {{ margin: .35rem 0 .15rem; font-size: 1.08rem; color: var(--lab-ink); }}

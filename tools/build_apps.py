@@ -30,6 +30,7 @@ PUB = SITE / "public"
 sys.path.insert(0, str(SITE))
 import blocks_common  # noqa: E402
 import blocks_fonts  # noqa: E402
+import blocks_fonts_site  # noqa: E402
 import blocks_wine  # noqa: E402
 
 UP = re.compile(r"\n*<sub>\[↑ к содержанию\]\(#toc\)</sub>\n*")
@@ -111,12 +112,17 @@ def build(nb_path: Path, out_py: Path, asset_dir: Path, prefix: str, module, tit
             exprs.append(f"code_block({lit(code)})")
         if not exprs:
             continue
+        if len(exprs) == 1 and exprs[0].startswith("mo.md("):   # только заголовок части: без рамки, как разделитель
+            cells.append(f"@app.cell(hide_code=True)\ndef _(mo):\n    {exprs[0]}\n    return\n")
+            for a in sec["anchors"]:
+                cells.extend(module.BLOCKS.get(a, []))
+            continue
         body = ",\n        ".join(exprs)
         cells.append(f'''@app.cell(hide_code=True)
-def _(code_block, fig, mo, out_text, table_html):
-    mo.vstack([
+def _(code_block, fig, mo, out_text, section, table_html):
+    section(
         {body},
-    ], gap=0.6)
+    )
     return
 ''')
         for a in sec["anchors"]:
@@ -151,6 +157,13 @@ def main() -> None:
 
     build(ROOT / "fonts/fonts.ipynb", SITE / "fonts_app.py", PUB / "fonts", "f", blocks_fonts,
           "Lab01 · КТвД · Шрифт как случайная величина")
+
+    # сайт про шрифты (витрина): написан прямо на marimo, без ноутбука
+    shutil.copy(ROOT / "fonts/figures/fonts_measure.png", PUB / "fonts_measure.png")
+    text = blocks_fonts_site.app_text()
+    compile(text, "fonts_site_app.py", "exec")
+    (SITE / "fonts_site_app.py").write_text(text, encoding="utf-8")
+    print(f"site/fonts_site_app.py: {text.count('@app.cell')} ячеек")
 
 
 if __name__ == "__main__":
