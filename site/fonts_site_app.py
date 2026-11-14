@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["marimo", "numpy", "pandas", "matplotlib", "scipy"]
+# dependencies = ["marimo", "numpy", "pandas", "matplotlib", "scipy", "anywidget", "traitlets"]
 # ///
 import marimo
 
@@ -12,7 +12,7 @@ app = marimo.App(width="medium", app_title="Lab01 КТвД: шрифт как с
 def _():
     import marimo as mo
     T = {"bg": "#f6f7f5", "card": "#ffffff", "ink": "#1a1d24", "ink2": "#5c6170", "line": "#dcdfd8", "acc": "#2a78d6", "acc2": "#a9c8ef", "soft": "#eceee9", "grid": "#e6e5e0", "c1": "#2a78d6", "c2": "#eb6834", "c3": "#1baf7a", "cover": "", "cover_ink": "", "head_font": "Golos Text"}
-    STYLE = "@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');\n:root{ --paper:#f6f7f5; --ink:#1a1d24; --muted:#5c6170; --rule:#dcdfd8;\n  --blue:#2a78d6; --orange:#eb6834; --straw:#d8c56a; --green:#1baf7a; --measure:68ch;\n  --marimo-text-font:\"Golos Text\",system-ui,sans-serif; --marimo-heading-font:\"Golos Text\",system-ui,sans-serif; }\nbody, #App, .mo-app, [data-testid=\"app\"]{background:var(--paper) !important;color:var(--ink)}\nbody, .markdown, .prose{font-family:\"Golos Text\",system-ui,-apple-system,\"Segoe UI\",sans-serif}\n.fs a{color:var(--blue);text-underline-offset:.18em}\n.fs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:#e9ebe6;padding:.08em .35em;border-radius:3px}\n.fs{font-size:1.0625rem;line-height:1.6;color:var(--ink)}\n.fs .text{max-width:var(--measure)}\n.fs p{margin:0 0 1rem !important}\n.fs, .fs *{font-family:\"Golos Text\",system-ui,sans-serif}\n.fs-hero{padding-top:clamp(2rem,6vw,5rem);padding-bottom:1rem}\n.fs-hero h1{font-family:\"Golos Text\",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}\n.fs-hero h1 .w{display:block !important}\n.fs-hero h1 span.l{transition:font-weight .5s cubic-bezier(.2,.7,.2,1)}\n.fs .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--muted);margin:0 0 1.4rem;max-width:var(--measure)}\n.fs .note{color:var(--muted);font-size:.95rem}\n.fs-sec{padding-top:3rem;border-top:1px solid var(--rule);margin-top:2rem}\n.fs h2{font-family:\"Golos Text\",sans-serif !important;font-size:clamp(1.7rem,3.4vw,2.6rem) !important;line-height:1.1 !important;font-weight:750 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}\n.fs h3{font-family:\"Golos Text\",sans-serif !important;font-size:1.15rem !important;font-weight:650 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}\n.fs figure{margin:1.4rem 0}\n.fs figure img{width:100%;height:auto;background:#fff;border-radius:6px}\n.fs figcaption{color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:var(--measure)}\n.fs .chart{background:#fff;border-radius:8px;padding:.6rem}\n.fs .chart svg{display:block;width:100%;height:auto}\n.fs .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.4rem 2rem;margin:1.6rem 0;max-width:900px}\n.fs .fact strong{display:block;font-size:2.4rem;line-height:1.05;font-weight:800;font-variant-numeric:tabular-nums}\n.fs .fact span{color:var(--muted);font-size:.95rem}\n.fs .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}\n.fs .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;margin-right:.35em;vertical-align:-.05em}\n.fs .rho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:820px}\n.fs .lab{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:1.6rem;align-items:start;margin-top:.6rem}\n.fs .readout{font-variant-numeric:tabular-nums;margin-top:.7rem;font-size:.95rem}\n.fs .readout b{font-weight:650}\n.fs .specimen{background:#fff;border-radius:8px;padding:1.2rem 1.4rem;overflow:hidden}\n.fs .cmp-row{background:#fff;border-radius:8px;padding:.8rem 1rem 1rem;margin:0 0 1rem}\n.fs .cmp-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:.3rem}\n.fs .cmp-head b{font-weight:650}\n.fs .bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.6rem 1.4rem;margin-top:.6rem}\n.fs .bar{font-size:.85rem;color:var(--muted)}\n.fs .bar .track{position:relative;height:8px;border-radius:4px;background:#eceee9;margin-top:.25rem}\n.fs .bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}\n.fs .bar .med{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.7}\n.fs .newfonts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:.8rem}\n.fs .newfonts div.c{background:#fff;border-radius:8px;padding:.8rem 1rem}\n.fs .newfonts small{color:var(--muted);font-size:.82rem}\n.fs-foot{border-top:1px solid var(--rule);margin-top:2.5rem;padding:2rem 0 3rem;color:var(--muted);font-size:.95rem}\n.fs-foot p{max-width:var(--measure)}\n.fs-ctrl{font-size:.9rem;color:var(--muted)}\n@media (max-width:640px){.fs .rho-grid,.fs .lab{grid-template-columns:1fr}}\n"
+    STYLE = "@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300..900&family=Unbounded:wght@300..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');\n:root{ --paper:#f6f7f5; --ink:#1a1d24; --muted:#5c6170; --rule:#dcdfd8;\n  --blue:#2a78d6; --orange:#eb6834; --straw:#d8c56a; --green:#1baf7a; --measure:68ch;\n  --marimo-text-font:Onest,system-ui,sans-serif; --marimo-heading-font:Unbounded,Onest,sans-serif; }\nbody, #App, .mo-app, [data-testid=\"app\"]{background:var(--paper) !important;color:var(--ink)}\nbody, .markdown, .prose{font-family:Onest,system-ui,-apple-system,\"Segoe UI\",sans-serif}\n.fs a{color:var(--blue);text-underline-offset:.18em}\n.fs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:#e9ebe6;padding:.08em .35em;border-radius:3px}\n.fs{font-size:1.0625rem;line-height:1.6;color:var(--ink)}\n.fs .text{max-width:var(--measure)}\n.fs p{margin:0 0 1rem !important}\n.fs, .fs p, .fs a, .fs li, .fs b, .fs i, .fs .note, .fs .lede, .fs .bar, .fs .cmp-head, .fs figcaption, .fs .readout, .fs .legend{font-family:Onest,system-ui,sans-serif}\n.fs-hero h1 .l{font-family:\"Roboto Flex\",sans-serif}\n.fs-hero{padding-top:clamp(2rem,6vw,5rem);padding-bottom:1rem}\n.fs-hero h1{font-family:\"Roboto Flex\",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}\n.fs-hero h1 .w{display:block !important}\n.fs-hero h1 span.l{transition:font-weight .5s cubic-bezier(.2,.7,.2,1)}\n.fs .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--muted);margin:0 0 1.4rem;max-width:var(--measure)}\n.fs .note{color:var(--muted);font-size:.95rem}\n.fs-sec{padding-top:3rem;border-top:1px solid var(--rule);margin-top:2rem}\n.fs h2{font-family:Unbounded,Onest,sans-serif !important;font-size:clamp(1.6rem,3.2vw,2.4rem) !important;line-height:1.15 !important;font-weight:600 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}\n.fs h3{font-family:Unbounded,Onest,sans-serif !important;font-size:1.1rem !important;font-weight:550 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}\n.fs figure{margin:1.4rem 0}\n.fs figure img{width:100%;height:auto;background:#fff;border-radius:6px}\n.fs figcaption{color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:var(--measure)}\n.fs .chart{background:#fff;border-radius:8px;padding:.6rem}\n.fs .chart svg{display:block;width:100%;height:auto}\n.fs .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.4rem 2rem;margin:1.6rem 0;max-width:900px}\n.fs .fact strong{display:block;font-family:Unbounded,Onest,sans-serif;font-size:2.2rem;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}\n.fs .fact span{color:var(--muted);font-size:.95rem}\n.fs .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}\n.fs .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;margin-right:.35em;vertical-align:-.05em}\n.fs .rho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:820px}\n.fs .lab{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:1.6rem;align-items:start;margin-top:.6rem}\n.fs .readout{font-variant-numeric:tabular-nums;margin-top:.7rem;font-size:.95rem}\n.fs .readout b{font-weight:650}\n.fs .specimen{background:#fff;border-radius:8px;padding:1.2rem 1.4rem;overflow:hidden}\n.fs .cmp-row{background:#fff;border-radius:8px;padding:.8rem 1rem 1rem;margin:0 0 1rem}\n.fs .cmp-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:.3rem}\n.fs .cmp-head b{font-weight:650}\n.fs .bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.6rem 1.4rem;margin-top:.6rem}\n.fs .bar{font-size:.85rem;color:var(--muted)}\n.fs .bar .track{position:relative;height:8px;border-radius:4px;background:#eceee9;margin-top:.25rem}\n.fs .bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}\n.fs .bar .med{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.7}\n.fs .newfonts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:.8rem}\n.fs .newfonts div.c{background:#fff;border-radius:8px;padding:.8rem 1rem}\n.fs .newfonts small{color:var(--muted);font-size:.82rem}\n.fs-foot{border-top:1px solid var(--rule);margin-top:2.5rem;padding:2rem 0 3rem;color:var(--muted);font-size:.95rem}\n.fs-foot p{max-width:var(--measure)}\n.fs-ctrl{font-size:.9rem;color:var(--muted)}\n@media (max-width:640px){.fs .rho-grid,.fs .lab{grid-template-columns:1fr}}\n"
 
     import base64
     import io
@@ -149,7 +149,7 @@ def _():
 
     def svg(W, H, items, label=""):
         return (f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{esc(label)}" '
-                f'style="font-family:Golos Text,system-ui,sans-serif">{"".join(items)}</svg>')
+                f'style="font-family:Onest,system-ui,sans-serif">{"".join(items)}</svg>')
 
     def legend(items):
         return '<div class="legend">' + "".join(f'<span><i class="sw" style="background:{c}"></i>{t}</span>' for t, c in items) + "</div>"
@@ -171,46 +171,117 @@ def _():
         """Кусок страницы в оформлении прежнего сайта."""
         return mo.Html(ST + f'<div class="fs">{s}</div>')
 
+    # свои элементы (anywidget): большая кнопка и график с приближением и щелчком; без anywidget всё работает на элементах marimo
+    _WJ = {"scatter": "// Точечный график шрифтов для marimo (anywidget): приближение, сдвиг, подсказки, щелчок по точке выбирает шрифт.\nfunction render({ model, el }) {\n  const NS = \"http://www.w3.org/2000/svg\", SW = 640, SH = 390, pad = { l: 58, r: 16, t: 14, b: 50 };\n  const P = model.get(\"points\"), CAT = model.get(\"cats\");\n  const nf = (v, d = 3) => v.toFixed(d).replace(\".\", \",\");\n  const mk = (tag, attrs = {}) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };\n  const h = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; };\n\n  const root = h(\"div\", \"fsc\");\n  const bar = h(\"div\", \"zoombar\");\n  const bIn = h(\"button\", \"\", \"+\"), bOut = h(\"button\", \"\", \"−\"), bAll = h(\"button\", \"\", \"Весь график\"), info = h(\"span\", \"note\");\n  bIn.title = \"Приблизить\"; bOut.title = \"Отдалить\";\n  bar.append(bIn, bOut, bAll, info);\n  const box = h(\"div\", \"box\"), sc = mk(\"svg\", { viewBox: `0 0 ${SW} ${SH}` }), tip = h(\"div\", \"tip\"), hint = h(\"div\", \"hint\", \"Чтобы приблизить, держите Ctrl (⌘) и крутите колесо\");\n  box.append(sc, tip, hint);\n  const legend = h(\"div\", \"legend\");\n  root.append(bar, box, legend);\n  el.append(root);\n\n  const FULL = { x: [Math.min(...P.map(p => p.x)) - .01, Math.max(...P.map(p => p.x)) + .01], y: [0, Math.max(...P.map(p => p.s)) * 1.08] };\n  let V = { x: [...FULL.x], y: [...FULL.y] };\n  const X = v => pad.l + (v - V.x[0]) / (V.x[1] - V.x[0]) * (SW - pad.l - pad.r);\n  const Y = v => SH - pad.b - (v - V.y[0]) / (V.y[1] - V.y[0]) * (SH - pad.t - pad.b);\n  const invX = px => V.x[0] + (px - pad.l) / (SW - pad.l - pad.r) * (V.x[1] - V.x[0]);\n  const invY = py => V.y[0] + (SH - pad.b - py) / (SH - pad.t - pad.b) * (V.y[1] - V.y[0]);\n  function niceTicks(a, b, n = 5) {\n    const raw = (b - a) / n, p = 10 ** Math.floor(Math.log10(raw)), m = raw / p;\n    const st = (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p, out = [];\n    for (let t = Math.ceil(a / st) * st; t <= b + 1e-12; t += st) out.push(+t.toFixed(10));\n    return [out, Math.max(0, -Math.floor(Math.log10(st) + 1e-9))];\n  }\n  const zoomK = () => (FULL.x[1] - FULL.x[0]) / (V.x[1] - V.x[0]);\n  function clampView() {\n    [\"x\", \"y\"].forEach(a => { const w = Math.min(V[a][1] - V[a][0], FULL[a][1] - FULL[a][0]);\n      const lo = Math.max(FULL[a][0], Math.min(V[a][0], FULL[a][1] - w)); V[a] = [lo, lo + w]; });\n  }\n  function zoomAt(f, px = (pad.l + SW - pad.r) / 2, py = (pad.t + SH - pad.b) / 2) {\n    const cx = invX(px), cy = invY(py), minW = (FULL.x[1] - FULL.x[0]) / 40, minH = (FULL.y[1] - FULL.y[0]) / 40;\n    const w = Math.max(minW, (V.x[1] - V.x[0]) / f), hh = Math.max(minH, (V.y[1] - V.y[0]) / f);\n    const fx = (cx - V.x[0]) / (V.x[1] - V.x[0]), fy = (cy - V.y[0]) / (V.y[1] - V.y[0]);\n    V = { x: [cx - fx * w, cx - fx * w + w], y: [cy - fy * hh, cy - fy * hh + hh] }; clampView(); draw();\n  }\n  function focusOn(name) {\n    const p = P.find(q => q.f === name); if (!p) return;\n    const w = (FULL.x[1] - FULL.x[0]) / 4, hh = (FULL.y[1] - FULL.y[0]) / 4;\n    V = { x: [p.x - w / 2, p.x + w / 2], y: [p.s - hh / 2, p.s + hh / 2] }; clampView();\n  }\n  function axes() {\n    const [xt, xd] = niceTicks(V.x[0], V.x[1]), [yt, yd] = niceTicks(V.y[0], V.y[1]);\n    xt.filter(t => t > V.x[0] && t < V.x[1]).forEach(t => {\n      sc.append(mk(\"line\", { x1: X(t), x2: X(t), y1: pad.t, y2: SH - pad.b, stroke: \"#e6e5e0\" }));\n      const tx = mk(\"text\", { x: X(t), y: SH - pad.b + 18, \"text-anchor\": \"middle\", \"font-size\": 12, fill: \"#5c6170\" }); tx.textContent = nf(t, Math.max(2, xd)); sc.append(tx); });\n    yt.filter(t => t >= V.y[0] && t < V.y[1]).forEach(t => {\n      sc.append(mk(\"line\", { x1: pad.l, x2: SW - pad.r, y1: Y(t), y2: Y(t), stroke: \"#e6e5e0\" }));\n      const ty = mk(\"text\", { x: pad.l - 8, y: Y(t) + 4, \"text-anchor\": \"end\", \"font-size\": 12, fill: \"#5c6170\" }); ty.textContent = nf(t, Math.max(2, yd)); sc.append(ty); });\n    sc.append(mk(\"line\", { x1: pad.l, x2: SW - pad.r, y1: SH - pad.b, y2: SH - pad.b, stroke: \"#5c6170\" }));\n    const lx = mk(\"text\", { x: (pad.l + SW - pad.r) / 2, y: SH - 8, \"text-anchor\": \"middle\", \"font-size\": 13, fill: \"#1a1d24\" }); lx.textContent = \"x-height, доли кегля\"; sc.append(lx);\n    const cy = (pad.t + SH - pad.b) / 2;\n    const ly = mk(\"text\", { x: 15, y: cy, \"text-anchor\": \"middle\", \"font-size\": 13, fill: \"#1a1d24\", transform: `rotate(-90 15 ${cy})` }); ly.textContent = \"толщина штриха, доли кегля\"; sc.append(ly);\n  }\n  function draw() {\n    sc.replaceChildren(); tip.style.opacity = 0; axes();\n    const defs = mk(\"defs\"), cp = mk(\"clipPath\", { id: \"fscClip\" });\n    cp.append(mk(\"rect\", { x: pad.l, y: pad.t, width: SW - pad.l - pad.r, height: SH - pad.t - pad.b })); defs.append(cp); sc.append(defs);\n    const g = mk(\"g\", { \"clip-path\": \"url(#fscClip)\" }); sc.append(g);\n    const k = zoomK(), r = Math.min(10, 6 * Math.sqrt(Math.sqrt(k))), sel = model.get(\"selected\");\n    const vis = P.filter(p => p.x >= V.x[0] && p.x <= V.x[1] && p.s >= V.y[0] && p.s <= V.y[1]);\n    vis.forEach(p => {\n      const on = p.f === sel;\n      const c = mk(\"circle\", { cx: X(p.x), cy: Y(p.s), r: on ? r + 3 : r, fill: (CAT[p.c] || [\"\", \"#999\"])[1], \"fill-opacity\": .88,\n        stroke: on ? \"#1a1d24\" : \"#fff\", \"stroke-width\": on ? 2.5 : 1.2, tabindex: 0, style: \"cursor:pointer\" });\n      const show = () => { tip.textContent = `${p.f}: x-height ${nf(p.x)}, штрих ${nf(p.s)} · нажмите, чтобы открыть`;\n        const b = sc.getBoundingClientRect(), kk = b.width / SW;\n        tip.style.left = `${X(p.x) * kk + 12}px`; tip.style.top = `${Y(p.s) * kk - 12}px`; tip.style.opacity = 1; };\n      const hide = () => { tip.style.opacity = 0; };\n      const pick = e => { e.stopPropagation(); model.set(\"selected\", p.f); model.save_changes(); draw(); };\n      c.addEventListener(\"mouseenter\", show); c.addEventListener(\"focus\", show);\n      c.addEventListener(\"mouseleave\", hide); c.addEventListener(\"blur\", hide);\n      c.addEventListener(\"click\", pick); c.addEventListener(\"keydown\", e => { if (e.key === \"Enter\" || e.key === \" \") pick(e); });\n      c.addEventListener(\"pointerdown\", e => e.stopPropagation());\n      g.append(c);\n    });\n    const boxes = [];\n    const labelled = (k > 1.5 && vis.length <= 30) ? [...vis] : vis.filter(p => p.f === sel);\n    labelled.sort((a, b) => (b.f === sel) - (a.f === sel) || b.s - a.s).forEach(p => {\n      const t = mk(\"text\", { x: X(p.x) + r + 4, y: Y(p.s) + 4, \"font-size\": p.f === sel ? 13 : 11, \"font-weight\": p.f === sel ? 650 : 400,\n        fill: \"#1a1d24\", \"pointer-events\": \"none\", stroke: \"#fff\", \"stroke-width\": 3, \"paint-order\": \"stroke\" });\n      t.textContent = p.f; g.append(t);\n      const bb = t.getBBox(), hit = boxes.some(o => bb.x < o.x + o.width + 2 && o.x < bb.x + bb.width + 2 && bb.y < o.y + o.height && o.y < bb.y + bb.height);\n      if (p.f !== sel && (hit || bb.x + bb.width > SW - pad.r)) t.remove(); else boxes.push(bb);\n    });\n    info.textContent = k > 1.02 ? `×${nf(k, 1)} · видно точек: ${vis.length} из ${P.length}` : `весь график · ${P.length} точек`;\n    sc.style.cursor = k > 1.02 ? \"grab\" : \"zoom-in\";\n    sc.style.touchAction = k > 1.02 ? \"none\" : \"pan-y\";\n  }\n  const svgPt = e => { const b = sc.getBoundingClientRect(); return [(e.clientX - b.left) * SW / b.width, (e.clientY - b.top) * SW / b.width]; };\n  let hintT;\n  sc.addEventListener(\"wheel\", e => {\n    if (!(e.ctrlKey || e.metaKey)) { hint.style.opacity = 1; clearTimeout(hintT); hintT = setTimeout(() => hint.style.opacity = 0, 1200); return; }\n    e.preventDefault(); const [x, y] = svgPt(e); zoomAt(Math.exp(-e.deltaY * 0.002), x, y);\n  }, { passive: false });\n  sc.addEventListener(\"dblclick\", e => { const [x, y] = svgPt(e); zoomAt(e.shiftKey ? 1 / 2 : 2, x, y); });\n  const ptrs = new Map(); let pinch0 = null;\n  sc.addEventListener(\"pointerdown\", e => { ptrs.set(e.pointerId, svgPt(e));\n    if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a[0] - b[0], a[1] - b[1]); }\n    if (zoomK() > 1.02 || ptrs.size === 2) { sc.setPointerCapture(e.pointerId); sc.style.cursor = \"grabbing\"; } });\n  sc.addEventListener(\"pointermove\", e => {\n    if (!ptrs.has(e.pointerId)) return; const prev = ptrs.get(e.pointerId), cur = svgPt(e); ptrs.set(e.pointerId, cur);\n    if (ptrs.size === 2 && pinch0) { const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]);\n      zoomAt(d / pinch0, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); pinch0 = d; return; }\n    if (zoomK() <= 1.02) return;\n    const dx = invX(prev[0]) - invX(cur[0]), dy = invY(prev[1]) - invY(cur[1]);\n    V.x = V.x.map(v => v + dx); V.y = V.y.map(v => v + dy); clampView(); draw();\n  });\n  const up = e => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch0 = null; sc.style.cursor = zoomK() > 1.02 ? \"grab\" : \"zoom-in\"; };\n  sc.addEventListener(\"pointerup\", up); sc.addEventListener(\"pointercancel\", up);\n  const med = a => { const b = [...a].sort((u, v) => u - v); return b[b.length >> 1]; };\n  const MX = med(P.map(p => p.x)), MY = med(P.map(p => p.s));\n  bIn.addEventListener(\"click\", () => zoomK() > 1.02 ? zoomAt(1.6) : zoomAt(1.6, X(MX), Y(MY)));\n  bOut.addEventListener(\"click\", () => zoomAt(1 / 1.6));\n  bAll.addEventListener(\"click\", () => { V = { x: [...FULL.x], y: [...FULL.y] }; draw(); });\n  const present = [...new Set(P.map(p => p.c))];\n  legend.innerHTML = Object.entries(CAT).filter(([k]) => present.includes(k))\n    .map(([k, [name, col]]) => `<span><i class=\"sw\" style=\"background:${col}\"></i>${name} (${P.filter(p => p.c === k).length})</span>`).join(\"\");\n  if (model.get(\"selected\")) focusOn(model.get(\"selected\"));\n  model.on(\"change:selected\", () => draw());\n  draw();\n}\nexport default { render };\n", "pill": "// Большая чёрная кнопка-«таблетка», как на прежнем сайте. Каждый щелчок увеличивает count.\nfunction render({ model, el }) {\n  const b = document.createElement(\"button\");\n  b.className = \"pill\"; b.type = \"button\"; b.textContent = model.get(\"label\");\n  b.addEventListener(\"click\", () => { model.set(\"count\", model.get(\"count\") + 1); model.save_changes(); });\n  el.append(b);\n}\nexport default { render };\n"}
+    _WC = {"scatter": ".fsc{font-family:Onest,\"Golos Text\",system-ui,sans-serif;color:#1a1d24;background:#fff;border-radius:10px;padding:.7rem .7rem .6rem;max-width:860px}\n.fsc .zoombar{display:flex;gap:.4rem;align-items:center;margin:0 0 .4rem;flex-wrap:wrap}\n.fsc .zoombar button{font:inherit;font-size:.95rem;min-width:2.3rem;height:2.3rem;padding:0 .8rem;border-radius:999px;border:1px solid #d6d4cc;background:#fff;color:#1a1d24;cursor:pointer}\n.fsc .zoombar button:hover{background:#f3f2ee}\n.fsc .note{color:#5c6170;font-size:.92rem;margin-left:.4rem}\n.fsc .box{position:relative}\n.fsc svg{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none;font-family:inherit}\n.fsc .tip{position:absolute;pointer-events:none;background:#1a1d24;color:#f6f7f5;font-size:.85rem;padding:.3rem .55rem;border-radius:5px;opacity:0;transition:opacity .12s;white-space:nowrap}\n.fsc .hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(26,29,36,.82);color:#fff;padding:.5rem .8rem;border-radius:6px;font-size:.9rem;pointer-events:none;opacity:0;transition:opacity .25s}\n.fsc .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.88rem;color:#5c6170;margin:.5rem 0 0}\n.fsc .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;margin-right:.35em;vertical-align:-.05em}\n", "pill": ".pill{font-family:Onest,\"Golos Text\",system-ui,sans-serif;font-weight:600;font-size:1.02rem;background:#1a1d24;color:#f6f7f5;border:0;border-radius:999px;padding:.78rem 1.35rem;cursor:pointer;transition:background .15s,transform .15s}\n.pill:hover{background:#353a46}\n.pill:active{transform:scale(.97)}\n"}
+    try:
+        import anywidget
+        import traitlets
+
+        class _Pill(anywidget.AnyWidget):
+            _esm = _WJ["pill"]
+            _css = _WC["pill"]
+            label = traitlets.Unicode("").tag(sync=True)
+            count = traitlets.Int(0).tag(sync=True)
+
+        class _Scatter(anywidget.AnyWidget):
+            _esm = _WJ["scatter"]
+            _css = _WC["scatter"]
+            points = traitlets.List([]).tag(sync=True)
+            cats = traitlets.Dict({}).tag(sync=True)
+            selected = traitlets.Unicode("").tag(sync=True)
+
+        HAS_AW = True
+    except Exception:
+        HAS_AW = False
+
+    def pill(label):
+        if HAS_AW:
+            return mo.ui.anywidget(_Pill(label=label))
+        return mo.ui.button(value=0, on_click=lambda v: v + 1, label=label)
+
+    def clicks(w):
+        v = w.value
+        return int(v.get("count", 0)) if isinstance(v, dict) else int(v or 0)
+
+    def scatter_widget(selected=""):
+        pts = [{"f": r.family, "c": r.category, "x": round(float(r.x_height), 4), "s": round(float(r.stem), 4)}
+               for r in fonts.itertuples()]
+        if HAS_AW:
+            return mo.ui.anywidget(_Scatter(points=pts, cats={k: list(v) for k, v in CAT.items()}, selected=selected or ""))
+        return None
+
+    def selected_of(w, default=""):
+        v = getattr(w, "value", None)
+        return (v.get("selected") or default) if isinstance(v, dict) else default
+
+    def font_row(r, txt):
+        """Строка сравнения: текст шрифтом r, пунктиры наших измерений, полоски с медианой датасета."""
+        keys = [("x_height", "x-height", 3), ("stem", "толщина штриха", 3), ("contrast", "контраст «o»", 2),
+                ("width_o", "ширина «o» / x-height", 3)]
+
+        def bar(k, lab, d):
+            lo, hi, md = fonts[k].min(), fonts[k].max(), fonts[k].median()
+            pos = lambda v: max(0, min(1, (v - lo) / (hi - lo))) * 100   # noqa: E731
+            return (f'<div class="bar">{lab}: <b style="color:#1a1d24">{nfc(r[k], d)}</b><div class="track">'
+                    f'<div class="fill" style="width:{pos(r[k]):.1f}%;background:{CAT[r.category][1]}"></div>'
+                    f'<div class="med" style="left:{pos(md):.1f}%" title="медиана датасета"></div></div></div>')
+
+        fs = max(14.0, min(72.0, 620 / (0.62 * max(len(txt), 1))))
+        base = round(fs * max(1.0, r.cap_height) + 14)
+        y_x, y_c = base - r.x_height * fs, base - r.cap_height * fs
+        lines = [f'<line x1="0" x2="640" y1="{base}" y2="{base}" stroke="#5c6170"/>',
+                 f'<line x1="0" x2="640" y1="{y_x:.1f}" y2="{y_x:.1f}" stroke="#eb6834" stroke-dasharray="5 4"/>',
+                 f'<line x1="0" x2="640" y1="{y_c:.1f}" y2="{y_c:.1f}" stroke="#1baf7a" stroke-dasharray="5 4"/>',
+                 f'<text x="8" y="{base}" font-size="{fs:.1f}" fill="#1a1d24" style="font-family:&quot;{esc(r.family)}&quot;,serif">{esc(txt)}</text>']
+        head = (f'<div class="cmp-head"><b>{esc(r.family)}</b><span class="note"><span style="color:#eb6834">- - x-height {nfc(r.x_height)}</span>'
+                f'&nbsp;&nbsp;<span style="color:#1baf7a">- - прописные {nfc(r.cap_height)}</span>&nbsp;&nbsp;{CAT[r.category][0]}</span></div>')
+        return (gfont(r.family, txt) + '<div class="cmp-row">' + head + svg(640, base + 16, lines, txt + " шрифтом " + r.family)
+                + '<div class="bars">' + "".join(bar(k, lab, d) for k, lab, d in keys) + "</div></div>")
+
+
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
-    return (CAT, CAT_RU, G, GRIDC, H, INK, MUTED, T, esc, fonts, frame, gfont, legend, nfc, svg, to_wght, to_ytlc,
+    return (CAT, CAT_RU, G, GRIDC, H, HAS_AW, INK, MUTED, T, clicks, esc, font_row, fonts, frame, gfont, legend, nfc, pill,
+            scatter_widget, selected_of, svg, to_wght, to_ytlc,
             Path, PUB, base64, cards, code_block, df_html, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
             read_text, scipy, section, stats, table_html, types)
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.Html("<style>@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');\n:root{ --paper:#f6f7f5; --ink:#1a1d24; --muted:#5c6170; --rule:#dcdfd8;\n  --blue:#2a78d6; --orange:#eb6834; --straw:#d8c56a; --green:#1baf7a; --measure:68ch;\n  --marimo-text-font:\"Golos Text\",system-ui,sans-serif; --marimo-heading-font:\"Golos Text\",system-ui,sans-serif; }\nbody, #App, .mo-app, [data-testid=\"app\"]{background:var(--paper) !important;color:var(--ink)}\nbody, .markdown, .prose{font-family:\"Golos Text\",system-ui,-apple-system,\"Segoe UI\",sans-serif}\n.fs a{color:var(--blue);text-underline-offset:.18em}\n.fs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:#e9ebe6;padding:.08em .35em;border-radius:3px}\n.fs{font-size:1.0625rem;line-height:1.6;color:var(--ink)}\n.fs .text{max-width:var(--measure)}\n.fs p{margin:0 0 1rem !important}\n.fs, .fs *{font-family:\"Golos Text\",system-ui,sans-serif}\n.fs-hero{padding-top:clamp(2rem,6vw,5rem);padding-bottom:1rem}\n.fs-hero h1{font-family:\"Golos Text\",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}\n.fs-hero h1 .w{display:block !important}\n.fs-hero h1 span.l{transition:font-weight .5s cubic-bezier(.2,.7,.2,1)}\n.fs .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--muted);margin:0 0 1.4rem;max-width:var(--measure)}\n.fs .note{color:var(--muted);font-size:.95rem}\n.fs-sec{padding-top:3rem;border-top:1px solid var(--rule);margin-top:2rem}\n.fs h2{font-family:\"Golos Text\",sans-serif !important;font-size:clamp(1.7rem,3.4vw,2.6rem) !important;line-height:1.1 !important;font-weight:750 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}\n.fs h3{font-family:\"Golos Text\",sans-serif !important;font-size:1.15rem !important;font-weight:650 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}\n.fs figure{margin:1.4rem 0}\n.fs figure img{width:100%;height:auto;background:#fff;border-radius:6px}\n.fs figcaption{color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:var(--measure)}\n.fs .chart{background:#fff;border-radius:8px;padding:.6rem}\n.fs .chart svg{display:block;width:100%;height:auto}\n.fs .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.4rem 2rem;margin:1.6rem 0;max-width:900px}\n.fs .fact strong{display:block;font-size:2.4rem;line-height:1.05;font-weight:800;font-variant-numeric:tabular-nums}\n.fs .fact span{color:var(--muted);font-size:.95rem}\n.fs .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}\n.fs .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;margin-right:.35em;vertical-align:-.05em}\n.fs .rho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:820px}\n.fs .lab{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:1.6rem;align-items:start;margin-top:.6rem}\n.fs .readout{font-variant-numeric:tabular-nums;margin-top:.7rem;font-size:.95rem}\n.fs .readout b{font-weight:650}\n.fs .specimen{background:#fff;border-radius:8px;padding:1.2rem 1.4rem;overflow:hidden}\n.fs .cmp-row{background:#fff;border-radius:8px;padding:.8rem 1rem 1rem;margin:0 0 1rem}\n.fs .cmp-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:.3rem}\n.fs .cmp-head b{font-weight:650}\n.fs .bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.6rem 1.4rem;margin-top:.6rem}\n.fs .bar{font-size:.85rem;color:var(--muted)}\n.fs .bar .track{position:relative;height:8px;border-radius:4px;background:#eceee9;margin-top:.25rem}\n.fs .bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}\n.fs .bar .med{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.7}\n.fs .newfonts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:.8rem}\n.fs .newfonts div.c{background:#fff;border-radius:8px;padding:.8rem 1rem}\n.fs .newfonts small{color:var(--muted);font-size:.82rem}\n.fs-foot{border-top:1px solid var(--rule);margin-top:2.5rem;padding:2rem 0 3rem;color:var(--muted);font-size:.95rem}\n.fs-foot p{max-width:var(--measure)}\n.fs-ctrl{font-size:.9rem;color:var(--muted)}\n@media (max-width:640px){.fs .rho-grid,.fs .lab{grid-template-columns:1fr}}\n</style>")
+    mo.Html("<style>@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300..900&family=Unbounded:wght@300..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');\n:root{ --paper:#f6f7f5; --ink:#1a1d24; --muted:#5c6170; --rule:#dcdfd8;\n  --blue:#2a78d6; --orange:#eb6834; --straw:#d8c56a; --green:#1baf7a; --measure:68ch;\n  --marimo-text-font:Onest,system-ui,sans-serif; --marimo-heading-font:Unbounded,Onest,sans-serif; }\nbody, #App, .mo-app, [data-testid=\"app\"]{background:var(--paper) !important;color:var(--ink)}\nbody, .markdown, .prose{font-family:Onest,system-ui,-apple-system,\"Segoe UI\",sans-serif}\n.fs a{color:var(--blue);text-underline-offset:.18em}\n.fs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:#e9ebe6;padding:.08em .35em;border-radius:3px}\n.fs{font-size:1.0625rem;line-height:1.6;color:var(--ink)}\n.fs .text{max-width:var(--measure)}\n.fs p{margin:0 0 1rem !important}\n.fs, .fs p, .fs a, .fs li, .fs b, .fs i, .fs .note, .fs .lede, .fs .bar, .fs .cmp-head, .fs figcaption, .fs .readout, .fs .legend{font-family:Onest,system-ui,sans-serif}\n.fs-hero h1 .l{font-family:\"Roboto Flex\",sans-serif}\n.fs-hero{padding-top:clamp(2rem,6vw,5rem);padding-bottom:1rem}\n.fs-hero h1{font-family:\"Roboto Flex\",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}\n.fs-hero h1 .w{display:block !important}\n.fs-hero h1 span.l{transition:font-weight .5s cubic-bezier(.2,.7,.2,1)}\n.fs .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--muted);margin:0 0 1.4rem;max-width:var(--measure)}\n.fs .note{color:var(--muted);font-size:.95rem}\n.fs-sec{padding-top:3rem;border-top:1px solid var(--rule);margin-top:2rem}\n.fs h2{font-family:Unbounded,Onest,sans-serif !important;font-size:clamp(1.6rem,3.2vw,2.4rem) !important;line-height:1.15 !important;font-weight:600 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}\n.fs h3{font-family:Unbounded,Onest,sans-serif !important;font-size:1.1rem !important;font-weight:550 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}\n.fs figure{margin:1.4rem 0}\n.fs figure img{width:100%;height:auto;background:#fff;border-radius:6px}\n.fs figcaption{color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:var(--measure)}\n.fs .chart{background:#fff;border-radius:8px;padding:.6rem}\n.fs .chart svg{display:block;width:100%;height:auto}\n.fs .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.4rem 2rem;margin:1.6rem 0;max-width:900px}\n.fs .fact strong{display:block;font-family:Unbounded,Onest,sans-serif;font-size:2.2rem;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}\n.fs .fact span{color:var(--muted);font-size:.95rem}\n.fs .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}\n.fs .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;margin-right:.35em;vertical-align:-.05em}\n.fs .rho-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:820px}\n.fs .lab{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:1.6rem;align-items:start;margin-top:.6rem}\n.fs .readout{font-variant-numeric:tabular-nums;margin-top:.7rem;font-size:.95rem}\n.fs .readout b{font-weight:650}\n.fs .specimen{background:#fff;border-radius:8px;padding:1.2rem 1.4rem;overflow:hidden}\n.fs .cmp-row{background:#fff;border-radius:8px;padding:.8rem 1rem 1rem;margin:0 0 1rem}\n.fs .cmp-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:.3rem}\n.fs .cmp-head b{font-weight:650}\n.fs .bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.6rem 1.4rem;margin-top:.6rem}\n.fs .bar{font-size:.85rem;color:var(--muted)}\n.fs .bar .track{position:relative;height:8px;border-radius:4px;background:#eceee9;margin-top:.25rem}\n.fs .bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px}\n.fs .bar .med{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.7}\n.fs .newfonts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:.8rem}\n.fs .newfonts div.c{background:#fff;border-radius:8px;padding:.8rem 1rem}\n.fs .newfonts small{color:var(--muted);font-size:.82rem}\n.fs-foot{border-top:1px solid var(--rule);margin-top:2.5rem;padding:2rem 0 3rem;color:var(--muted);font-size:.95rem}\n.fs-foot p{max-width:var(--measure)}\n.fs-ctrl{font-size:.9rem;color:var(--muted)}\n@media (max-width:640px){.fs .rho-grid,.fs .lab{grid-template-columns:1fr}}\n</style>")
     return
 
 
 @app.cell(hide_code=True)
-def _(mo):
-    reroll = mo.ui.button(value=0, on_click=lambda v: v + 1, label="Перебросить толщину букв")
+def _(pill):
+    reroll = pill("Перебросить толщину букв")
     return (reroll,)
 
 
 @app.cell(hide_code=True)
-def _(H, fonts, mo, np, reroll):
-    _rng = np.random.default_rng(int(reroll.value) * 7 + 3)
-    _st = np.sort(fonts["stem"].to_numpy(float))
+def _(H, clicks, fonts, mo, np, reroll, to_wght):
+    _rng = np.random.default_rng(clicks(reroll) * 7 + 3)
+    _pick = fonts[["stem", "width_o"]].dropna().to_numpy(float)
 
-    def _wt(s):   # толщина штриха настоящего шрифта → вес Golos Text 400…900 по месту среди шрифтов
-        return int(400 + 500 * np.searchsorted(_st, s) / len(_st))
+    def _letter(ch):   # каждая буква берёт толщину и ширину случайного настоящего шрифта
+        if ch == " ":
+            return " "
+        _s, _w = _pick[_rng.integers(len(_pick))]
+        _wd = float(np.clip(np.interp(_w, [0.75, 1.0, 1.25], [62, 100, 140]), 25, 151))
+        return f'<span class="l" style="font-variation-settings:\'wght\' {to_wght(_s):.0f},\'wdth\' {_wd:.0f}">{ch}</span>'
 
-    _words = []
-    for _w in ("Шрифт как", "случайная", "величина"):
-        _words.append('<span class="w">' + "".join(
-            ch if ch == " " else f'<span class="l" style="font-weight:{_wt(_rng.choice(_st))}">{ch}</span>' for ch in _w) + "</span>")
+    _words = "".join('<span class="w">' + "".join(_letter(c) for c in w) + "</span>" for w in ("Шрифт как", "случайная", "величина"))
     mo.vstack([H(f"""<div class="fs-hero">
   <p class="note" style="margin:0"><a href="../" target="_top">← Lab01: обе части работы</a> · <a href="report/" target="_top">отчёт</a></p>
-  <h1 aria-label="Шрифт как случайная величина">{"".join(_words)}</h1>
+  <h1 aria-label="Шрифт как случайная величина">{_words}</h1>
   <p class="lede">Это доп. задание КТвД к лабораторной по прикладной статистике. Я собрала датасет шрифтов
   с Google Fonts (в анализе их {len(fonts)}: часть выбрана мной, остальные добавлены случайным отбором, по 20 в каждой категории)
   и измерила у каждого две вещи: высоту строчных букв (x-height) и толщину штриха.
   Эти размеры нельзя вычислить по формуле: у каждого шрифта они свои, поэтому их можно изучать как случайные величины.</p>
   <p class="lede">Ниже то, что получилось, и интерактивный датчик, который выдаёт случайные числа, похожие на настоящие данные.
-  Нажми кнопку: толщина каждой буквы в заголовке выпадет случайно, из тех же значений, что у настоящих шрифтов.</p>
+  Нажми кнопку: толщина и ширина каждой буквы в заголовке выпадут случайно, из тех же значений, что у настоящих шрифтов.</p>
 </div>"""), reroll])
     return
 
@@ -272,47 +343,34 @@ def _(H, MUTED, fonts, nfc, np, rho_preset, rho_s, stats, svg):
 
 
 @app.cell(hide_code=True)
-def _(CAT, mo):
-    sc_cats = mo.ui.multiselect(options=[v[0] for v in CAT.values()], value=[v[0] for v in CAT.values()], label="Категории")
-    sc_x = mo.ui.range_slider(start=0.15, stop=0.65, step=0.01, value=[0.15, 0.65], label="x-height: от и до", show_value=True)
-    sc_y = mo.ui.range_slider(start=0.0, stop=0.44, step=0.01, value=[0.0, 0.44], label="толщина штриха: от и до", show_value=True)
-    sc_find = mo.ui.text(placeholder="например, Inter", label="Найти шрифт")
-    mo.vstack([mo.md("Приближайте график ползунками «от и до»: когда точек на экране немного, у них появляются названия шрифтов. "
-                     "Наведите на точку, чтобы увидеть подробности.").style({"color": "#5c6170", "font-size": ".95rem"}),
-               mo.hstack([sc_cats, sc_find], justify="start", gap=1.5, wrap=True),
-               mo.hstack([sc_x, sc_y], justify="start", gap=1.5, wrap=True)], gap=0.5)
-    return (sc_cats, sc_find, sc_x, sc_y,)
+def _(fonts, mo):
+    sc_find = mo.ui.dropdown(options=sorted(fonts.family), value=None, label="Найти шрифт", searchable=True)
+    mo.vstack([mo.md("Приближайте кнопками «+ / −», двойным щелчком по месту или Ctrl (⌘) + колесом; приближенный график можно "
+                     "двигать мышью. **Нажмите на кружок**, и ниже откроется этот шрифт. Шрифт можно и найти по названию: "
+                     "начните вводить его в поле.").style({"color": "#5c6170", "font-size": ".95rem", "max-width": "68ch"}),
+               sc_find], gap=0.5)
+    return (sc_find,)
 
 
 @app.cell(hide_code=True)
-def _(CAT, CAT_RU, H, INK, esc, fonts, frame, legend, nfc, sc_cats, sc_find, sc_x, sc_y, svg):
-    _d = fonts[fonts.category.isin([CAT_RU[c] for c in sc_cats.value])]
-    _xl, _yl = tuple(sc_x.value), tuple(sc_y.value)
-    if _xl[1] - _xl[0] < 0.02:
-        _xl = (_xl[0] - 0.01, _xl[0] + 0.01)
-    if _yl[1] - _yl[0] < 0.02:
-        _yl = (_yl[0] - 0.01, _yl[0] + 0.01)
-    _in = _d[_d.x_height.between(*_xl) & _d.stem.between(*_yl)]
-    _items, _X, _Y = frame(640, 400, 64, 18, 14, 48, _xl, _yl, "x-height, доли кегля", "толщина штриха, доли кегля")
-    _q = (sc_find.value or "").strip().lower()
-    _lab = len(_in) <= 30
-    for _, _r in _in.iterrows():
-        _ru, _col = CAT[_r.category]
-        _hit = bool(_q) and _q in _r.family.lower()
-        _tip = f"{_r.family} · {_ru} · x-height {nfc(_r.x_height)} · штрих {nfc(_r.stem)}"
-        _items.append(f'<circle cx="{_X(_r.x_height):.1f}" cy="{_Y(_r.stem):.1f}" r="{8 if _hit else 6}" fill="{_col}" '
-                      f'stroke="{INK if _hit else "#fff"}" stroke-width="{2 if _hit else 1.2}"><title>{esc(_tip)}</title></circle>')
-        if _lab or _hit:
-            _items.append(f'<text x="{_X(_r.x_height) + 9:.1f}" y="{_Y(_r.stem) + 4:.1f}" font-size="{12 if _hit else 10.5}" '
-                          f'fill="{INK}" font-weight="{600 if _hit else 400}">{esc(_r.family)}</text>')
-    _counts = _d.category.value_counts()
-    _info = "весь график" if (_xl, _yl) == ((0.15, 0.65), (0.0, 0.44)) else "приближено"
-    H(f"""<div class="chart" style="max-width:820px">
-  <p class="note" style="margin:.2rem .4rem">{_info} · {len(_in)} точек</p>
-  {svg(640, 400, _items, "Точечный график: x-height и толщина штриха по шрифтам")}
-  {legend([(f"{v[0]} ({_counts.get(k, 0)})", v[1]) for k, v in CAT.items() if v[0] in sc_cats.value])}
-</div>
-<p class="note">Исследование целиком: <a href="report/" target="_top">отчёт</a> (код и формулы).</p>""")
+def _(sc_find, scatter_widget):
+    sc_plot = scatter_widget(sc_find.value or "Inter")
+    sc_plot
+    return (sc_plot,)
+
+
+@app.cell(hide_code=True)
+def _(H, fonts, font_row, mo, sc_find, sc_plot, selected_of):
+    _name = selected_of(sc_plot, sc_find.value or "Inter") if sc_plot is not None else (sc_find.value or "Inter")
+    _r = fonts[fonts.family == _name]
+    if sc_plot is None:
+        _out = mo.md("_Интерактивный график загружается…_")
+    elif not len(_r):
+        _out = mo.md("")
+    else:
+        _out = H('<p class="note" style="margin:.4rem 0">Выбранный шрифт:</p>' + font_row(_r.iloc[0], "Hxlno шрифт") +
+                 '<p class="note">Исследование целиком: <a href="report/" target="_top">отчёт</a> (код и формулы).</p>')
+    _out
     return
 
 
@@ -362,35 +420,10 @@ def _(CAT, H, fonts, mo):
 
 
 @app.cell(hide_code=True)
-def _(CAT, H, cmp1, cmp2, cmp3, cmp_text, esc, fonts, gfont, nfc, svg):
+def _(H, cmp1, cmp2, cmp3, cmp_text, font_row, fonts):
     _txt = (cmp_text.value or "Hxlno").strip() or "Hxlno"
-    _keys = [("x_height", "x-height", 3), ("stem", "толщина штриха", 3), ("contrast", "контраст «o»", 2), ("width_o", "ширина «o» / x-height", 3)]
-    _rg = {k: (fonts[k].min(), fonts[k].max(), fonts[k].median()) for k, _, _ in _keys}
-
-    def _bar(r, k, lab, d):
-        lo, hi, med = _rg[k]
-        pos = lambda v: max(0, min(1, (v - lo) / (hi - lo))) * 100   # noqa: E731
-        return (f'<div class="bar">{lab}: <b style="color:#1a1d24">{nfc(r[k], d)}</b><div class="track">'
-                f'<div class="fill" style="width:{pos(r[k]):.1f}%;background:{CAT[r.category][1]}"></div>'
-                f'<div class="med" style="left:{pos(med):.1f}%" title="медиана датасета"></div></div></div>')
-
-    _rows = []
-    for _name in (cmp1.value, cmp2.value, cmp3.value):
-        _r = fonts[fonts.family == _name].iloc[0]
-        _fs = max(14.0, min(72.0, 72 * 620 / (0.62 * 72 * len(_txt))))
-        _base = round(_fs * max(1.0, _r.cap_height) + 14)
-        _h = _base + 16
-        _lines = [f'<line x1="0" x2="640" y1="{_base}" y2="{_base}" stroke="#5c6170"/>',
-                  f'<line x1="0" x2="640" y1="{_base - _r.x_height * _fs:.1f}" y2="{_base - _r.x_height * _fs:.1f}" stroke="#eb6834" stroke-dasharray="5 4"/>',
-                  f'<line x1="0" x2="640" y1="{_base - _r.cap_height * _fs:.1f}" y2="{_base - _r.cap_height * _fs:.1f}" stroke="#1baf7a" stroke-dasharray="5 4"/>',
-                  f'<text x="8" y="{_base}" font-family="\'{esc(_name)}\', serif" font-size="{_fs:.1f}" fill="#1a1d24" '
-                  f'style="font-family:\'{esc(_name)}\',serif">{esc(_txt)}</text>']
-        _rows.append(f"""{gfont(_name, _txt)}<div class="cmp-row"><div class="cmp-head"><b>{esc(_name)}</b>
-<span class="note"><span style="color:#eb6834">- - x-height {nfc(_r.x_height)}</span>&nbsp;&nbsp;
-<span style="color:#1baf7a">- - прописные {nfc(_r.cap_height)}</span>&nbsp;&nbsp;{CAT[_r.category][0]}</span></div>
-{svg(640, _h, _lines, _txt + " шрифтом " + _name)}
-<div class="bars">{"".join(_bar(_r, k, lab, d) for k, lab, d in _keys)}</div></div>""")
-    H("".join(_rows) + '<p class="note">Чёрная риска на полоске показывает медиану по всем шрифтам датасета.</p>')
+    H("".join(font_row(fonts[fonts.family == n].iloc[0], _txt) for n in (cmp1.value, cmp2.value, cmp3.value))
+      + '<p class="note">Чёрная риска на полоске показывает медиану по всем шрифтам датасета.</p>')
     return
 
 
@@ -408,22 +441,22 @@ def _(H):
 
 
 @app.cell(hide_code=True)
-def _(G, mo):
+def _(G, mo, pill):
     rg_var = mo.ui.radio(options={"x-height": "x_height", "толщина штриха": "stem"}, value="x-height", label="Величина", inline=True)
     rg_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод")
     rg_base = mo.ui.radio(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик", inline=True)
     rg_n = mo.ui.slider(start=100, stop=20000, step=100, value=1000, label="Сколько чисел", show_value=True)
-    rg_go = mo.ui.button(value=0, on_click=lambda v: v + 1, label="Сгенерировать заново")
+    rg_go = pill("Сгенерировать заново")
     mo.vstack([mo.hstack([rg_var, rg_method], justify="start", gap=2, wrap=True), rg_base,
                mo.hstack([rg_n, rg_go], justify="start", gap=2, align="end")], gap=0.6)
     return (rg_base, rg_go, rg_method, rg_n, rg_var,)
 
 
 @app.cell(hide_code=True)
-def _(G, H, MUTED, fonts, frame, legend, nfc, np, rg_base, rg_go, rg_method, rg_n, rg_var, svg):
+def _(G, H, MUTED, clicks, fonts, frame, legend, nfc, np, rg_base, rg_go, rg_method, rg_n, rg_var, svg):
     _real = fonts[rg_var.value].to_numpy(float)
     _fam = "skewnorm" if rg_var.value == "x_height" else "lognorm"
-    _seed = 2026 + int(rg_go.value)
+    _seed = 2026 + clicks(rg_go)
     _x, _info = G.generate(_real, rg_n.value, method=rg_method.value, family=_fam, base=rg_base.value, seed=_seed)
     _c = G.compare(_real, _x)
     _lo, _hi = (0.15, 0.65) if rg_var.value == "x_height" else (0.0, 0.22)
@@ -472,18 +505,8 @@ def _(G, H, MUTED, fonts, frame, legend, nfc, np, rg_base, rg_go, rg_method, rg_
 
 
 @app.cell(hide_code=True)
-def _(G, H, esc, fonts, nfc, rg_base, rg_go, to_wght, to_ytlc):
-    _seed = 99 + int(rg_go.value)
-    _xs = G.generate(fonts.x_height.to_numpy(float), 6, method="polar", family="skewnorm", base=rg_base.value, seed=_seed)[0]
-    _ss = G.generate(fonts.stem.to_numpy(float), 6, method="polar", family="lognorm", base=rg_base.value, seed=_seed + 1)[0]
-    _c = "".join(
-        f'<div class="c"><div style="font-family:\'Roboto Flex\',sans-serif;font-size:58px;line-height:1.1;'
-        f'font-variation-settings:\'wght\' {to_wght(s):.0f},\'YTLC\' {to_ytlc(x):.0f}">Hxlno</div>'
-        f'<small>x-height {nfc(x)} · штрих {nfc(s)}</small></div>' for x, s in zip(_xs, _ss))
-    H(f"""<h3>Шесть «новых» шрифтов</h3><div class="text"><p>Датчик выдал шесть пар (x-height, толщина штриха), и они наложены
-на вариативный Roboto Flex: толщина задаёт вес, x-height задаёт высоту строчных. Кнопка «Сгенерировать заново» даёт новые шрифты.</p></div>
-<div class="newfonts">{_c}</div>
-<p class="note" style="margin-top:1rem">Полная версия датчика на marimo: шесть методов, четыре величины шрифтов и таблица сравнения:
+def _(H):
+    H("""<p class="note" style="margin-top:1rem">Полная версия датчика на marimo: шесть методов, четыре величины шрифтов и таблица сравнения:
 <a href="datchik/" target="_top">датчик</a>.</p>
 <div class="fs-foot"><p>Быкова Кристина Денисовна, ИСУ 501322, команда 27, трек КТвД. Lab01, прикладная статистика, осень 2026:
 доп. задание КТвД, датасет шрифтов, датчик случайных чисел, интерактив и этот сайт.

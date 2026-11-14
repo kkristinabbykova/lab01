@@ -115,9 +115,9 @@ def css(t: dict, tags: bool = True) -> str:
 
 
 def css_body(t: dict) -> str:
-    return f'''@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap');
-:root {{ --marimo-text-font: "Golos Text", system-ui, sans-serif; --marimo-heading-font: {t["head_font"]}; }}
-body, .markdown, .prose {{ font-family: "Golos Text", system-ui, sans-serif; }}
+    return f'''@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300..900&family=Unbounded:wght@300..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap');
+:root {{ --marimo-text-font: Onest, system-ui, sans-serif; --marimo-heading-font: {t["head_font"]}; }}
+body, .markdown, .prose, .lab-cover, .lab-guide, .lab-card, .lab-live {{ font-family: Onest, system-ui, sans-serif; }}
 .markdown h1, .markdown h2, .markdown h3, .markdown h4 {{ font-family: {t["head_font"]} !important; font-weight: 700 !important; }}
 .markdown h1 {{ font-size: 2.1rem !important; letter-spacing: -.02em; margin: .3rem 0 .6rem; }}
 .markdown h2 {{ font-size: 1.65rem !important; }}

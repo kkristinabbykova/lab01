@@ -1,0 +1,3 @@
+.pill{font-family:Onest,"Golos Text",system-ui,sans-serif;font-weight:600;font-size:1.02rem;background:#1a1d24;color:#f6f7f5;border:0;border-radius:999px;padding:.78rem 1.35rem;cursor:pointer;transition:background .15s,transform .15s}
+.pill:hover{background:#353a46}
+.pill:active{transform:scale(.97)}

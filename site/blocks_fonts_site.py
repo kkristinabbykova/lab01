@@ -4,40 +4,118 @@
 поэтому выглядят как раньше; ползунки и переключатели теперь marimo, расчёты на Python в браузере.
 """
 import json
+from pathlib import Path
 
 import blocks_common as C
+
+WCODE = r'''    try:
+        import anywidget
+        import traitlets
+
+        class _Pill(anywidget.AnyWidget):
+            _esm = _WJ["pill"]
+            _css = _WC["pill"]
+            label = traitlets.Unicode("").tag(sync=True)
+            count = traitlets.Int(0).tag(sync=True)
+
+        class _Scatter(anywidget.AnyWidget):
+            _esm = _WJ["scatter"]
+            _css = _WC["scatter"]
+            points = traitlets.List([]).tag(sync=True)
+            cats = traitlets.Dict({}).tag(sync=True)
+            selected = traitlets.Unicode("").tag(sync=True)
+
+        HAS_AW = True
+    except Exception:
+        HAS_AW = False
+
+    def pill(label):
+        if HAS_AW:
+            return mo.ui.anywidget(_Pill(label=label))
+        return mo.ui.button(value=0, on_click=lambda v: v + 1, label=label)
+
+    def clicks(w):
+        v = w.value
+        return int(v.get("count", 0)) if isinstance(v, dict) else int(v or 0)
+
+    def scatter_widget(selected=""):
+        pts = [{"f": r.family, "c": r.category, "x": round(float(r.x_height), 4), "s": round(float(r.stem), 4)}
+               for r in fonts.itertuples()]
+        if HAS_AW:
+            return mo.ui.anywidget(_Scatter(points=pts, cats={k: list(v) for k, v in CAT.items()}, selected=selected or ""))
+        return None
+
+    def selected_of(w, default=""):
+        v = getattr(w, "value", None)
+        return (v.get("selected") or default) if isinstance(v, dict) else default
+
+    def font_row(r, txt):
+        """Строка сравнения: текст шрифтом r, пунктиры наших измерений, полоски с медианой датасета."""
+        keys = [("x_height", "x-height", 3), ("stem", "толщина штриха", 3), ("contrast", "контраст «o»", 2),
+                ("width_o", "ширина «o» / x-height", 3)]
+
+        def bar(k, lab, d):
+            lo, hi, md = fonts[k].min(), fonts[k].max(), fonts[k].median()
+            pos = lambda v: max(0, min(1, (v - lo) / (hi - lo))) * 100   # noqa: E731
+            return (f'<div class="bar">{lab}: <b style="color:#1a1d24">{nfc(r[k], d)}</b><div class="track">'
+                    f'<div class="fill" style="width:{pos(r[k]):.1f}%;background:{CAT[r.category][1]}"></div>'
+                    f'<div class="med" style="left:{pos(md):.1f}%" title="медиана датасета"></div></div></div>')
+
+        fs = max(14.0, min(72.0, 620 / (0.62 * max(len(txt), 1))))
+        base = round(fs * max(1.0, r.cap_height) + 14)
+        y_x, y_c = base - r.x_height * fs, base - r.cap_height * fs
+        lines = [f'<line x1="0" x2="640" y1="{base}" y2="{base}" stroke="#5c6170"/>',
+                 f'<line x1="0" x2="640" y1="{y_x:.1f}" y2="{y_x:.1f}" stroke="#eb6834" stroke-dasharray="5 4"/>',
+                 f'<line x1="0" x2="640" y1="{y_c:.1f}" y2="{y_c:.1f}" stroke="#1baf7a" stroke-dasharray="5 4"/>',
+                 f'<text x="8" y="{base}" font-size="{fs:.1f}" fill="#1a1d24" style="font-family:&quot;{esc(r.family)}&quot;,serif">{esc(txt)}</text>']
+        head = (f'<div class="cmp-head"><b>{esc(r.family)}</b><span class="note"><span style="color:#eb6834">- - x-height {nfc(r.x_height)}</span>'
+                f'&nbsp;&nbsp;<span style="color:#1baf7a">- - прописные {nfc(r.cap_height)}</span>&nbsp;&nbsp;{CAT[r.category][0]}</span></div>')
+        return (gfont(r.family, txt) + '<div class="cmp-row">' + head + svg(640, base + 16, lines, txt + " шрифтом " + r.family)
+                + '<div class="bars">' + "".join(bar(k, lab, d) for k, lab, d in keys) + "</div></div>")
+
+'''
+
+_W = Path(__file__).resolve().parent / "widgets"
+WJ = {n: (_W / f"{n}.js").read_text(encoding="utf-8") for n in ("scatter", "pill")}
+WC = {n: (_W / f"{n}.css").read_text(encoding="utf-8") for n in ("scatter", "pill")}
+WIDGET_CODE = (
+    "    # свои элементы (anywidget): большая кнопка и график с приближением и щелчком; без anywidget всё работает на элементах marimo\n"
+    "    _WJ = " + json.dumps(WJ, ensure_ascii=False) + "\n"
+    "    _WC = " + json.dumps(WC, ensure_ascii=False) + "\n"
+    + WCODE)
 
 CSS_FILE = "fonts_site.css"
 TITLE = "Lab01 КТвД: шрифт как случайная величина"
 
-CSS = r'''@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');
+CSS = r'''@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300..900&family=Unbounded:wght@300..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');
 :root{ --paper:#f6f7f5; --ink:#1a1d24; --muted:#5c6170; --rule:#dcdfd8;
   --blue:#2a78d6; --orange:#eb6834; --straw:#d8c56a; --green:#1baf7a; --measure:68ch;
-  --marimo-text-font:"Golos Text",system-ui,sans-serif; --marimo-heading-font:"Golos Text",system-ui,sans-serif; }
+  --marimo-text-font:Onest,system-ui,sans-serif; --marimo-heading-font:Unbounded,Onest,sans-serif; }
 body, #App, .mo-app, [data-testid="app"]{background:var(--paper) !important;color:var(--ink)}
-body, .markdown, .prose{font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif}
+body, .markdown, .prose{font-family:Onest,system-ui,-apple-system,"Segoe UI",sans-serif}
 .fs a{color:var(--blue);text-underline-offset:.18em}
 .fs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:#e9ebe6;padding:.08em .35em;border-radius:3px}
 .fs{font-size:1.0625rem;line-height:1.6;color:var(--ink)}
 .fs .text{max-width:var(--measure)}
 .fs p{margin:0 0 1rem !important}
-.fs, .fs *{font-family:"Golos Text",system-ui,sans-serif}
+.fs, .fs p, .fs a, .fs li, .fs b, .fs i, .fs .note, .fs .lede, .fs .bar, .fs .cmp-head, .fs figcaption, .fs .readout, .fs .legend{font-family:Onest,system-ui,sans-serif}
+.fs-hero h1 .l{font-family:"Roboto Flex",sans-serif}
 .fs-hero{padding-top:clamp(2rem,6vw,5rem);padding-bottom:1rem}
-.fs-hero h1{font-family:"Golos Text",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}
+.fs-hero h1{font-family:"Roboto Flex",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}
 .fs-hero h1 .w{display:block !important}
 .fs-hero h1 span.l{transition:font-weight .5s cubic-bezier(.2,.7,.2,1)}
 .fs .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--muted);margin:0 0 1.4rem;max-width:var(--measure)}
 .fs .note{color:var(--muted);font-size:.95rem}
 .fs-sec{padding-top:3rem;border-top:1px solid var(--rule);margin-top:2rem}
-.fs h2{font-family:"Golos Text",sans-serif !important;font-size:clamp(1.7rem,3.4vw,2.6rem) !important;line-height:1.1 !important;font-weight:750 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}
-.fs h3{font-family:"Golos Text",sans-serif !important;font-size:1.15rem !important;font-weight:650 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}
+.fs h2{font-family:Unbounded,Onest,sans-serif !important;font-size:clamp(1.6rem,3.2vw,2.4rem) !important;line-height:1.15 !important;font-weight:600 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}
+.fs h3{font-family:Unbounded,Onest,sans-serif !important;font-size:1.1rem !important;font-weight:550 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}
 .fs figure{margin:1.4rem 0}
 .fs figure img{width:100%;height:auto;background:#fff;border-radius:6px}
 .fs figcaption{color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:var(--measure)}
 .fs .chart{background:#fff;border-radius:8px;padding:.6rem}
 .fs .chart svg{display:block;width:100%;height:auto}
 .fs .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.4rem 2rem;margin:1.6rem 0;max-width:900px}
-.fs .fact strong{display:block;font-size:2.4rem;line-height:1.05;font-weight:800;font-variant-numeric:tabular-nums}
+.fs .fact strong{display:block;font-family:Unbounded,Onest,sans-serif;font-size:2.2rem;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}
 .fs .fact span{color:var(--muted);font-size:.95rem}
 .fs .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}
 .fs .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;margin-right:.35em;vertical-align:-.05em}
@@ -129,7 +207,7 @@ def _():
 
     def svg(W, H, items, label=""):
         return (f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{esc(label)}" '
-                f'style="font-family:Golos Text,system-ui,sans-serif">{"".join(items)}</svg>')
+                f'style="font-family:Onest,system-ui,sans-serif">{"".join(items)}</svg>')
 
     def legend(items):
         return '<div class="legend">' + "".join(f'<span><i class="sw" style="background:{c}"></i>{t}</span>' for t, c in items) + "</div>"
@@ -151,36 +229,40 @@ def _():
         """Кусок страницы в оформлении прежнего сайта."""
         return mo.Html(ST + f'<div class="fs">{s}</div>')
 
+''' + WIDGET_CODE + r'''
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
-    return (CAT, CAT_RU, G, GRIDC, H, INK, MUTED, T, esc, fonts, frame, gfont, legend, nfc, svg, to_wght, to_ytlc,
+    return (CAT, CAT_RU, G, GRIDC, H, HAS_AW, INK, MUTED, T, clicks, esc, font_row, fonts, frame, gfont, legend, nfc, pill,
+            scatter_widget, selected_of, svg, to_wght, to_ytlc,
             Path, PUB, base64, cards, code_block, df_html, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
             read_text, scipy, section, stats, table_html, types)
 '''
 
 HERO = [
-    _cell("mo", '''    reroll = mo.ui.button(value=0, on_click=lambda v: v + 1, label="Перебросить толщину букв")''', "reroll"),
-    _cell("H, fonts, mo, np, reroll", r'''    _rng = np.random.default_rng(int(reroll.value) * 7 + 3)
-    _st = np.sort(fonts["stem"].to_numpy(float))
+    _cell("pill", '''    reroll = pill("Перебросить толщину букв")''', "reroll"),
+    _cell("H, clicks, fonts, mo, np, reroll, to_wght", r'''    _rng = np.random.default_rng(clicks(reroll) * 7 + 3)
+    _pick = fonts[["stem", "width_o"]].dropna().to_numpy(float)
 
-    def _wt(s):   # толщина штриха настоящего шрифта → вес Golos Text 400…900 по месту среди шрифтов
-        return int(400 + 500 * np.searchsorted(_st, s) / len(_st))
+    def _letter(ch):   # каждая буква берёт толщину и ширину случайного настоящего шрифта
+        if ch == " ":
+            return " "
+        _s, _w = _pick[_rng.integers(len(_pick))]
+        _wd = float(np.clip(np.interp(_w, [0.75, 1.0, 1.25], [62, 100, 140]), 25, 151))
+        return f'<span class="l" style="font-variation-settings:\'wght\' {to_wght(_s):.0f},\'wdth\' {_wd:.0f}">{ch}</span>'
 
-    _words = []
-    for _w in ("Шрифт как", "случайная", "величина"):
-        _words.append('<span class="w">' + "".join(
-            ch if ch == " " else f'<span class="l" style="font-weight:{_wt(_rng.choice(_st))}">{ch}</span>' for ch in _w) + "</span>")
+    _words = "".join('<span class="w">' + "".join(_letter(c) for c in w) + "</span>" for w in ("Шрифт как", "случайная", "величина"))
     mo.vstack([H(f"""<div class="fs-hero">
   <p class="note" style="margin:0"><a href="../" target="_top">← Lab01: обе части работы</a> · <a href="report/" target="_top">отчёт</a></p>
-  <h1 aria-label="Шрифт как случайная величина">{"".join(_words)}</h1>
+  <h1 aria-label="Шрифт как случайная величина">{_words}</h1>
   <p class="lede">Это доп. задание КТвД к лабораторной по прикладной статистике. Я собрала датасет шрифтов
   с Google Fonts (в анализе их {len(fonts)}: часть выбрана мной, остальные добавлены случайным отбором, по 20 в каждой категории)
   и измерила у каждого две вещи: высоту строчных букв (x-height) и толщину штриха.
   Эти размеры нельзя вычислить по формуле: у каждого шрифта они свои, поэтому их можно изучать как случайные величины.</p>
   <p class="lede">Ниже то, что получилось, и интерактивный датчик, который выдаёт случайные числа, похожие на настоящие данные.
-  Нажми кнопку: толщина каждой буквы в заголовке выпадет случайно, из тех же значений, что у настоящих шрифтов.</p>
+  Нажми кнопку: толщина и ширина каждой буквы в заголовке выпадут случайно, из тех же значений, что у настоящих шрифтов.</p>
 </div>"""), reroll])'''),
 ]
+
 
 FONTS = [
     _cell("H, fonts, nfc, stats", r'''    _rho = stats.spearmanr(fonts.x_height, fonts.stem)[0]
@@ -224,41 +306,23 @@ FONTS = [
   <div class="chart">{_dots(_z[:, 0], _ys, "#9aa0a8")}<p class="note" style="margin:.3rem 0 0">Случайные точки: ρ Спирмена получилось {nfc(stats.spearmanr(_z[:, 0], _ys)[0], 2)}.</p></div>
   <div class="chart">{_dots(fonts.x_height.to_numpy(), fonts.stem.to_numpy(), "#2a78d6")}<p class="note" style="margin:.3rem 0 0">Наши шрифты: место по x-height и место по толщине штриха (ранги, как у Спирмена).</p></div>
 </div>""")'''),
-    _cell("CAT, mo", r'''    sc_cats = mo.ui.multiselect(options=[v[0] for v in CAT.values()], value=[v[0] for v in CAT.values()], label="Категории")
-    sc_x = mo.ui.range_slider(start=0.15, stop=0.65, step=0.01, value=[0.15, 0.65], label="x-height: от и до", show_value=True)
-    sc_y = mo.ui.range_slider(start=0.0, stop=0.44, step=0.01, value=[0.0, 0.44], label="толщина штриха: от и до", show_value=True)
-    sc_find = mo.ui.text(placeholder="например, Inter", label="Найти шрифт")
-    mo.vstack([mo.md("Приближайте график ползунками «от и до»: когда точек на экране немного, у них появляются названия шрифтов. "
-                     "Наведите на точку, чтобы увидеть подробности.").style({"color": "#5c6170", "font-size": ".95rem"}),
-               mo.hstack([sc_cats, sc_find], justify="start", gap=1.5, wrap=True),
-               mo.hstack([sc_x, sc_y], justify="start", gap=1.5, wrap=True)], gap=0.5)''', "sc_cats, sc_find, sc_x, sc_y"),
-    _cell("CAT, CAT_RU, H, INK, esc, fonts, frame, legend, nfc, sc_cats, sc_find, sc_x, sc_y, svg", r'''    _d = fonts[fonts.category.isin([CAT_RU[c] for c in sc_cats.value])]
-    _xl, _yl = tuple(sc_x.value), tuple(sc_y.value)
-    if _xl[1] - _xl[0] < 0.02:
-        _xl = (_xl[0] - 0.01, _xl[0] + 0.01)
-    if _yl[1] - _yl[0] < 0.02:
-        _yl = (_yl[0] - 0.01, _yl[0] + 0.01)
-    _in = _d[_d.x_height.between(*_xl) & _d.stem.between(*_yl)]
-    _items, _X, _Y = frame(640, 400, 64, 18, 14, 48, _xl, _yl, "x-height, доли кегля", "толщина штриха, доли кегля")
-    _q = (sc_find.value or "").strip().lower()
-    _lab = len(_in) <= 30
-    for _, _r in _in.iterrows():
-        _ru, _col = CAT[_r.category]
-        _hit = bool(_q) and _q in _r.family.lower()
-        _tip = f"{_r.family} · {_ru} · x-height {nfc(_r.x_height)} · штрих {nfc(_r.stem)}"
-        _items.append(f'<circle cx="{_X(_r.x_height):.1f}" cy="{_Y(_r.stem):.1f}" r="{8 if _hit else 6}" fill="{_col}" '
-                      f'stroke="{INK if _hit else "#fff"}" stroke-width="{2 if _hit else 1.2}"><title>{esc(_tip)}</title></circle>')
-        if _lab or _hit:
-            _items.append(f'<text x="{_X(_r.x_height) + 9:.1f}" y="{_Y(_r.stem) + 4:.1f}" font-size="{12 if _hit else 10.5}" '
-                          f'fill="{INK}" font-weight="{600 if _hit else 400}">{esc(_r.family)}</text>')
-    _counts = _d.category.value_counts()
-    _info = "весь график" if (_xl, _yl) == ((0.15, 0.65), (0.0, 0.44)) else "приближено"
-    H(f"""<div class="chart" style="max-width:820px">
-  <p class="note" style="margin:.2rem .4rem">{_info} · {len(_in)} точек</p>
-  {svg(640, 400, _items, "Точечный график: x-height и толщина штриха по шрифтам")}
-  {legend([(f"{v[0]} ({_counts.get(k, 0)})", v[1]) for k, v in CAT.items() if v[0] in sc_cats.value])}
-</div>
-<p class="note">Исследование целиком: <a href="report/" target="_top">отчёт</a> (код и формулы).</p>""")'''),
+    _cell("fonts, mo", r'''    sc_find = mo.ui.dropdown(options=sorted(fonts.family), value=None, label="Найти шрифт", searchable=True)
+    mo.vstack([mo.md("Приближайте кнопками «+ / −», двойным щелчком по месту или Ctrl (⌘) + колесом; приближенный график можно "
+                     "двигать мышью. **Нажмите на кружок**, и ниже откроется этот шрифт. Шрифт можно и найти по названию: "
+                     "начните вводить его в поле.").style({"color": "#5c6170", "font-size": ".95rem", "max-width": "68ch"}),
+               sc_find], gap=0.5)''', "sc_find"),
+    _cell("sc_find, scatter_widget", r'''    sc_plot = scatter_widget(sc_find.value or "Inter")
+    sc_plot''', "sc_plot"),
+    _cell("H, fonts, font_row, mo, sc_find, sc_plot, selected_of", r'''    _name = selected_of(sc_plot, sc_find.value or "Inter") if sc_plot is not None else (sc_find.value or "Inter")
+    _r = fonts[fonts.family == _name]
+    if sc_plot is None:
+        _out = mo.md("_Интерактивный график загружается…_")
+    elif not len(_r):
+        _out = mo.md("")
+    else:
+        _out = H('<p class="note" style="margin:.4rem 0">Выбранный шрифт:</p>' + font_row(_r.iloc[0], "Hxlno шрифт") +
+                 '<p class="note">Исследование целиком: <a href="report/" target="_top">отчёт</a> (код и формулы).</p>')
+    _out'''),
 ]
 
 PLAY = [
@@ -289,34 +353,9 @@ font-size:{pl_size.value}px;font-variation-settings:'wght' {pl_wght.value},'wdth
 Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div>"""),
                mo.hstack([cmp1, cmp2, cmp3, cmp_text], justify="start", gap=1.2, wrap=True)], gap=0.4)''',
           "cmp1, cmp2, cmp3, cmp_text"),
-    _cell("CAT, H, cmp1, cmp2, cmp3, cmp_text, esc, fonts, gfont, nfc, svg", r'''    _txt = (cmp_text.value or "Hxlno").strip() or "Hxlno"
-    _keys = [("x_height", "x-height", 3), ("stem", "толщина штриха", 3), ("contrast", "контраст «o»", 2), ("width_o", "ширина «o» / x-height", 3)]
-    _rg = {k: (fonts[k].min(), fonts[k].max(), fonts[k].median()) for k, _, _ in _keys}
-
-    def _bar(r, k, lab, d):
-        lo, hi, med = _rg[k]
-        pos = lambda v: max(0, min(1, (v - lo) / (hi - lo))) * 100   # noqa: E731
-        return (f'<div class="bar">{lab}: <b style="color:#1a1d24">{nfc(r[k], d)}</b><div class="track">'
-                f'<div class="fill" style="width:{pos(r[k]):.1f}%;background:{CAT[r.category][1]}"></div>'
-                f'<div class="med" style="left:{pos(med):.1f}%" title="медиана датасета"></div></div></div>')
-
-    _rows = []
-    for _name in (cmp1.value, cmp2.value, cmp3.value):
-        _r = fonts[fonts.family == _name].iloc[0]
-        _fs = max(14.0, min(72.0, 72 * 620 / (0.62 * 72 * len(_txt))))
-        _base = round(_fs * max(1.0, _r.cap_height) + 14)
-        _h = _base + 16
-        _lines = [f'<line x1="0" x2="640" y1="{_base}" y2="{_base}" stroke="#5c6170"/>',
-                  f'<line x1="0" x2="640" y1="{_base - _r.x_height * _fs:.1f}" y2="{_base - _r.x_height * _fs:.1f}" stroke="#eb6834" stroke-dasharray="5 4"/>',
-                  f'<line x1="0" x2="640" y1="{_base - _r.cap_height * _fs:.1f}" y2="{_base - _r.cap_height * _fs:.1f}" stroke="#1baf7a" stroke-dasharray="5 4"/>',
-                  f'<text x="8" y="{_base}" font-family="\'{esc(_name)}\', serif" font-size="{_fs:.1f}" fill="#1a1d24" '
-                  f'style="font-family:\'{esc(_name)}\',serif">{esc(_txt)}</text>']
-        _rows.append(f"""{gfont(_name, _txt)}<div class="cmp-row"><div class="cmp-head"><b>{esc(_name)}</b>
-<span class="note"><span style="color:#eb6834">- - x-height {nfc(_r.x_height)}</span>&nbsp;&nbsp;
-<span style="color:#1baf7a">- - прописные {nfc(_r.cap_height)}</span>&nbsp;&nbsp;{CAT[_r.category][0]}</span></div>
-{svg(640, _h, _lines, _txt + " шрифтом " + _name)}
-<div class="bars">{"".join(_bar(_r, k, lab, d) for k, lab, d in _keys)}</div></div>""")
-    H("".join(_rows) + '<p class="note">Чёрная риска на полоске показывает медиану по всем шрифтам датасета.</p>')'''),
+    _cell("H, cmp1, cmp2, cmp3, cmp_text, font_row, fonts", r'''    _txt = (cmp_text.value or "Hxlno").strip() or "Hxlno"
+    H("".join(font_row(fonts[fonts.family == n].iloc[0], _txt) for n in (cmp1.value, cmp2.value, cmp3.value))
+      + '<p class="note">Чёрная риска на полоске показывает медиану по всем шрифтам датасета.</p>')'''),
 ]
 
 RNG = [
@@ -328,16 +367,16 @@ RNG = [
 распределение, для толщины штриха логнормальное <i>X</i> = θ + e<sup>μ + σ<i>Z</i></sup>.
 <b>Квантильный метод</b> модель не использует: он берёт <i>U</i> и находит значение, ниже которого лежит
 такая же доля шрифтов.</p></div></div>""")'''),
-    _cell("G, mo", r'''    rg_var = mo.ui.radio(options={"x-height": "x_height", "толщина штриха": "stem"}, value="x-height", label="Величина", inline=True)
+    _cell("G, mo, pill", r'''    rg_var = mo.ui.radio(options={"x-height": "x_height", "толщина штриха": "stem"}, value="x-height", label="Величина", inline=True)
     rg_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод")
     rg_base = mo.ui.radio(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик", inline=True)
     rg_n = mo.ui.slider(start=100, stop=20000, step=100, value=1000, label="Сколько чисел", show_value=True)
-    rg_go = mo.ui.button(value=0, on_click=lambda v: v + 1, label="Сгенерировать заново")
+    rg_go = pill("Сгенерировать заново")
     mo.vstack([mo.hstack([rg_var, rg_method], justify="start", gap=2, wrap=True), rg_base,
                mo.hstack([rg_n, rg_go], justify="start", gap=2, align="end")], gap=0.6)''', "rg_base, rg_go, rg_method, rg_n, rg_var"),
-    _cell("G, H, MUTED, fonts, frame, legend, nfc, np, rg_base, rg_go, rg_method, rg_n, rg_var, svg", r'''    _real = fonts[rg_var.value].to_numpy(float)
+    _cell("G, H, MUTED, clicks, fonts, frame, legend, nfc, np, rg_base, rg_go, rg_method, rg_n, rg_var, svg", r'''    _real = fonts[rg_var.value].to_numpy(float)
     _fam = "skewnorm" if rg_var.value == "x_height" else "lognorm"
-    _seed = 2026 + int(rg_go.value)
+    _seed = 2026 + clicks(rg_go)
     _x, _info = G.generate(_real, rg_n.value, method=rg_method.value, family=_fam, base=rg_base.value, seed=_seed)
     _c = G.compare(_real, _x)
     _lo, _hi = (0.15, 0.65) if rg_var.value == "x_height" else (0.0, 0.22)
@@ -382,17 +421,7 @@ RNG = [
 Расстояние Колмогорова между функциями распределения <b>{nfc(_c["ks_D"])}</b> при пороге <b>{nfc(_crit)}</b> (α = 0,05):
 {"датчик и шрифты статистически не различаются" if _same else "датчик и шрифты различаются"}.
 Доля принятых точек <b>{nfc(_info["accept"])}</b>{" (теория π/4 = 0,785)" if rg_method.value == "polar" else ""}.</p>""")'''),
-    _cell("G, H, esc, fonts, nfc, rg_base, rg_go, to_wght, to_ytlc", r'''    _seed = 99 + int(rg_go.value)
-    _xs = G.generate(fonts.x_height.to_numpy(float), 6, method="polar", family="skewnorm", base=rg_base.value, seed=_seed)[0]
-    _ss = G.generate(fonts.stem.to_numpy(float), 6, method="polar", family="lognorm", base=rg_base.value, seed=_seed + 1)[0]
-    _c = "".join(
-        f'<div class="c"><div style="font-family:\'Roboto Flex\',sans-serif;font-size:58px;line-height:1.1;'
-        f'font-variation-settings:\'wght\' {to_wght(s):.0f},\'YTLC\' {to_ytlc(x):.0f}">Hxlno</div>'
-        f'<small>x-height {nfc(x)} · штрих {nfc(s)}</small></div>' for x, s in zip(_xs, _ss))
-    H(f"""<h3>Шесть «новых» шрифтов</h3><div class="text"><p>Датчик выдал шесть пар (x-height, толщина штриха), и они наложены
-на вариативный Roboto Flex: толщина задаёт вес, x-height задаёт высоту строчных. Кнопка «Сгенерировать заново» даёт новые шрифты.</p></div>
-<div class="newfonts">{_c}</div>
-<p class="note" style="margin-top:1rem">Полная версия датчика на marimo: шесть методов, четыре величины шрифтов и таблица сравнения:
+    _cell("H", r'''    H("""<p class="note" style="margin-top:1rem">Полная версия датчика на marimo: шесть методов, четыре величины шрифтов и таблица сравнения:
 <a href="datchik/" target="_top">датчик</a>.</p>
 <div class="fs-foot"><p>Быкова Кристина Денисовна, ИСУ 501322, команда 27, трек КТвД. Lab01, прикладная статистика, осень 2026:
 доп. задание КТвД, датасет шрифтов, датчик случайных чисел, интерактив и этот сайт.
@@ -401,7 +430,7 @@ RNG = [
 
 
 def app_text() -> str:
-    head = C.header(TITLE, CSS_FILE)
+    head = C.header(TITLE, CSS_FILE).replace('"scipy"]', '"scipy", "anywidget", "traitlets"]')
     style = _cell("mo", "    mo.Html(" + json.dumps("<style>" + CSS + "</style>", ensure_ascii=False) + ")")
     cells = [SETUP, style] + HERO + FONTS + PLAY + RNG
     return head + "\n\n".join(cells) + '\n\nif __name__ == "__main__":\n    app.run()\n'

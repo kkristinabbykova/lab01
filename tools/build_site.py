@@ -78,15 +78,15 @@ HUB = r"""<!DOCTYPE html>
 <title>Lab01 · Прикладная статистика</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300..900&family=Unbounded:wght@300..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0}
-body{font-family:"Golos Text",system-ui,sans-serif;color:#16181d;background:#f2f2f0;line-height:1.5}
+body{font-family:Onest,system-ui,sans-serif;color:#16181d;background:#f2f2f0;line-height:1.5}
 a{color:inherit}
 .top{max-width:1180px;margin:0 auto;padding:2.2rem 1.4rem 1.2rem}
 .kicker{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:#5a5f69}
-h1{font-size:clamp(2rem,5.4vw,3.6rem);line-height:1.02;margin:.4rem 0 .8rem;font-weight:800;letter-spacing:-.02em}
+h1{font-family:Unbounded,Onest,sans-serif;font-size:clamp(1.9rem,5vw,3.3rem);line-height:1.08;margin:.4rem 0 .8rem;font-weight:600;letter-spacing:-.02em}
 .lede{max-width:52rem;color:#3b3f48;font-size:1.05rem;margin:0}
 .authors{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;margin-top:1rem;font-size:.92rem;color:#5a5f69}
 .authors b{color:#16181d;font-weight:600}
@@ -94,7 +94,7 @@ h1{font-size:clamp(2rem,5.4vw,3.6rem);line-height:1.02;margin:.4rem 0 .8rem;font
 .repo:hover{background:#fff}
 .parts{max-width:1180px;margin:0 auto;padding:0 1.4rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
 .part{position:relative;border-radius:22px;padding:1.8rem 1.7rem 1.6rem;overflow:hidden;display:flex;flex-direction:column;min-height:31rem}
-.part h2{margin:.3rem 0 .6rem;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.05;letter-spacing:-.01em}
+.part h2{font-family:Unbounded,Onest,sans-serif;font-weight:600;margin:.3rem 0 .6rem;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.05;letter-spacing:-.01em}
 .part p{margin:.2rem 0 .8rem}
 .tag{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
 .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:1rem 0 1.2rem}

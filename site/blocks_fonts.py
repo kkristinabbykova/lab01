@@ -3,7 +3,7 @@ import json
 
 import blocks_common as C
 
-THEME = dict(head_font='"Roboto Flex", "Golos Text", sans-serif', bg="#fafaf7", card="#ffffff", ink="#1a1d24", ink2="#5c6170", line="#e6e5e0", acc="#2a78d6",
+THEME = dict(head_font='Unbounded, Onest, sans-serif', bg="#fafaf7", card="#ffffff", ink="#1a1d24", ink2="#5c6170", line="#e6e5e0", acc="#2a78d6",
              acc2="#a9c8ef", soft="#f1f0eb", grid="#e6e5e0", c1="#2a78d6", c2="#eb6834", c3="#1baf7a",
              cover="radial-gradient(120% 140% at 100% 0%,#2a78d6 0%,#1a1d24 55%)", cover_ink="#fafaf7")
 

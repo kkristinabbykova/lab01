@@ -1,31 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@300..900&family=Unbounded:wght@300..900&family=Roboto+Flex:opsz,wdth,wght,YTLC@8..144,25..151,100..1000,416..570&display=swap');
 :root{ --paper:#f6f7f5; --ink:#1a1d24; --muted:#5c6170; --rule:#dcdfd8;
   --blue:#2a78d6; --orange:#eb6834; --straw:#d8c56a; --green:#1baf7a; --measure:68ch;
-  --marimo-text-font:"Golos Text",system-ui,sans-serif; --marimo-heading-font:"Golos Text",system-ui,sans-serif; }
+  --marimo-text-font:Onest,system-ui,sans-serif; --marimo-heading-font:Unbounded,Onest,sans-serif; }
 body, #App, .mo-app, [data-testid="app"]{background:var(--paper) !important;color:var(--ink)}
-body, .markdown, .prose{font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif}
+body, .markdown, .prose{font-family:Onest,system-ui,-apple-system,"Segoe UI",sans-serif}
 .fs a{color:var(--blue);text-underline-offset:.18em}
 .fs code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:#e9ebe6;padding:.08em .35em;border-radius:3px}
 .fs{font-size:1.0625rem;line-height:1.6;color:var(--ink)}
 .fs .text{max-width:var(--measure)}
 .fs p{margin:0 0 1rem !important}
-.fs, .fs *{font-family:"Golos Text",system-ui,sans-serif}
+.fs, .fs p, .fs a, .fs li, .fs b, .fs i, .fs .note, .fs .lede, .fs .bar, .fs .cmp-head, .fs figcaption, .fs .readout, .fs .legend{font-family:Onest,system-ui,sans-serif}
+.fs-hero h1 .l{font-family:"Roboto Flex",sans-serif}
 .fs-hero{padding-top:clamp(2rem,6vw,5rem);padding-bottom:1rem}
-.fs-hero h1{font-family:"Golos Text",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}
+.fs-hero h1{font-family:"Roboto Flex",sans-serif !important;font-size:clamp(2.9rem,9.2vw,7.4rem) !important;line-height:.98 !important;letter-spacing:-.02em;margin:.4rem 0 1.6rem !important;font-weight:400}
 .fs-hero h1 .w{display:block !important}
 .fs-hero h1 span.l{transition:font-weight .5s cubic-bezier(.2,.7,.2,1)}
 .fs .lede{font-size:clamp(1.1rem,1.6vw,1.3rem);color:var(--muted);margin:0 0 1.4rem;max-width:var(--measure)}
 .fs .note{color:var(--muted);font-size:.95rem}
 .fs-sec{padding-top:3rem;border-top:1px solid var(--rule);margin-top:2rem}
-.fs h2{font-family:"Golos Text",sans-serif !important;font-size:clamp(1.7rem,3.4vw,2.6rem) !important;line-height:1.1 !important;font-weight:750 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}
-.fs h3{font-family:"Golos Text",sans-serif !important;font-size:1.15rem !important;font-weight:650 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}
+.fs h2{font-family:Unbounded,Onest,sans-serif !important;font-size:clamp(1.6rem,3.2vw,2.4rem) !important;line-height:1.15 !important;font-weight:600 !important;letter-spacing:-.01em;margin:0 0 1rem !important;color:var(--ink)}
+.fs h3{font-family:Unbounded,Onest,sans-serif !important;font-size:1.1rem !important;font-weight:550 !important;margin:1.6rem 0 .5rem !important;color:var(--ink)}
 .fs figure{margin:1.4rem 0}
 .fs figure img{width:100%;height:auto;background:#fff;border-radius:6px}
 .fs figcaption{color:var(--muted);font-size:.92rem;margin-top:.5rem;max-width:var(--measure)}
 .fs .chart{background:#fff;border-radius:8px;padding:.6rem}
 .fs .chart svg{display:block;width:100%;height:auto}
 .fs .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.4rem 2rem;margin:1.6rem 0;max-width:900px}
-.fs .fact strong{display:block;font-size:2.4rem;line-height:1.05;font-weight:800;font-variant-numeric:tabular-nums}
+.fs .fact strong{display:block;font-family:Unbounded,Onest,sans-serif;font-size:2.2rem;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}
 .fs .fact span{color:var(--muted);font-size:.95rem}
 .fs .legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.88rem;color:var(--muted);margin:.5rem 0 0}
 .fs .sw{display:inline-block;width:.8em;height:.8em;border-radius:2px;margin-right:.35em;vertical-align:-.05em}
