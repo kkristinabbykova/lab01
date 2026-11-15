@@ -25,9 +25,41 @@ WCODE = r'''    try:
             cats = traitlets.Dict({}).tag(sync=True)
             selected = traitlets.Unicode("").tag(sync=True)
 
+        class _Panel(anywidget.AnyWidget):
+            _esm = _WJ["controls"]
+            _css = _WC["controls"]
+            spec = traitlets.List([]).tag(sync=True)
+            values = traitlets.Dict({}).tag(sync=True)
+
         HAS_AW = True
     except Exception:
         HAS_AW = False
+
+    def panel(spec, values):
+        """Элементы управления в стиле прежнего сайта; без anywidget те же поля на стандартных элементах marimo."""
+        if HAS_AW:
+            return mo.ui.anywidget(_Panel(spec=spec, values=values))
+        els = {}
+        for c in spec:
+            n, t = c.get("name"), c["type"]
+            if t == "seg" and not c.get("sets"):
+                o = {a: b for a, b in c["options"]}
+                els[n] = mo.ui.radio(options=o, value=[a for a, b in c["options"] if b == values[n]][0], label=c.get("label", ""), inline=True)
+            elif t == "select":
+                opts = [o for g in c["groups"] for o in g[1]] if c.get("groups") else c["options"]
+                o = {a: b for a, b in opts}
+                els[n] = mo.ui.dropdown(options=o, value=[a for a, b in opts if b == values[n]][0], label=c.get("label", ""), searchable=True)
+            elif t == "range":
+                els[n] = mo.ui.slider(start=c["min"], stop=c["max"], step=c.get("step", 1), value=values[n], label=c["label"], show_value=True)
+            elif t == "text":
+                els[n] = mo.ui.text(value=values.get(n, ""), label=c.get("label", ""))
+            elif t == "button":
+                els[n] = mo.ui.button(value=0, on_click=lambda v: v + 1, label=c["label"])
+        return mo.ui.dictionary(els)
+
+    def vals(p):
+        v = p.value
+        return v.get("values", v) if isinstance(v, dict) else {}
 
     def pill(label):
         if HAS_AW:
@@ -76,8 +108,8 @@ WCODE = r'''    try:
 '''
 
 _W = Path(__file__).resolve().parent / "widgets"
-WJ = {n: (_W / f"{n}.js").read_text(encoding="utf-8") for n in ("scatter", "pill")}
-WC = {n: (_W / f"{n}.css").read_text(encoding="utf-8") for n in ("scatter", "pill")}
+WJ = {n: (_W / f"{n}.js").read_text(encoding="utf-8") for n in ("scatter", "pill", "controls")}
+WC = {n: (_W / f"{n}.css").read_text(encoding="utf-8") for n in ("scatter", "pill", "controls")}
 WIDGET_CODE = (
     "    # свои элементы (anywidget): большая кнопка и график с приближением и щелчком; без anywidget всё работает на элементах marimo\n"
     "    _WJ = " + json.dumps(WJ, ensure_ascii=False) + "\n"
@@ -232,7 +264,7 @@ def _():
 ''' + WIDGET_CODE + r'''
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
-    return (CAT, CAT_RU, G, GRIDC, H, HAS_AW, INK, MUTED, T, clicks, esc, font_row, fonts, frame, gfont, legend, nfc, pill,
+    return (CAT, CAT_RU, G, GRIDC, H, HAS_AW, INK, MUTED, T, clicks, esc, font_row, fonts, frame, gfont, legend, nfc, panel, pill, vals,
             scatter_widget, selected_of, svg, to_wght, to_ytlc,
             Path, PUB, base64, cards, code_block, df_html, fig, io, live, mo, nf, np, out_text, pd, plot_html, plt,
             read_text, scipy, section, stats, table_html, types)
@@ -283,11 +315,11 @@ FONTS = [
 <p class="note text">ρ Спирмена показывает, насколько согласованно растут две величины: 0 значит связи нет,
 1 значит чем больше одна, тем больше другая, без исключений. Подвигай ползунок: слева облако из 100 случайных точек
 с выбранной силой связи, справа наши шрифты (ρ = {nfc(_rho, 2)}).</p></div>""")'''),
-    _cell("mo", r'''    rho_s = mo.ui.slider(start=-1, stop=1, step=0.05, value=0.4, label="Сила связи ρ", show_value=True, full_width=True)
-    rho_preset = mo.ui.radio(options={"нет связи": 0.0, "как у нас": 0.4, "сильная": 0.9, "свой (ползунок)": None},
-                             value="свой (ползунок)", inline=True)
-    mo.hstack([rho_s, rho_preset], justify="start", gap=2, wrap=True).style({"zoom": "1.12"})''', "rho_preset, rho_s"),
-    _cell("H, MUTED, fonts, nfc, np, rho_preset, rho_s, stats, svg", r'''    _r = rho_preset.value if rho_preset.value is not None else float(rho_s.value)
+    _cell("panel", r'''    rho_p = panel([{"type": "range", "name": "rho", "label": "Сила связи ρ", "min": -1, "max": 1, "step": 0.05, "decimals": 2, "live": True},
+                   {"type": "seg", "name": "preset", "sets": "rho", "options": [["нет связи", 0], ["как у нас", 0.4], ["сильная", 0.9]]}],
+                  {"rho": 0.4})
+    rho_p''', "rho_p"),
+    _cell("H, MUTED, fonts, nfc, np, rho_p, stats, svg, vals", r'''    _r = float(vals(rho_p).get("rho", 0.4))
     _rp = 2 * np.sin(np.pi * _r / 6)          # корреляция Пирсона, при которой ρ Спирмена ≈ _r
     _z = np.random.default_rng(7).standard_normal((100, 2))
     _ys = _rp * _z[:, 0] + np.sqrt(max(1 - _rp ** 2, 0)) * _z[:, 1]
@@ -306,14 +338,17 @@ FONTS = [
   <div class="chart">{_dots(_z[:, 0], _ys, "#9aa0a8")}<p class="note" style="margin:.3rem 0 0">Случайные точки: ρ Спирмена получилось {nfc(stats.spearmanr(_z[:, 0], _ys)[0], 2)}.</p></div>
   <div class="chart">{_dots(fonts.x_height.to_numpy(), fonts.stem.to_numpy(), "#2a78d6")}<p class="note" style="margin:.3rem 0 0">Наши шрифты: место по x-height и место по толщине штриха (ранги, как у Спирмена).</p></div>
 </div>""")'''),
-    _cell("fonts, mo", r'''    sc_find = mo.ui.dropdown(options=sorted(fonts.family), value="Inter", label="Найти шрифт", searchable=True, full_width=True)
-    mo.vstack([mo.md("Приближайте кнопками «+ / −», двойным щелчком по месту; приближенный график можно "
-                     "двигать мышью. **Нажмите на кружок**, и ниже откроется этот шрифт. Шрифт можно и найти по названию: "
-                     "начните вводить его в поле.").style({"color": "#5c6170", "font-size": ".95rem", "max-width": "68ch"}),
-               mo.hstack([sc_find], widths=[0.45], justify="start").style({"zoom": "1.12"})], gap=0.5)''', "sc_find"),
-    _cell("sc_find, scatter_widget", r'''    sc_plot = scatter_widget(sc_find.value or "Inter")
-    sc_plot''', "sc_plot"),
-    _cell("H, fonts, font_row, mo, sc_find, sc_plot, selected_of", r'''    _name = selected_of(sc_plot, sc_find.value or "Inter") if sc_plot is not None else (sc_find.value or "Inter")
+    _cell("CAT, fonts, mo, panel", r'''    sc_find = panel([{"type": "select", "name": "f", "label": "Найти шрифт", "grow": 0,
+                      "groups": [[CAT[k][0], [[f, f] for f in sorted(fonts[fonts.category == k].family)]] for k in CAT]}],
+                    {"f": "Inter"})
+    mo.vstack([mo.md("Приближайте кнопками «+ / −» или двойным щелчком по месту; приближенный график можно "
+                     "двигать мышью. **Нажмите на кружок**, и ниже откроется этот шрифт. Шрифт можно и найти по названию "
+                     "в списке.").style({"color": "#5c6170", "font-size": ".95rem", "max-width": "68ch"}),
+               sc_find], gap=0.3)''', "sc_find"),
+    _cell("sc_find, scatter_widget, vals", r'''    sc_find_v = vals(sc_find).get("f") or "Inter"
+    sc_plot = scatter_widget(sc_find_v)
+    sc_plot''', "sc_find_v, sc_plot"),
+    _cell("H, fonts, font_row, mo, sc_find_v, sc_plot, selected_of", r'''    _name = selected_of(sc_plot, sc_find_v) if sc_plot is not None else sc_find_v
     _r = fonts[fonts.family == _name]
     if sc_plot is None:
         _out = mo.md("_Интерактивный график загружается…_")
@@ -329,32 +364,32 @@ PLAY = [
     _cell("H", r'''    H("""<div class="fs-sec" id="play"><h2>Попробуй сам</h2><h3>Толщина и ширина</h3>
 <div class="text"><p>Этот текст набран вариативным шрифтом Roboto Flex: у него толщину штриха, ширину букв и даже высоту
 строчных можно менять плавно. Подвигай ползунки и посмотри, как меняется характер текста. Текст можно исправить в поле.</p></div></div>""")'''),
-    _cell("mo", r'''    pl_text = mo.ui.text(value="Шрифт как случайная величина", label="Текст", full_width=True)
-    pl_wght = mo.ui.slider(start=100, stop=1000, step=10, value=400, label="Толщина (вес)", show_value=True, full_width=True)
-    pl_wdth = mo.ui.slider(start=25, stop=151, step=1, value=100, label="Ширина, %", show_value=True, full_width=True)
-    pl_ytlc = mo.ui.slider(start=416, stop=570, step=2, value=514, label="Высота строчных", show_value=True, full_width=True)
-    pl_size = mo.ui.slider(start=16, stop=160, step=2, value=72, label="Кегль, px", show_value=True, full_width=True)
-    mo.vstack([pl_text, mo.hstack([pl_wght, pl_wdth, pl_ytlc, pl_size], widths="equal", gap=1.5, wrap=True)], gap=0.6).style({"zoom": "1.12"})''',
-          "pl_size, pl_text, pl_wdth, pl_wght, pl_ytlc"),
-    _cell("H, esc, fonts, nfc, pl_size, pl_text, pl_wdth, pl_wght, pl_ytlc", r'''    _s = fonts.stem
+    _cell("panel", r'''    pl = panel([{"type": "text", "name": "t", "label": "Текст", "wide": True},
+                {"type": "range", "name": "wght", "label": "Толщина (вес)", "min": 100, "max": 1000, "step": 10, "live": True},
+                {"type": "range", "name": "wdth", "label": "Ширина", "unit": "%", "min": 25, "max": 151, "step": 1, "live": True},
+                {"type": "range", "name": "ytlc", "label": "Высота строчных", "min": 416, "max": 570, "step": 2, "live": True},
+                {"type": "range", "name": "size", "label": "Кегль", "unit": "px", "min": 16, "max": 160, "step": 2, "live": True},
+                {"type": "reset", "label": "Сбросить"}],
+               {"t": "Шрифт как случайная величина", "wght": 400, "wdth": 100, "ytlc": 514, "size": 72})
+    pl''', "pl"),
+    _cell("H, esc, fonts, nfc, pl, vals", r'''    _s = fonts.stem
+    _v = vals(pl)
     H(f"""<div class="specimen"><div style="font-family:'Roboto Flex','Golos Text',sans-serif;line-height:1.05;word-break:break-word;
-font-size:{pl_size.value}px;font-variation-settings:'wght' {pl_wght.value},'wdth' {pl_wdth.value},'YTLC' {pl_ytlc.value}">{esc(pl_text.value or " ")}</div></div>
+font-size:{_v['size']}px;font-variation-settings:'wght' {_v['wght']},'wdth' {_v['wdth']},'YTLC' {_v['ytlc']}">{esc(_v['t'] or " ")}</div></div>
 <p class="note">Для сравнения: у шрифтов из датасета (начертание Regular, вес 400) толщина штриха от {nfc(_s.min())} до {nfc(_s.max())} кегля,
-медиана {nfc(_s.median())}. При кегле {pl_size.value} px это от {nfc(_s.min() * pl_size.value, 1)} до {nfc(_s.max() * pl_size.value, 1)} px.</p>""")'''),
-    _cell("CAT, H, fonts, mo", r'''    _opts = {f"{r.family} · {CAT[r.category][0]}": r.family for r in fonts.sort_values(["category", "family"]).itertuples()}
-    _key = {v: k for k, v in _opts.items()}
-    _pick = lambda name, i: _key.get(name, list(_opts)[i * 7])   # noqa: E731
-    cmp1 = mo.ui.dropdown(options=_opts, value=_pick("Inter", 0), label="Шрифт 1", searchable=True, full_width=True)
-    cmp2 = mo.ui.dropdown(options=_opts, value=_pick("Playfair", 1), label="Шрифт 2", searchable=True, full_width=True)
-    cmp3 = mo.ui.dropdown(options=_opts, value=_pick("Indie Flower", 2), label="Шрифт 3", searchable=True, full_width=True)
-    cmp_text = mo.ui.text(value="Hxlno шрифт", label="Текст", max_length=40, full_width=True)
+медиана {nfc(_s.median())}. При кегле {_v['size']} px это от {nfc(_s.min() * _v['size'], 1)} до {nfc(_s.max() * _v['size'], 1)} px.</p>""")'''),
+    _cell("CAT, H, fonts, mo, panel", r'''    _g = [[CAT[k][0], [[f, f] for f in sorted(fonts[fonts.category == k].family)]] for k in CAT]
+    _has = set(fonts.family)
+    _def = [n if n in _has else sorted(_has)[i * 7] for i, n in enumerate(("Inter", "Playfair", "Indie Flower"))]
+    cmp = panel([{"type": "select", "name": f"f{i}", "label": f"Шрифт {i + 1}", "groups": _g, "grow": 1} for i in range(3)]
+                + [{"type": "text", "name": "t", "label": "Текст", "maxlength": 40, "grow": 1}],
+                {"f0": _def[0], "f1": _def[1], "f2": _def[2], "t": "Hxlno шрифт"})
     mo.vstack([H("""<h3>Сравнение шрифтов</h3><div class="text"><p>Выбери до трёх шрифтов из датасета
 и введи любой текст. Все строки набраны одним кеглем: сразу видно, у какого шрифта строчные выше и штрих толще.
-Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div>"""),
-               mo.hstack([cmp1, cmp2, cmp3, cmp_text], widths="equal", gap=1.2, wrap=True).style({"zoom": "1.12"})], gap=0.4)''',
-          "cmp1, cmp2, cmp3, cmp_text"),
-    _cell("H, cmp1, cmp2, cmp3, cmp_text, font_row, fonts", r'''    _txt = (cmp_text.value or "Hxlno").strip() or "Hxlno"
-    H("".join(font_row(fonts[fonts.family == n].iloc[0], _txt) for n in (cmp1.value, cmp2.value, cmp3.value))
+Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div>"""), cmp], gap=0.2)''', "cmp"),
+    _cell("H, cmp, font_row, fonts, vals", r'''    _v = vals(cmp)
+    _txt = (_v.get("t") or "Hxlno").strip() or "Hxlno"
+    H("".join(font_row(fonts[fonts.family == _v[f"f{i}"]].iloc[0], _txt) for i in range(3))
       + '<p class="note">Чёрная риска на полоске показывает медиану по всем шрифтам датасета.</p>')'''),
 ]
 
@@ -379,26 +414,28 @@ RNG = [
 <p><b>Метод Неймана</b> снова обходится без модели. Он бросает точку под гистограмму шрифтов: случайное значение и случайную
 высоту. Если точка оказалась ниже столбика, значение остаётся, если выше, бросок повторяется. Работает с любой формой
 распределения, но большая часть бросков уходит впустую: принимается около 29 %.</p></div></div>""")'''),
-    _cell("G, mo, pill", r'''    rg_var = mo.ui.radio(options={"x-height": "x_height", "толщина штриха": "stem"}, value="x-height", label="Величина", inline=True)
-    rg_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод", full_width=True)
-    rg_base = mo.ui.radio(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик", inline=True)
-    rg_n = mo.ui.slider(start=100, stop=20000, step=100, value=1000, label="Сколько чисел", show_value=True, full_width=True)
-    rg_go = pill("Сгенерировать заново")
-    mo.vstack([mo.hstack([rg_var, rg_method], widths=[1, 1.4], gap=2, wrap=True), rg_base,
-               mo.hstack([rg_n, rg_go], widths=[1.4, 1], gap=2, align="end")], gap=0.7).style({"zoom": "1.12"})''', "rg_base, rg_go, rg_method, rg_n, rg_var"),
-    _cell("G, H, MUTED, clicks, fonts, frame, legend, nfc, np, rg_base, rg_go, rg_method, rg_n, rg_var, svg", r'''    _real = fonts[rg_var.value].to_numpy(float)
-    _fam = "skewnorm" if rg_var.value == "x_height" else "lognorm"
-    _seed = 2026 + clicks(rg_go)
-    _x, _info = G.generate(_real, rg_n.value, method=rg_method.value, family=_fam, base=rg_base.value, seed=_seed)
+    _cell("G, panel", r'''    rg = panel([{"type": "seg", "name": "var", "label": "Величина", "options": [["x-height", "x_height"], ["толщина штриха", "stem"]]},
+                {"type": "select", "name": "method", "label": "Метод", "options": [[v, k] for k, v in G.METHOD_RU.items()], "grow": 1},
+                {"type": "seg", "name": "base", "label": "Базовый датчик", "options": [[v.split(" (")[0], k] for k, v in G.BASE_RU.items()]},
+                {"type": "range", "name": "n", "label": "Сколько чисел", "min": 100, "max": 20000, "step": 100, "thousands": True},
+                {"type": "button", "name": "go", "label": "Сгенерировать заново"}],
+               {"var": "x_height", "method": "polar", "base": "pcg64", "n": 1000, "go": 0})
+    rg''', "rg"),
+    _cell("G, H, MUTED, fonts, frame, legend, nfc, np, rg, svg, vals", r'''    _v = vals(rg)
+    rg_var, rg_method, rg_base, rg_n = _v["var"], _v["method"], _v["base"], int(_v["n"])
+    _real = fonts[rg_var].to_numpy(float)
+    _fam = "skewnorm" if rg_var == "x_height" else "lognorm"
+    _seed = 2026 + int(_v.get("go", 0))
+    _x, _info = G.generate(_real, rg_n, method=rg_method, family=_fam, base=rg_base, seed=_seed)
     _c = G.compare(_real, _x)
-    _lo, _hi = (0.15, 0.65) if rg_var.value == "x_height" else (0.0, 0.22)
-    _step = 0.025 if rg_var.value == "x_height" else 0.01
+    _lo, _hi = (0.15, 0.65) if rg_var == "x_height" else (0.0, 0.22)
+    _step = 0.025 if rg_var == "x_height" else 0.01
     _e = np.arange(_lo, _hi + _step / 2, _step)
     _hr = np.histogram(_real, _e, density=True)[0]
     _hg = np.histogram(_x, _e, density=True)[0]
     _ymax = max(_hr.max(), _hg.max()) * 1.12
     _it, _X, _Y = frame(640, 290, 52, 16, 12, 46, (_lo, _hi), (0, _ymax),
-                        ("x-height" if rg_var.value == "x_height" else "толщина штриха") + ", доли кегля", "плотность", xd=2, yd=0)
+                        ("x-height" if rg_var == "x_height" else "толщина штриха") + ", доли кегля", "плотность", xd=2, yd=0)
     for _a, _b, _h in zip(_e[:-1], _e[1:], _hr):
         _it.append(f'<rect x="{_X(_a) + .5:.1f}" y="{_Y(_h):.1f}" width="{_X(_b) - _X(_a) - 1:.1f}" height="{_Y(0) - _Y(_h):.1f}" fill="#bcd6f3"/>')
     _pts = []
@@ -407,8 +444,8 @@ RNG = [
     _it.append(f'<polyline points="{" ".join(_pts)}" fill="none" stroke="#eb6834" stroke-width="2"/>')
     _hist = svg(640, 290, _it, "Гистограмма: шрифты и датчик")
 
-    _u = G.Uniform(rg_base.value, _seed)(2400)
-    if rg_method.value in ("polar", "ratio", "neumann"):
+    _u = G.Uniform(rg_base, _seed)(2400)
+    if rg_method in ("polar", "ratio", "neumann"):
         _v = 2 * _u.reshape(-1, 2) - 1
         _ok = (_v ** 2).sum(1) < 1
         _side = [f'<rect x="10" y="10" width="300" height="300" fill="none" stroke="#e6e5e0"/>',
@@ -418,7 +455,7 @@ RNG = [
         _cap = "Полярный метод: синие точки внутри круга приняты, оранжевые в углах отброшены."
     else:
         _side = [f'<rect x="10" y="10" width="300" height="300" fill="none" stroke="#e6e5e0"/>']
-        _side += [f'<circle cx="{10 + a * 300:.1f}" cy="{310 - b * 300:.1f}" r="1.3" fill="{"#eb6834" if rg_base.value == "randu" else "#2a78d6"}"/>'
+        _side += [f'<circle cx="{10 + a * 300:.1f}" cy="{310 - b * 300:.1f}" r="1.3" fill="{"#eb6834" if rg_base == "randu" else "#2a78d6"}"/>'
                   for a, b in zip((6 * _u[1:-1] - 9 * _u[:-2]) % 1.0, _u[2:])]
         _cap = "Тройки базового датчика: у RANDU они ложатся на прямые, у хороших датчиков облако ровное."
     _n, _m = len(_real), len(_x)
@@ -432,7 +469,7 @@ RNG = [
 шрифты: среднее <b>{nfc(_c["real"]["среднее"])}</b>, СКО <b>{nfc(_c["real"]["СКО"])}</b>.
 Расстояние Колмогорова между функциями распределения <b>{nfc(_c["ks_D"])}</b> при пороге <b>{nfc(_crit)}</b> (α = 0,05):
 {"датчик и шрифты статистически не различаются" if _same else "датчик и шрифты различаются"}.
-Доля принятых точек <b>{nfc(_info["accept"])}</b>{" (теория π/4 = 0,785)" if rg_method.value == "polar" else ""}.</p>""")'''),
+Доля принятых точек <b>{nfc(_info["accept"])}</b>{" (теория π/4 = 0,785)" if rg_method == "polar" else ""}.</p>""")'''),
     _cell("H", r'''    H("""<div class="fs-foot"><p>Быкова Кристина Денисовна, ИСУ 501322, команда 27, трек КТвД. Lab01, прикладная статистика, осень 2026:
 доп. задание КТвД, датасет шрифтов, датчик случайных чисел, интерактив и этот сайт.
 Отчёт: <a href="report/" target="_top">ноутбук со скрытым кодом</a>.</p><p>Шрифты: Google Fonts (SIL Open Font License).</p></div>""")'''),
