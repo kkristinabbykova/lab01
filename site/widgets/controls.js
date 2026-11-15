@@ -40,6 +40,23 @@ function render({ model, el }) {
       refreshers[c.name] = sync;
       if (c.sets) { const prev = refreshers[c.sets]; refreshers["__after_" + c.sets] = sync; }
       sync(); lab.append(seg);
+    } else if (c.type === "chips") {
+      cap.textContent = c.label || ""; lab.append(cap);
+      const box = document.createElement("span"); box.className = "chips";
+      const btns = c.options.map(([text, v, color]) => {
+        const b = document.createElement("button"); b.type = "button";
+        if (color) { const dot = document.createElement("i"); dot.style.background = color; b.append(dot); }
+        b.append(document.createTextNode(text));
+        b.addEventListener("click", () => {
+          const cur = new Set(vals[c.name] || []);
+          if (cur.has(v)) cur.delete(v); else cur.add(v);
+          vals[c.name] = c.options.map(o => o[1]).filter(x => cur.has(x));
+          sync(); push(true);
+        });
+        box.append(b); return [b, v];
+      });
+      const sync = () => btns.forEach(([b, v]) => b.setAttribute("aria-pressed", (vals[c.name] || []).includes(v)));
+      refreshers[c.name] = sync; sync(); lab.append(box);
     } else if (c.type === "select") {
       cap.textContent = c.label || ""; lab.append(cap);
       const sel = document.createElement("select"); sel.className = "fancy";

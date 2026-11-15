@@ -15,3 +15,9 @@
 .fctl .pill{font-family:inherit;font-weight:600;font-size:1rem;background:#1a1d24;color:#f6f7f5;border:0;border-radius:999px;padding:.78rem 1.35rem;cursor:pointer;transition:background .15s,transform .15s;white-space:nowrap}
 .fctl .pill:hover{background:#353a46}
 .fctl .pill:active{transform:scale(.97)}
+.fctl .chips{display:flex;flex-wrap:wrap;gap:6px}
+.fctl .chips button{font:inherit;font-size:.92rem;display:inline-flex;align-items:center;gap:.45rem;padding:.45rem .9rem;border:1px solid #c9cdc5;border-radius:999px;background:#fff;color:#5c6170;cursor:pointer;transition:background .15s,border-color .15s}
+.fctl .chips button:hover{border-color:#9aa0a8}
+.fctl .chips button i{width:.65rem;height:.65rem;border-radius:50%;display:inline-block;opacity:.35}
+.fctl .chips button[aria-pressed="true"]{background:#1a1d24;border-color:#1a1d24;color:#fff;font-weight:600}
+.fctl .chips button[aria-pressed="true"] i{opacity:1}
