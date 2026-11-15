@@ -195,6 +195,7 @@ def cover(head_md: str) -> str:
   </div>
   <div class="meta"><span><b>Спринт 1:</b> Нефедьева А. С. (Инфохимия)</span>
   <span><b>Спринт 2, оформление, выводы спринта 1:</b> Быкова К. Д. (КТвД)</span>
+  <span><b>Проверка и правка текстов обоих спринтов:</b> Нефедьева А. С.</span>
   <span><b>Данные:</b> Wine Quality, UCI</span></div>
 </div>
 <div class="lab-guide"><h4>Как читать отчёт</h4><ul>
