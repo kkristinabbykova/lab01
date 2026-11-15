@@ -4,9 +4,13 @@ from pathlib import Path
 
 import blocks_common as C
 
-THEME = dict(head_font='Onest, system-ui, sans-serif', bg="#f2f2f0", card="#ffffff", ink="#16181d", ink2="#5a5f69", line="#e1e1de", acc="#8e3b46",
-             acc2="#c9a3a9", soft="#ecebe8", grid="#e4e4e4", c1="#4a5160", c2="#8e3b46", c3="#9aa1ab",
-             cover="linear-gradient(135deg,#2b2e35 0%,#4a4f59 55%,#6b6f78 100%)", cover_ink="#f4f4f2")
+THEME = dict(head_font="Unbounded, Onest, sans-serif", bg="#ffffff", card="#ffffff", ink="#111111", ink2="#555555", line="#111111",
+             acc="#8e1b2e", acc2="#111111", soft="#f4f4f4", grid="#e2e2e2", c1="#4a5160", c2="#8e3b46", c3="#9aa1ab",
+             cover="#ffffff", cover_ink="#111111",
+             section_style={"background": "#ffffff", "border-top": "2px solid #111111", "padding": "1.2rem 0 1rem"},
+             live_style={"background": "#f4f4f4", "border": "2px solid #111111", "border-left": "8px solid #8e1b2e",
+                         "padding": "1rem 1.2rem 1.1rem"},
+             extra_css='\n/* стиль «Плакат»: белый фон, чёрные линии, Unbounded, винно-красный акцент */\n.markdown h1, .markdown h2 {{ font-family: Unbounded, Onest, sans-serif !important; text-transform: uppercase; letter-spacing: -.01em; }}\n.markdown h1 {{ font-size: 2.6rem !important; line-height: 1 !important; border-top: 6px solid #111111; padding-top: .8rem; }}\n.markdown h2 {{ font-size: 1.9rem !important; line-height: 1.05 !important; }}\n.markdown h3 {{ font-family: Onest, sans-serif !important; font-size: .95rem !important; text-transform: uppercase; letter-spacing: .1em;\n               border-left: 0 !important; padding-left: 0 !important; border-top: 2px solid #111111; padding-top: .55rem; margin-top: 1.4rem; }}\n.markdown h4 {{ font-size: 1rem !important; color: #111111 !important; }}\n.markdown a {{ color: #8e1b2e; }}\n.markdown table {{ border-top: 2px solid #111111; border-bottom: 2px solid #111111; }}\n.lab-cover {{ background: #ffffff !important; color: #111111 !important; border-radius: 0 !important; padding: 0 0 1.4rem !important;\n             border-bottom: 2px solid #111111; }}\n.lab-cover h1 {{ font-family: Unbounded, Onest, sans-serif; text-transform: uppercase; font-size: clamp(2.2rem, 5.6vw, 4.4rem) !important;\n                line-height: .98 !important; letter-spacing: -.02em; font-weight: 700; margin: .4rem 0 1rem !important; }}\n.lab-cover .kicker {{ color: #8e1b2e; opacity: 1 !important; font-weight: 600; border-top: 6px solid #8e1b2e; padding-top: .6rem; display: inline-block; }}\n.lab-cover p {{ opacity: 1 !important; font-size: 1.05rem; }}\n.lab-stats {{ display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0 !important;\n             border-top: 2px solid #111111; border-bottom: 2px solid #111111; margin-top: 1.4rem !important; }}\n.lab-stats div {{ padding: .9rem 0 .9rem .9rem; border-left: 1px solid #111111; }}\n.lab-stats div:first-child {{ border-left: 0; padding-left: 0; }}\n.lab-stats div b {{ font-family: Unbounded, Onest, sans-serif; font-size: 2.1rem !important; font-weight: 600 !important; }}\n.lab-stats div span {{ opacity: 1 !important; font-size: .82rem !important; }}\n.lab-cover .meta {{ opacity: 1 !important; }}\n.lab-guide {{ border: 0 !important; border-radius: 0 !important; border-top: 2px solid #111111 !important; padding: .9rem 0 0 !important; }}\n.lab-guide h4 {{ font-family: Unbounded, Onest, sans-serif; text-transform: uppercase; font-size: 1rem; }}\n.lab-fig {{ background: #f4f4f4 !important; border: 0 !important; border-radius: 0 !important; padding: .8rem !important; }}\n.lab-fig img {{ background: #ffffff; }}\n.lab-fig.live {{ border-left: 6px solid #8e1b2e !important; }}\n.lab-cards {{ gap: 2px !important; background: #111111; border: 2px solid #111111; }}\n.lab-card {{ border: 0 !important; border-radius: 0 !important; background: #ffffff !important; }}\n.lab-card:first-child {{ background: #8e1b2e !important; }}\n.lab-card:first-child span, .lab-card:first-child b, .lab-card:first-child small {{ color: #ffffff !important; }}\n.lab-card b {{ font-family: Unbounded, Onest, sans-serif; font-weight: 600; }}\n.lab-live .tag {{ background: #111111 !important; border-radius: 0 !important; }}\n.lab-live h4 {{ font-family: Unbounded, Onest, sans-serif; text-transform: uppercase; font-size: 1.05rem !important; }}\n.lab-tbl table {{ border: 0 !important; border-top: 2px solid #111111 !important; border-bottom: 2px solid #111111 !important; }}\n.lab-tbl th {{ background: #ffffff !important; text-transform: uppercase; font-size: .75rem; letter-spacing: .06em; }}\n.lab-out {{ border-radius: 0 !important; background: #f4f4f4 !important; border: 0 !important; }}\n')
 
 
 CSS_FILE = "wine.css"
@@ -191,11 +195,11 @@ def cover_art() -> str:
     x = (d["fixed acidity"].clip(4, 10) - 4) / 6 * 440 + 20 + rng.uniform(-2, 2, len(d))
     y = 300 - (d["pH"].clip(2.8, 3.7) - 2.8) / 0.9 * 270 + rng.uniform(-2, 2, len(d))
     good = (d["quality"] >= 7).to_numpy()
-    dots = "".join(f'<circle cx="{a:.1f}" cy="{b:.1f}" r="2.1" fill="{"#c97884" if g else "#eceae6"}" fill-opacity="{0.85 if g else 0.33}"/>'
+    dots = "".join(f'<circle cx="{a:.1f}" cy="{b:.1f}" r="2.1" fill="{"#8e1b2e" if g else "#111111"}" fill-opacity="{0.8 if g else 0.18}"/>'
                    for a, b, g in zip(x, y, good))
     return (f'<svg class="art" viewBox="0 0 480 320" aria-hidden="true">{dots}'
-            '<text x="470" y="312" text-anchor="end" font-size="15" fill="#eceae6" fill-opacity=".7">'
-            'точка = вино (кислотность и pH), розовые: оценка 7+</text></svg>')
+            '<text x="470" y="312" text-anchor="end" font-size="15" fill="#111111" fill-opacity=".7">'
+            'точка = вино (кислотность и pH), красные: оценка 7+</text></svg>')
 
 
 def cover(head_md: str) -> str:

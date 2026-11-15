@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Onest:wght@300..900&family=Unbounded:wght@300..900&family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap');
-:root { --marimo-text-font: Onest, system-ui, sans-serif; --marimo-heading-font: Onest, system-ui, sans-serif; }
+:root { --marimo-text-font: Onest, system-ui, sans-serif; --marimo-heading-font: Unbounded, Onest, sans-serif; }
 body, .markdown, .prose, .lab-cover, .lab-guide, .lab-card, .lab-live { font-family: Onest, system-ui, sans-serif; }
-.markdown h1, .markdown h2, .markdown h3, .markdown h4 { font-family: Onest, system-ui, sans-serif !important; font-weight: 700 !important; }
+.markdown h1, .markdown h2, .markdown h3, .markdown h4 { font-family: Unbounded, Onest, sans-serif !important; font-weight: 700 !important; }
 .markdown h1 { font-size: 2.1rem !important; letter-spacing: -.02em; margin: .3rem 0 .6rem; }
 .markdown h2 { font-size: 1.65rem !important; }
 .markdown h3 { font-size: 1.25rem !important; margin-top: 1.8rem; padding-left: .7rem; border-left: 4px solid var(--lab-acc); }
@@ -12,14 +12,14 @@ body, .markdown, .prose, .lab-cover, .lab-guide, .lab-card, .lab-live { font-fam
 .markdown table td, .markdown table th { text-align: left !important; vertical-align: top; }
 .markdown table { font-size: .9rem; }
 .lab-fig img { max-width: 900px; margin: 0 auto; }
-:root { --lab-bg:#f2f2f0; --lab-card:#ffffff; --lab-ink:#16181d; --lab-ink2:#5a5f69;
-        --lab-line:#e1e1de; --lab-acc:#8e3b46; --lab-acc2:#c9a3a9; --lab-soft:#ecebe8; }
+:root { --lab-bg:#ffffff; --lab-card:#ffffff; --lab-ink:#111111; --lab-ink2:#555555;
+        --lab-line:#111111; --lab-acc:#8e1b2e; --lab-acc2:#111111; --lab-soft:#f4f4f4; }
 body, #App, .mo-app, [data-testid="app"] { background: var(--lab-bg) !important; }
 .markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: var(--lab-ink); letter-spacing: -.01em; }
 .markdown h2 { font-size: 1.6rem; margin-top: .3rem; }
 .markdown h3 { font-size: 1.22rem; margin-top: 1.6rem; }
 .markdown a { color: var(--lab-acc); }
-.lab-cover { background: linear-gradient(135deg,#2b2e35 0%,#4a4f59 55%,#6b6f78 100%); color: #f4f4f2; border-radius: 18px; padding: 2.2rem 2rem 1.8rem;
+.lab-cover { background: #ffffff; color: #111111; border-radius: 18px; padding: 2.2rem 2rem 1.8rem;
              margin-bottom: .6rem; position: relative; overflow: hidden; }
 .lab-cover .kicker { text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; opacity: .75; }
 .lab-cover h1 { font-size: clamp(1.8rem, 4.6vw, 3rem); line-height: 1.08; margin: .5rem 0 .8rem; color: inherit; border: 0; }
@@ -70,5 +70,44 @@ body, #App, .mo-app, [data-testid="app"] { background: var(--lab-bg) !important;
 .lab-cover > * { position: relative; z-index: 1; }
 .lab-cover .art { position: absolute; right: 1.4rem; top: 2.6rem; width: min(36%, 400px); height: auto; z-index: 0; pointer-events: none; }
 @media (min-width: 760px) { .lab-cover:has(.art) h1, .lab-cover:has(.art) p { max-width: 60%; } }
+
+/* стиль «Плакат»: белый фон, чёрные линии, Unbounded, винно-красный акцент */
+.markdown h1, .markdown h2 { font-family: Unbounded, Onest, sans-serif !important; text-transform: uppercase; letter-spacing: -.01em; }
+.markdown h1 { font-size: 2.6rem !important; line-height: 1 !important; border-top: 6px solid #111111; padding-top: .8rem; }
+.markdown h2 { font-size: 1.9rem !important; line-height: 1.05 !important; }
+.markdown h3 { font-family: Onest, sans-serif !important; font-size: .95rem !important; text-transform: uppercase; letter-spacing: .1em;
+               border-left: 0 !important; padding-left: 0 !important; border-top: 2px solid #111111; padding-top: .55rem; margin-top: 1.4rem; }
+.markdown h4 { font-size: 1rem !important; color: #111111 !important; }
+.markdown a { color: #8e1b2e; }
+.markdown table { border-top: 2px solid #111111; border-bottom: 2px solid #111111; }
+.lab-cover { background: #ffffff !important; color: #111111 !important; border-radius: 0 !important; padding: 0 0 1.4rem !important;
+             border-bottom: 2px solid #111111; }
+.lab-cover h1 { font-family: Unbounded, Onest, sans-serif; text-transform: uppercase; font-size: clamp(2.2rem, 5.6vw, 4.4rem) !important;
+                line-height: .98 !important; letter-spacing: -.02em; font-weight: 700; margin: .4rem 0 1rem !important; }
+.lab-cover .kicker { color: #8e1b2e; opacity: 1 !important; font-weight: 600; border-top: 6px solid #8e1b2e; padding-top: .6rem; display: inline-block; }
+.lab-cover p { opacity: 1 !important; font-size: 1.05rem; }
+.lab-stats { display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0 !important;
+             border-top: 2px solid #111111; border-bottom: 2px solid #111111; margin-top: 1.4rem !important; }
+.lab-stats div { padding: .9rem 0 .9rem .9rem; border-left: 1px solid #111111; }
+.lab-stats div:first-child { border-left: 0; padding-left: 0; }
+.lab-stats div b { font-family: Unbounded, Onest, sans-serif; font-size: 2.1rem !important; font-weight: 600 !important; }
+.lab-stats div span { opacity: 1 !important; font-size: .82rem !important; }
+.lab-cover .meta { opacity: 1 !important; }
+.lab-guide { border: 0 !important; border-radius: 0 !important; border-top: 2px solid #111111 !important; padding: .9rem 0 0 !important; }
+.lab-guide h4 { font-family: Unbounded, Onest, sans-serif; text-transform: uppercase; font-size: 1rem; }
+.lab-fig { background: #f4f4f4 !important; border: 0 !important; border-radius: 0 !important; padding: .8rem !important; }
+.lab-fig img { background: #ffffff; }
+.lab-fig.live { border-left: 6px solid #8e1b2e !important; }
+.lab-cards { gap: 2px !important; background: #111111; border: 2px solid #111111; }
+.lab-card { border: 0 !important; border-radius: 0 !important; background: #ffffff !important; }
+.lab-card:first-child { background: #8e1b2e !important; }
+.lab-card:first-child span, .lab-card:first-child b, .lab-card:first-child small { color: #ffffff !important; }
+.lab-card b { font-family: Unbounded, Onest, sans-serif; font-weight: 600; }
+.lab-live .tag { background: #111111 !important; border-radius: 0 !important; }
+.lab-live h4 { font-family: Unbounded, Onest, sans-serif; text-transform: uppercase; font-size: 1.05rem !important; }
+.lab-tbl table { border: 0 !important; border-top: 2px solid #111111 !important; border-bottom: 2px solid #111111 !important; }
+.lab-tbl th { background: #ffffff !important; text-transform: uppercase; font-size: .75rem; letter-spacing: .06em; }
+.lab-out { border-radius: 0 !important; background: #f4f4f4 !important; border: 0 !important; }
+
 @media (max-width: 640px) { .lab-cover { padding: 1.5rem 1.2rem; } .lab-stats div b { font-size: 1.5rem; }
   .lab-cover .art { width: 70%; opacity: .45; } }

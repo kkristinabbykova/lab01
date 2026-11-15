@@ -89,7 +89,7 @@ HELPERS = r'''
 
     def section(*items):
         """Раздел отчёта в рамке-карточке."""
-        return mo.vstack([mo.Html(ST)] + list(items), gap=0.6).style({
+        return mo.vstack([mo.Html(ST)] + list(items), gap=0.6).style(T.get("section_style") or {
             "background": T["card"], "border": f"1px solid {T['line']}", "border-radius": "18px",
             "padding": "1.3rem 1.5rem 1.1rem", "box-shadow": "0 1px 2px rgba(0,0,0,.04), 0 6px 22px rgba(0,0,0,.05)"})
 
@@ -97,7 +97,7 @@ HELPERS = r'''
         """Заголовок живого блока и его элементы управления, в цветной рамке."""
         acc = T["acc"]
         return mo.vstack([mo.Html(ST + f'<div class="lab-live"><span class="tag">живой блок</span><h4>{title}</h4><p>{note}</p></div>'),
-                          mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.5).style({
+                          mo.hstack(list(controls), wrap=True, justify="start", gap=1.2)], gap=0.5).style(T.get("live_style") or {
             "background": T["soft"], "border": f"1px solid {T['acc2']}", "border-left": f"6px solid {acc}",
             "border-radius": "16px", "padding": ".9rem 1.2rem 1rem"})
 
@@ -197,6 +197,7 @@ body, #App, .mo-app, [data-testid="app"] {{ background: var(--lab-bg) !important
 .lab-cover > * {{ position: relative; z-index: 1; }}
 .lab-cover .art {{ position: absolute; right: 1.4rem; top: 2.6rem; width: min(36%, 400px); height: auto; z-index: 0; pointer-events: none; }}
 @media (min-width: 760px) {{ .lab-cover:has(.art) h1, .lab-cover:has(.art) p {{ max-width: 60%; }} }}
+{t.get("extra_css", "").replace("{{", "{").replace("}}", "}")}
 @media (max-width: 640px) {{ .lab-cover {{ padding: 1.5rem 1.2rem; }} .lab-stats div b {{ font-size: 1.5rem; }}
   .lab-cover .art {{ width: 70%; opacity: .45; }} }}'''
 
