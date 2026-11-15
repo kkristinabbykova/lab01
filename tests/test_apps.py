@@ -25,7 +25,8 @@ def test_app_figures_exist(name):
     import re
     src = (ROOT / "site" / name).read_text(encoding="utf-8")
     folder = "wine" if name.startswith("wine") else "fonts"
-    figs = re.findall(r'fig\("([^"]+\.png)"\)', src)
+    import base64
+    figs = [base64.b64decode(b).decode() for b in re.findall(r'fig\(__import__\("base64"\)\.b64decode\("([^"]+)"\)', src)]
     assert figs
     for f in figs:
         assert (ROOT / "site" / "public" / folder / f).exists(), f
@@ -41,3 +42,9 @@ def test_fonts_site_app():
     for anchor in ("fonts", "play", "rng"):
         assert f'id="{anchor}"' in src
     assert (ROOT / "site" / "public" / "fonts_measure.png").exists()
+
+
+@pytest.mark.parametrize("name", APPS + ["fonts_site_app.py"])
+def test_no_double_backslashes(name):
+    """При экспорте в WebAssembly «\\\\» в коде ячеек превращается в «\\» и ломает LaTeX: тексты хранятся в base64."""
+    assert "\\\\" not in (ROOT / "site" / name).read_text(encoding="utf-8")
