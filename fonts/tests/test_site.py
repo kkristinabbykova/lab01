@@ -14,6 +14,3 @@ def test_landing_has_no_placeholders():
     assert "__" not in html.replace("__proto__", "")
     assert '<html lang="ru">' in html
 
-
-def test_marimo_notebook_is_valid_python():
-    compile((ROOT / "datchik.py").read_text(encoding="utf-8"), "datchik.py", "exec")

@@ -6,7 +6,6 @@ docs/                — общая страница: две части рабо
 docs/wine/           — основная работа (вино): marimo-приложение, серый стиль
 docs/fonts/          — доп. задание КТвД: сайт про шрифты (marimo)
 docs/fonts/report/   — отчёт по шрифтам: marimo-приложение
-docs/fonts/datchik/  — полный датчик на marimo
 
 Без marimo (pip install marimo) собираются только страницы без приложений.
 """
@@ -39,15 +38,10 @@ def main() -> int:
         shutil.rmtree(DOCS)
     DOCS.mkdir()
 
-    # marimo-приложения: вино, сайт про шрифты, отчёт по шрифтам, полный датчик шрифтов
+    # marimo-приложения: вино, сайт про шрифты, отчёт по шрифтам
     code |= export(ROOT / "site" / "wine_app.py", DOCS / "wine")
     code |= export(ROOT / "site" / "fonts_site_app.py", DOCS / "fonts")
     code |= export(ROOT / "site" / "fonts_app.py", DOCS / "fonts" / "report")
-    fpub = ROOT / "fonts" / "public"                      # датчик берёт код и данные из своей папки public/
-    fpub.mkdir(exist_ok=True)
-    shutil.copy(ROOT / "fonts" / "labrng" / "generators.py", fpub / "generators.py")
-    shutil.copy(ROOT / "fonts" / "data" / "fonts.csv", fpub / "fonts.csv")
-    code |= export(ROOT / "fonts" / "datchik.py", DOCS / "fonts" / "datchik")
 
     # общая страница
     (DOCS / "index.html").write_text(hub(), encoding="utf-8")
@@ -172,7 +166,6 @@ footer{max-width:1180px;margin:0 auto;padding:1rem 1.4rem 2.5rem;color:#5a5f69;f
     <div class="btns">
       <a class="btn main" href="fonts/">Сайт про шрифты →</a>
       <a class="btn ghost" href="fonts/report/">Отчёт</a>
-      <a class="btn ghost" href="fonts/datchik/">Датчик</a>
     </div>
     <p class="small">Всё на marimo: сайт с живыми шрифтами и датчиком, отчёт с живыми блоками. Ноутбук: __NB_FONTS__.</p>
   </section>

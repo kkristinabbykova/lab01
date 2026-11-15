@@ -3,8 +3,6 @@
     python tools/build_site.py
 
 1. Копирует код датчиков и данные в public/: в браузере (WASM) ноутбук берёт их оттуда.
-2. Если установлен marimo, экспортирует datchik.py в интерактивный сайт docs/datchik/
-   (marimo export html-wasm).
 3. Собирает лендинг docs/index.html (tools/build_landing.py), он ведёт на датчик.
 """
 import shutil
@@ -22,13 +20,6 @@ def main():
     shutil.copy(ROOT / "data" / "fonts.csv", PUB / "fonts.csv")
     print("public/ обновлена")
     code = 0
-    if shutil.which("marimo") is None:
-        print("marimo не установлен: pip install marimo, затем запустить скрипт ещё раз для экспорта датчика")
-    else:
-        out = ROOT / "docs" / "datchik"
-        cmd = ["marimo", "export", "html-wasm", str(ROOT / "datchik.py"), "-o", str(out), "--mode", "run"]
-        print(" ".join(cmd))
-        code = subprocess.call(cmd)
     subprocess.call([sys.executable, str(ROOT / "tools" / "build_landing.py")])   # лендинг docs/index.html
     # отчёт: ноутбук без кода, с работающими якорями и формулами (GitHub так не умеет)
     subprocess.call([sys.executable, str(ROOT / "tools" / "export_nb.py"), str(ROOT / "fonts.ipynb"), str(ROOT / "docs" / "fonts.html")])

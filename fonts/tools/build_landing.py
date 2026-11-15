@@ -84,7 +84,7 @@ def main():
         .replace("__MARIMO__", marimo) \
         .replace("__L_NB__", f' (<a href="{MAIN}">репозиторий</a>)' if MAIN else "") \
         .replace("__L_FONTS__", f'<a href="{REPORT}">отчёт-ноутбук</a> (с кодом: ' + link("fonts.ipynb", "fonts.ipynb") + ")") \
-        .replace("__L_DATCHIK__", link("datchik.py", "datchik.py")) \
+        .replace("__L_DATCHIK__", link("fonts.ipynb", "fonts.ipynb")) \
         .replace("__REPORT__", REPORT) \
         .replace("__HUB__", f'<p class="note"><a href="{HUB}">← Lab01: все части работы</a> · <a href="{REPORT}">отчёт</a></p>' if HUB else "") \
         .replace("__N_FONTS__", str(data["fonts"]["n"])) \

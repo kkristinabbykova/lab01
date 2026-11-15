@@ -7,7 +7,7 @@
 | Часть | Папка | На сайте |
 |---|---|---|
 | Основная работа: белое вино как случайный эксперимент (спринты 1 и 2) | [`wine/`](wine/) | [отчёт на marimo](https://kkristinabbykova.github.io/lab01/wine/) |
-| Доп. задание КТвД: шрифт как случайная величина | [`fonts/`](fonts/) | [сайт про шрифты](https://kkristinabbykova.github.io/lab01/fonts/) · [отчёт на marimo](https://kkristinabbykova.github.io/lab01/fonts/report/) · [датчик](https://kkristinabbykova.github.io/lab01/fonts/datchik/) |
+| Доп. задание КТвД: шрифт как случайная величина | [`fonts/`](fonts/) | [сайт про шрифты](https://kkristinabbykova.github.io/lab01/fonts/) · [отчёт на marimo](https://kkristinabbykova.github.io/lab01/fonts/report/) |
 
 Ноутбуки: [`wine/lab01.ipynb`](wine/lab01.ipynb) и [`fonts/fonts.ipynb`](fonts/fonts.ipynb).
 

@@ -506,9 +506,7 @@ def _(G, H, MUTED, clicks, fonts, frame, legend, nfc, np, rg_base, rg_go, rg_met
 
 @app.cell(hide_code=True)
 def _(H):
-    H("""<p class="note" style="margin-top:1rem">Полная версия датчика на marimo: шесть методов, четыре величины шрифтов и таблица сравнения:
-<a href="datchik/" target="_top">датчик</a>.</p>
-<div class="fs-foot"><p>Быкова Кристина Денисовна, ИСУ 501322, команда 27, трек КТвД. Lab01, прикладная статистика, осень 2026:
+    H("""<div class="fs-foot"><p>Быкова Кристина Денисовна, ИСУ 501322, команда 27, трек КТвД. Lab01, прикладная статистика, осень 2026:
 доп. задание КТвД, датасет шрифтов, датчик случайных чисел, интерактив и этот сайт.
 Отчёт: <a href="report/" target="_top">ноутбук со скрытым кодом</a>.</p><p>Шрифты: Google Fonts (SIL Open Font License).</p></div>""")
     return
