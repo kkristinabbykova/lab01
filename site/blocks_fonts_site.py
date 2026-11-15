@@ -283,10 +283,10 @@ FONTS = [
 <p class="note text">ρ Спирмена показывает, насколько согласованно растут две величины: 0 значит связи нет,
 1 значит чем больше одна, тем больше другая, без исключений. Подвигай ползунок: слева облако из 100 случайных точек
 с выбранной силой связи, справа наши шрифты (ρ = {nfc(_rho, 2)}).</p></div>""")'''),
-    _cell("mo", r'''    rho_s = mo.ui.slider(start=-1, stop=1, step=0.05, value=0.4, label="Сила связи ρ", show_value=True)
+    _cell("mo", r'''    rho_s = mo.ui.slider(start=-1, stop=1, step=0.05, value=0.4, label="Сила связи ρ", show_value=True, full_width=True)
     rho_preset = mo.ui.radio(options={"нет связи": 0.0, "как у нас": 0.4, "сильная": 0.9, "свой (ползунок)": None},
                              value="свой (ползунок)", inline=True)
-    mo.hstack([rho_s, rho_preset], justify="start", gap=2)''', "rho_preset, rho_s"),
+    mo.hstack([rho_s, rho_preset], justify="start", gap=2, wrap=True).style({"zoom": "1.12"})''', "rho_preset, rho_s"),
     _cell("H, MUTED, fonts, nfc, np, rho_preset, rho_s, stats, svg", r'''    _r = rho_preset.value if rho_preset.value is not None else float(rho_s.value)
     _rp = 2 * np.sin(np.pi * _r / 6)          # корреляция Пирсона, при которой ρ Спирмена ≈ _r
     _z = np.random.default_rng(7).standard_normal((100, 2))
@@ -306,11 +306,11 @@ FONTS = [
   <div class="chart">{_dots(_z[:, 0], _ys, "#9aa0a8")}<p class="note" style="margin:.3rem 0 0">Случайные точки: ρ Спирмена получилось {nfc(stats.spearmanr(_z[:, 0], _ys)[0], 2)}.</p></div>
   <div class="chart">{_dots(fonts.x_height.to_numpy(), fonts.stem.to_numpy(), "#2a78d6")}<p class="note" style="margin:.3rem 0 0">Наши шрифты: место по x-height и место по толщине штриха (ранги, как у Спирмена).</p></div>
 </div>""")'''),
-    _cell("fonts, mo", r'''    sc_find = mo.ui.dropdown(options=sorted(fonts.family), value=None, label="Найти шрифт", searchable=True)
-    mo.vstack([mo.md("Приближайте кнопками «+ / −», двойным щелчком по месту или Ctrl (⌘) + колесом; приближенный график можно "
+    _cell("fonts, mo", r'''    sc_find = mo.ui.dropdown(options=sorted(fonts.family), value="Inter", label="Найти шрифт", searchable=True, full_width=True)
+    mo.vstack([mo.md("Приближайте кнопками «+ / −», двойным щелчком по месту; приближенный график можно "
                      "двигать мышью. **Нажмите на кружок**, и ниже откроется этот шрифт. Шрифт можно и найти по названию: "
                      "начните вводить его в поле.").style({"color": "#5c6170", "font-size": ".95rem", "max-width": "68ch"}),
-               sc_find], gap=0.5)''', "sc_find"),
+               mo.hstack([sc_find], widths=[0.45], justify="start").style({"zoom": "1.12"})], gap=0.5)''', "sc_find"),
     _cell("sc_find, scatter_widget", r'''    sc_plot = scatter_widget(sc_find.value or "Inter")
     sc_plot''', "sc_plot"),
     _cell("H, fonts, font_row, mo, sc_find, sc_plot, selected_of", r'''    _name = selected_of(sc_plot, sc_find.value or "Inter") if sc_plot is not None else (sc_find.value or "Inter")
@@ -330,11 +330,11 @@ PLAY = [
 <div class="text"><p>Этот текст набран вариативным шрифтом Roboto Flex: у него толщину штриха, ширину букв и даже высоту
 строчных можно менять плавно. Подвигай ползунки и посмотри, как меняется характер текста. Текст можно исправить в поле.</p></div></div>""")'''),
     _cell("mo", r'''    pl_text = mo.ui.text(value="Шрифт как случайная величина", label="Текст", full_width=True)
-    pl_wght = mo.ui.slider(start=100, stop=1000, step=10, value=400, label="Толщина (вес)", show_value=True)
-    pl_wdth = mo.ui.slider(start=25, stop=151, step=1, value=100, label="Ширина, %", show_value=True)
-    pl_ytlc = mo.ui.slider(start=416, stop=570, step=2, value=514, label="Высота строчных", show_value=True)
-    pl_size = mo.ui.slider(start=16, stop=160, step=2, value=72, label="Кегль, px", show_value=True)
-    mo.vstack([pl_text, mo.hstack([pl_wght, pl_wdth, pl_ytlc, pl_size], justify="start", gap=1.5, wrap=True)], gap=0.5)''',
+    pl_wght = mo.ui.slider(start=100, stop=1000, step=10, value=400, label="Толщина (вес)", show_value=True, full_width=True)
+    pl_wdth = mo.ui.slider(start=25, stop=151, step=1, value=100, label="Ширина, %", show_value=True, full_width=True)
+    pl_ytlc = mo.ui.slider(start=416, stop=570, step=2, value=514, label="Высота строчных", show_value=True, full_width=True)
+    pl_size = mo.ui.slider(start=16, stop=160, step=2, value=72, label="Кегль, px", show_value=True, full_width=True)
+    mo.vstack([pl_text, mo.hstack([pl_wght, pl_wdth, pl_ytlc, pl_size], widths="equal", gap=1.5, wrap=True)], gap=0.6).style({"zoom": "1.12"})''',
           "pl_size, pl_text, pl_wdth, pl_wght, pl_ytlc"),
     _cell("H, esc, fonts, nfc, pl_size, pl_text, pl_wdth, pl_wght, pl_ytlc", r'''    _s = fonts.stem
     H(f"""<div class="specimen"><div style="font-family:'Roboto Flex','Golos Text',sans-serif;line-height:1.05;word-break:break-word;
@@ -344,14 +344,14 @@ font-size:{pl_size.value}px;font-variation-settings:'wght' {pl_wght.value},'wdth
     _cell("CAT, H, fonts, mo", r'''    _opts = {f"{r.family} · {CAT[r.category][0]}": r.family for r in fonts.sort_values(["category", "family"]).itertuples()}
     _key = {v: k for k, v in _opts.items()}
     _pick = lambda name, i: _key.get(name, list(_opts)[i * 7])   # noqa: E731
-    cmp1 = mo.ui.dropdown(options=_opts, value=_pick("Inter", 0), label="Шрифт 1", searchable=True)
-    cmp2 = mo.ui.dropdown(options=_opts, value=_pick("Playfair", 1), label="Шрифт 2", searchable=True)
-    cmp3 = mo.ui.dropdown(options=_opts, value=_pick("Indie Flower", 2), label="Шрифт 3", searchable=True)
-    cmp_text = mo.ui.text(value="Hxlno шрифт", label="Текст", max_length=40)
+    cmp1 = mo.ui.dropdown(options=_opts, value=_pick("Inter", 0), label="Шрифт 1", searchable=True, full_width=True)
+    cmp2 = mo.ui.dropdown(options=_opts, value=_pick("Playfair", 1), label="Шрифт 2", searchable=True, full_width=True)
+    cmp3 = mo.ui.dropdown(options=_opts, value=_pick("Indie Flower", 2), label="Шрифт 3", searchable=True, full_width=True)
+    cmp_text = mo.ui.text(value="Hxlno шрифт", label="Текст", max_length=40, full_width=True)
     mo.vstack([H("""<h3>Сравнение шрифтов</h3><div class="text"><p>Выбери до трёх шрифтов из датасета
 и введи любой текст. Все строки набраны одним кеглем: сразу видно, у какого шрифта строчные выше и штрих толще.
 Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div>"""),
-               mo.hstack([cmp1, cmp2, cmp3, cmp_text], justify="start", gap=1.2, wrap=True)], gap=0.4)''',
+               mo.hstack([cmp1, cmp2, cmp3, cmp_text], widths="equal", gap=1.2, wrap=True).style({"zoom": "1.12"})], gap=0.4)''',
           "cmp1, cmp2, cmp3, cmp_text"),
     _cell("H, cmp1, cmp2, cmp3, cmp_text, font_row, fonts", r'''    _txt = (cmp_text.value or "Hxlno").strip() or "Hxlno"
     H("".join(font_row(fonts[fonts.family == n].iloc[0], _txt) for n in (cmp1.value, cmp2.value, cmp3.value))
@@ -362,18 +362,30 @@ RNG = [
     _cell("H", r'''    H("""<div class="fs-sec" id="rng"><h2>Датчик: случайный шрифт, похожий на настоящий</h2>
 <div class="text"><p>Датчик случайных чисел выдаёт значения, распределённые так же, как пропорции моих 100 шрифтов.
 Сначала базовый датчик даёт равномерное число <i>U</i> от 0 до 1, потом метод превращает его в нужную величину.</p>
-<p><b>Полярный метод Марсальи:</b> точка бросается в квадрат, остаются только точки внутри круга, и из них
-получаются нормальные числа <i>Z</i>. Дальше <i>Z</i> переводится в модель: для x-height это скошенное нормальное
-распределение, для толщины штриха логнормальное <i>X</i> = θ + e<sup>μ + σ<i>Z</i></sup>.
-<b>Квантильный метод</b> модель не использует: он берёт <i>U</i> и находит значение, ниже которого лежит
-такая же доля шрифтов.</p></div></div>""")'''),
+<p>Методов шесть. Два из них работают прямо с данными, остальные сначала подбирают модель: для x-height это
+скошенное нормальное распределение, для толщины штриха логнормальное.</p>
+<p><b>Квантильное преобразование</b> модель не использует. Оно берёт <i>U</i> и находит значение, ниже которого лежит
+такая же доля шрифтов: если <i>U</i> = 0,3, датчик выдаёт значение, у которого 30 % шрифтов меньше.</p>
+<p><b>Метод обратной функции</b> делает то же самое, только не по самим шрифтам, а по формуле модели:
+<i>X</i> = <i>F</i><sup>−1</sup>(<i>U</i>), где <i>F</i> это функция распределения модели.</p>
+<p><b>Бокс–Мюллер</b> из двух равномерных чисел сразу делает два нормальных: <i>Z</i> = √(−2 ln <i>U</i><sub>1</sub>) · cos 2π<i>U</i><sub>2</sub>.
+Синус и косинус считаются медленно, поэтому придумали полярный метод.</p>
+<p><b>Полярный метод Марсальи</b> обходится без синуса и косинуса: точка бросается в квадрат, остаются только точки внутри
+круга, и из них получаются нормальные числа <i>Z</i>. Принимается около 78,5 % точек (π/4).</p>
+<p><b>Метод отношений</b> (Киндерман и Монахан) бросает точку (<i>u</i>, <i>v</i>) в прямоугольник и оставляет её, только если
+она попала в особую фигуру. Тогда отношение <i>v</i>/<i>u</i> оказывается нормальным. Принимается около 73 % точек.</p>
+<p>У этих трёх методов нормальное <i>Z</i> потом переводится в модель, например для толщины штриха
+<i>X</i> = θ + e<sup>μ + σ<i>Z</i></sup>.</p>
+<p><b>Метод Неймана</b> снова обходится без модели. Он бросает точку под гистограмму шрифтов: случайное значение и случайную
+высоту. Если точка оказалась ниже столбика, значение остаётся, если выше, бросок повторяется. Работает с любой формой
+распределения, но большая часть бросков уходит впустую: принимается около 29 %.</p></div></div>""")'''),
     _cell("G, mo, pill", r'''    rg_var = mo.ui.radio(options={"x-height": "x_height", "толщина штриха": "stem"}, value="x-height", label="Величина", inline=True)
-    rg_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод")
+    rg_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод", full_width=True)
     rg_base = mo.ui.radio(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик", inline=True)
-    rg_n = mo.ui.slider(start=100, stop=20000, step=100, value=1000, label="Сколько чисел", show_value=True)
+    rg_n = mo.ui.slider(start=100, stop=20000, step=100, value=1000, label="Сколько чисел", show_value=True, full_width=True)
     rg_go = pill("Сгенерировать заново")
-    mo.vstack([mo.hstack([rg_var, rg_method], justify="start", gap=2, wrap=True), rg_base,
-               mo.hstack([rg_n, rg_go], justify="start", gap=2, align="end")], gap=0.6)''', "rg_base, rg_go, rg_method, rg_n, rg_var"),
+    mo.vstack([mo.hstack([rg_var, rg_method], widths=[1, 1.4], gap=2, wrap=True), rg_base,
+               mo.hstack([rg_n, rg_go], widths=[1.4, 1], gap=2, align="end")], gap=0.7).style({"zoom": "1.12"})''', "rg_base, rg_go, rg_method, rg_n, rg_var"),
     _cell("G, H, MUTED, clicks, fonts, frame, legend, nfc, np, rg_base, rg_go, rg_method, rg_n, rg_var, svg", r'''    _real = fonts[rg_var.value].to_numpy(float)
     _fam = "skewnorm" if rg_var.value == "x_height" else "lognorm"
     _seed = 2026 + clicks(rg_go)

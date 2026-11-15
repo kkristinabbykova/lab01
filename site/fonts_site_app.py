@@ -311,10 +311,10 @@ def _(H, fonts, nfc, stats):
 
 @app.cell(hide_code=True)
 def _(mo):
-    rho_s = mo.ui.slider(start=-1, stop=1, step=0.05, value=0.4, label="Сила связи ρ", show_value=True)
+    rho_s = mo.ui.slider(start=-1, stop=1, step=0.05, value=0.4, label="Сила связи ρ", show_value=True, full_width=True)
     rho_preset = mo.ui.radio(options={"нет связи": 0.0, "как у нас": 0.4, "сильная": 0.9, "свой (ползунок)": None},
                              value="свой (ползунок)", inline=True)
-    mo.hstack([rho_s, rho_preset], justify="start", gap=2)
+    mo.hstack([rho_s, rho_preset], justify="start", gap=2, wrap=True).style({"zoom": "1.12"})
     return (rho_preset, rho_s,)
 
 
@@ -344,11 +344,11 @@ def _(H, MUTED, fonts, nfc, np, rho_preset, rho_s, stats, svg):
 
 @app.cell(hide_code=True)
 def _(fonts, mo):
-    sc_find = mo.ui.dropdown(options=sorted(fonts.family), value=None, label="Найти шрифт", searchable=True)
-    mo.vstack([mo.md("Приближайте кнопками «+ / −», двойным щелчком по месту или Ctrl (⌘) + колесом; приближенный график можно "
+    sc_find = mo.ui.dropdown(options=sorted(fonts.family), value="Inter", label="Найти шрифт", searchable=True, full_width=True)
+    mo.vstack([mo.md("Приближайте кнопками «+ / −», двойным щелчком по месту; приближенный график можно "
                      "двигать мышью. **Нажмите на кружок**, и ниже откроется этот шрифт. Шрифт можно и найти по названию: "
                      "начните вводить его в поле.").style({"color": "#5c6170", "font-size": ".95rem", "max-width": "68ch"}),
-               sc_find], gap=0.5)
+               mo.hstack([sc_find], widths=[0.45], justify="start").style({"zoom": "1.12"})], gap=0.5)
     return (sc_find,)
 
 
@@ -385,11 +385,11 @@ def _(H):
 @app.cell(hide_code=True)
 def _(mo):
     pl_text = mo.ui.text(value="Шрифт как случайная величина", label="Текст", full_width=True)
-    pl_wght = mo.ui.slider(start=100, stop=1000, step=10, value=400, label="Толщина (вес)", show_value=True)
-    pl_wdth = mo.ui.slider(start=25, stop=151, step=1, value=100, label="Ширина, %", show_value=True)
-    pl_ytlc = mo.ui.slider(start=416, stop=570, step=2, value=514, label="Высота строчных", show_value=True)
-    pl_size = mo.ui.slider(start=16, stop=160, step=2, value=72, label="Кегль, px", show_value=True)
-    mo.vstack([pl_text, mo.hstack([pl_wght, pl_wdth, pl_ytlc, pl_size], justify="start", gap=1.5, wrap=True)], gap=0.5)
+    pl_wght = mo.ui.slider(start=100, stop=1000, step=10, value=400, label="Толщина (вес)", show_value=True, full_width=True)
+    pl_wdth = mo.ui.slider(start=25, stop=151, step=1, value=100, label="Ширина, %", show_value=True, full_width=True)
+    pl_ytlc = mo.ui.slider(start=416, stop=570, step=2, value=514, label="Высота строчных", show_value=True, full_width=True)
+    pl_size = mo.ui.slider(start=16, stop=160, step=2, value=72, label="Кегль, px", show_value=True, full_width=True)
+    mo.vstack([pl_text, mo.hstack([pl_wght, pl_wdth, pl_ytlc, pl_size], widths="equal", gap=1.5, wrap=True)], gap=0.6).style({"zoom": "1.12"})
     return (pl_size, pl_text, pl_wdth, pl_wght, pl_ytlc,)
 
 
@@ -408,14 +408,14 @@ def _(CAT, H, fonts, mo):
     _opts = {f"{r.family} · {CAT[r.category][0]}": r.family for r in fonts.sort_values(["category", "family"]).itertuples()}
     _key = {v: k for k, v in _opts.items()}
     _pick = lambda name, i: _key.get(name, list(_opts)[i * 7])   # noqa: E731
-    cmp1 = mo.ui.dropdown(options=_opts, value=_pick("Inter", 0), label="Шрифт 1", searchable=True)
-    cmp2 = mo.ui.dropdown(options=_opts, value=_pick("Playfair", 1), label="Шрифт 2", searchable=True)
-    cmp3 = mo.ui.dropdown(options=_opts, value=_pick("Indie Flower", 2), label="Шрифт 3", searchable=True)
-    cmp_text = mo.ui.text(value="Hxlno шрифт", label="Текст", max_length=40)
+    cmp1 = mo.ui.dropdown(options=_opts, value=_pick("Inter", 0), label="Шрифт 1", searchable=True, full_width=True)
+    cmp2 = mo.ui.dropdown(options=_opts, value=_pick("Playfair", 1), label="Шрифт 2", searchable=True, full_width=True)
+    cmp3 = mo.ui.dropdown(options=_opts, value=_pick("Indie Flower", 2), label="Шрифт 3", searchable=True, full_width=True)
+    cmp_text = mo.ui.text(value="Hxlno шрифт", label="Текст", max_length=40, full_width=True)
     mo.vstack([H("""<h3>Сравнение шрифтов</h3><div class="text"><p>Выбери до трёх шрифтов из датасета
 и введи любой текст. Все строки набраны одним кеглем: сразу видно, у какого шрифта строчные выше и штрих толще.
 Пунктир показывает наши измерения: высоту строчных (x-height) и прописных.</p></div>"""),
-               mo.hstack([cmp1, cmp2, cmp3, cmp_text], justify="start", gap=1.2, wrap=True)], gap=0.4)
+               mo.hstack([cmp1, cmp2, cmp3, cmp_text], widths="equal", gap=1.2, wrap=True).style({"zoom": "1.12"})], gap=0.4)
     return (cmp1, cmp2, cmp3, cmp_text,)
 
 
@@ -432,23 +432,35 @@ def _(H):
     H("""<div class="fs-sec" id="rng"><h2>Датчик: случайный шрифт, похожий на настоящий</h2>
 <div class="text"><p>Датчик случайных чисел выдаёт значения, распределённые так же, как пропорции моих 100 шрифтов.
 Сначала базовый датчик даёт равномерное число <i>U</i> от 0 до 1, потом метод превращает его в нужную величину.</p>
-<p><b>Полярный метод Марсальи:</b> точка бросается в квадрат, остаются только точки внутри круга, и из них
-получаются нормальные числа <i>Z</i>. Дальше <i>Z</i> переводится в модель: для x-height это скошенное нормальное
-распределение, для толщины штриха логнормальное <i>X</i> = θ + e<sup>μ + σ<i>Z</i></sup>.
-<b>Квантильный метод</b> модель не использует: он берёт <i>U</i> и находит значение, ниже которого лежит
-такая же доля шрифтов.</p></div></div>""")
+<p>Методов шесть. Два из них работают прямо с данными, остальные сначала подбирают модель: для x-height это
+скошенное нормальное распределение, для толщины штриха логнормальное.</p>
+<p><b>Квантильное преобразование</b> модель не использует. Оно берёт <i>U</i> и находит значение, ниже которого лежит
+такая же доля шрифтов: если <i>U</i> = 0,3, датчик выдаёт значение, у которого 30 % шрифтов меньше.</p>
+<p><b>Метод обратной функции</b> делает то же самое, только не по самим шрифтам, а по формуле модели:
+<i>X</i> = <i>F</i><sup>−1</sup>(<i>U</i>), где <i>F</i> это функция распределения модели.</p>
+<p><b>Бокс–Мюллер</b> из двух равномерных чисел сразу делает два нормальных: <i>Z</i> = √(−2 ln <i>U</i><sub>1</sub>) · cos 2π<i>U</i><sub>2</sub>.
+Синус и косинус считаются медленно, поэтому придумали полярный метод.</p>
+<p><b>Полярный метод Марсальи</b> обходится без синуса и косинуса: точка бросается в квадрат, остаются только точки внутри
+круга, и из них получаются нормальные числа <i>Z</i>. Принимается около 78,5 % точек (π/4).</p>
+<p><b>Метод отношений</b> (Киндерман и Монахан) бросает точку (<i>u</i>, <i>v</i>) в прямоугольник и оставляет её, только если
+она попала в особую фигуру. Тогда отношение <i>v</i>/<i>u</i> оказывается нормальным. Принимается около 73 % точек.</p>
+<p>У этих трёх методов нормальное <i>Z</i> потом переводится в модель, например для толщины штриха
+<i>X</i> = θ + e<sup>μ + σ<i>Z</i></sup>.</p>
+<p><b>Метод Неймана</b> снова обходится без модели. Он бросает точку под гистограмму шрифтов: случайное значение и случайную
+высоту. Если точка оказалась ниже столбика, значение остаётся, если выше, бросок повторяется. Работает с любой формой
+распределения, но большая часть бросков уходит впустую: принимается около 29 %.</p></div></div>""")
     return
 
 
 @app.cell(hide_code=True)
 def _(G, mo, pill):
     rg_var = mo.ui.radio(options={"x-height": "x_height", "толщина штриха": "stem"}, value="x-height", label="Величина", inline=True)
-    rg_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод")
+    rg_method = mo.ui.dropdown(options={v: k for k, v in G.METHOD_RU.items()}, value=G.METHOD_RU["polar"], label="Метод", full_width=True)
     rg_base = mo.ui.radio(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик", inline=True)
-    rg_n = mo.ui.slider(start=100, stop=20000, step=100, value=1000, label="Сколько чисел", show_value=True)
+    rg_n = mo.ui.slider(start=100, stop=20000, step=100, value=1000, label="Сколько чисел", show_value=True, full_width=True)
     rg_go = pill("Сгенерировать заново")
-    mo.vstack([mo.hstack([rg_var, rg_method], justify="start", gap=2, wrap=True), rg_base,
-               mo.hstack([rg_n, rg_go], justify="start", gap=2, align="end")], gap=0.6)
+    mo.vstack([mo.hstack([rg_var, rg_method], widths=[1, 1.4], gap=2, wrap=True), rg_base,
+               mo.hstack([rg_n, rg_go], widths=[1.4, 1], gap=2, align="end")], gap=0.7).style({"zoom": "1.12"})
     return (rg_base, rg_go, rg_method, rg_n, rg_var,)
 
 
