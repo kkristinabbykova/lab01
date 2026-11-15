@@ -2,6 +2,16 @@
 import json
 
 
+def pystr(text: str) -> str:
+    """Строка для кода приложения без обратных слешей.
+
+    При экспорте в WebAssembly обратные слеши в коде ячеек теряются: \\frac превращался в перевод страницы + «rac»,
+    и формулы LaTeX ломались. Поэтому тексты, формулы и код кладутся в приложение в base64.
+    """
+    import base64
+    return '__import__("base64").b64decode("' + base64.b64encode(text.encode("utf-8")).decode() + '").decode("utf-8")'
+
+
 def header(title: str, css_file: str = "") -> str:
     return f'''# /// script
 # requires-python = ">=3.10"
@@ -184,14 +194,18 @@ body, #App, .mo-app, [data-testid="app"] {{ background: var(--lab-bg) !important
 .lab-stats div span {{ font-size: .78rem; opacity: .75; }}
 .lab-cover a {{ color: inherit; }}
 .lab-tbl table {{ margin: .2rem 0; }}
-@media (max-width: 640px) {{ .lab-cover {{ padding: 1.5rem 1.2rem; }} .lab-stats div b {{ font-size: 1.5rem; }} }}'''
+.lab-cover > * {{ position: relative; z-index: 1; }}
+.lab-cover .art {{ position: absolute; right: 1.4rem; top: 2.6rem; width: min(36%, 400px); height: auto; z-index: 0; pointer-events: none; }}
+@media (min-width: 760px) {{ .lab-cover:has(.art) h1, .lab-cover:has(.art) p {{ max-width: 60%; }} }}
+@media (max-width: 640px) {{ .lab-cover {{ padding: 1.5rem 1.2rem; }} .lab-stats div b {{ font-size: 1.5rem; }}
+  .lab-cover .art {{ width: 70%; opacity: .45; }} }}'''
 
 
 def toc_cell(toc_md: str, extra: str) -> str:
     """Оглавление в боковой панели marimo (кнопка ☰ на телефоне)."""
     toc = toc_md.replace('<a id="toc"></a>', "").replace("**Содержание**", "").strip()
     toc = "\n".join(l for l in toc.splitlines() if not l.startswith("**Часть КТвД") and not l.startswith("*Код в ячейках"))
-    body = json.dumps("### Содержание\n\n" + toc + "\n\n" + extra, ensure_ascii=False)
+    body = pystr("### Содержание\n\n" + toc + "\n\n" + extra)
     return f'''@app.cell(hide_code=True)
 def _(mo):
     mo.sidebar([mo.md({body})])

@@ -38,8 +38,8 @@ HEAD = re.compile(r"^(#{1,4}) (.+)$", re.M)
 
 
 def lit(s: str) -> str:
-    """Строковый литерал Python (JSON-строка подходит без изменений)."""
-    return json.dumps(s, ensure_ascii=False)
+    """Строка для кода приложения: в base64, чтобы при экспорте не потерялись обратные слеши (формулы LaTeX)."""
+    return blocks_common.pystr(s)
 
 
 def sections(nb: dict):

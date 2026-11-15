@@ -1,5 +1,6 @@
 """Приложение «Белое вино»: настройка, обложка и живые блоки (серая тема)."""
 import json
+from pathlib import Path
 
 import blocks_common as C
 
@@ -180,9 +181,26 @@ def _():
 '''
 
 
+def cover_art() -> str:
+    """Рисунок для обложки: облако настоящих вин, pH против фиксированной кислотности."""
+    import numpy as np
+    import pandas as pd
+    w = pd.read_csv(Path(__file__).resolve().parent.parent / "wine" / "data" / "winequality-white.csv", sep=";")
+    rng = np.random.default_rng(7)
+    d = w.sample(1400, random_state=7)
+    x = (d["fixed acidity"].clip(4, 10) - 4) / 6 * 440 + 20 + rng.uniform(-2, 2, len(d))
+    y = 300 - (d["pH"].clip(2.8, 3.7) - 2.8) / 0.9 * 270 + rng.uniform(-2, 2, len(d))
+    good = (d["quality"] >= 7).to_numpy()
+    dots = "".join(f'<circle cx="{a:.1f}" cy="{b:.1f}" r="2.1" fill="{"#c97884" if g else "#eceae6"}" fill-opacity="{0.85 if g else 0.33}"/>'
+                   for a, b, g in zip(x, y, good))
+    return (f'<svg class="art" viewBox="0 0 480 320" aria-hidden="true">{dots}'
+            '<text x="470" y="312" text-anchor="end" font-size="15" fill="#eceae6" fill-opacity=".7">'
+            'точка = вино (кислотность и pH), розовые: оценка 7+</text></svg>')
+
+
 def cover(head_md: str) -> str:
     html = C.css(THEME) + '''
-<div class="lab-cover">
+<div class="lab-cover">''' + cover_art() + '''
   <div class="kicker">Прикладная статистика · Lab01 · команда 27 · основная работа</div>
   <h1>Белое вино как случайный эксперимент</h1>
   <p>4898 португальских белых вин Vinho Verde. Три случайные величины: pH, фиксированная кислотность и спирт.
@@ -207,7 +225,7 @@ def cover(head_md: str) -> str:
 </ul></div>'''
     return f'''@app.cell(hide_code=True)
 def _(mo):
-    mo.vstack([mo.Html({json.dumps(html, ensure_ascii=False)}), mo.md({json.dumps(head_md.strip(), ensure_ascii=False)})])
+    mo.vstack([mo.Html({C.pystr(html)}), mo.md({C.pystr(head_md.strip())})])
     return
 '''
 

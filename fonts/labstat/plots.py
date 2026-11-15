@@ -64,7 +64,7 @@ def eda_panel(x, label: str, unit: str, fits: dict, fname: str, bins=None):
     style()
     x = np.asarray(x, dtype=float)
     bins = grid_bins(x) if bins is None else bins
-    fig, ax = plt.subplots(1, 3, figsize=(13, 3.6), gridspec_kw={"width_ratios": [2.2, 1, 1.4]})
+    fig, ax = plt.subplots(1, 3, figsize=(9, 3.6), gridspec_kw={"width_ratios": [2.2, 1, 1.4]})
     ax[0].hist(x, bins=bins, density=True, color=C1, alpha=0.35, edgecolor="white", linewidth=0.5, label="данные")
     grid = np.linspace(x.min(), x.max(), 400)
     # разные линии, а не только цвет: близкие модели иначе сливаются в одну кривую
@@ -88,7 +88,7 @@ def eda_panel(x, label: str, unit: str, fits: dict, fname: str, bins=None):
 def consistency_panel(curves: dict, running: dict, label: str, fname: str):
     """Слева: одна траектория оценок при росте n. Справа: P(|оценка - θ| > ε) от n."""
     style()
-    fig, ax = plt.subplots(1, 2, figsize=(12, 3.6))
+    fig, ax = plt.subplots(1, 2, figsize=(9, 3.6))
     for (est, (ns, vals, theta)), col in zip(running.items(), [C1, C2, C3]):
         ax[0].plot(ns, vals / theta, color=col, label=EST_RU.get(est, est), linewidth=1.5)
     ax[0].axhline(1, color=INK2, linewidth=1, linestyle="--")
@@ -125,7 +125,7 @@ def sampling_panel(pop, s_with, s_without, label: str, unit: str, fname: str):
 def se_panel(tables: dict, fname: str):
     """Отношение эмпирической СКО среднего к σ/√n для двух способов отбора."""
     style()
-    fig, axes = plt.subplots(1, len(tables), figsize=(4.2 * len(tables), 3.4), sharey=True)
+    fig, axes = plt.subplots(1, len(tables), figsize=(min(9, max(7, 4.2 * len(tables))), 3.4), sharey=True)
     for ax, (label, df) in zip(np.atleast_1d(axes), tables.items()):
         base = df["se_with_theory"]
         ax.plot(df["n/N"], df["se_with_emp"] / base, "o", color=C1, ms=6, label="с возвр., опыт")
@@ -144,7 +144,7 @@ def se_panel(tables: dict, fname: str):
 def normalization_panel(pairs: dict, fname: str):
     """Гистограммы до и после преобразования, поверх них плотность N(0, 1)."""
     style()
-    fig, ax = plt.subplots(1, len(pairs), figsize=(4.2 * len(pairs), 3.4))
+    fig, ax = plt.subplots(1, len(pairs), figsize=(min(9, max(7, 4.2 * len(pairs))), 3.4))
     grid = np.linspace(-4, 4, 300)
     for a, (title, z) in zip(np.atleast_1d(ax), pairs.items()):
         a.hist(z, bins=grid_bins(z), density=True, color=C1, alpha=0.35, edgecolor="white", linewidth=0.5)

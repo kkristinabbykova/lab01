@@ -133,7 +133,14 @@ def _():
 
 def cover(head_md: str) -> str:
     html = C.css(THEME) + '''
-<div class="lab-cover">
+<div class="lab-cover"><svg class="art" viewBox="0 0 480 300" aria-hidden="true" style="font-family:'Roboto Flex',sans-serif">
+<text x="20" y="250" font-size="170" fill="#a9c8ef" fill-opacity=".28" style="font-variation-settings:'wght' 720,'wdth' 112">Hxlno</text>
+<line x1="10" x2="470" y1="250" y2="250" stroke="#fafaf7" stroke-opacity=".55"/>
+<line x1="10" x2="470" y1="160" y2="160" stroke="#eb6834" stroke-dasharray="6 5"/>
+<line x1="10" x2="470" y1="129" y2="129" stroke="#1baf7a" stroke-dasharray="6 5"/>
+<text x="470" y="155" text-anchor="end" font-size="15" fill="#eb6834">x-height</text>
+<text x="470" y="124" text-anchor="end" font-size="15" fill="#1baf7a">высота прописных</text>
+<text x="470" y="268" text-anchor="end" font-size="15" fill="#fafaf7" fill-opacity=".7">базовая линия</text></svg>
   <div class="kicker">Lab01 · команда 27 · доп. задание КТвД · Быкова Кристина Денисовна</div>
   <h1>Шрифт как случайная величина</h1>
   <p>Собственный датасет: 100 семейств Google Fonts, по 20 в каждой категории. Две случайные величины одной природы,
@@ -154,7 +161,7 @@ def cover(head_md: str) -> str:
 </ul></div>'''
     return f'''@app.cell(hide_code=True)
 def _(mo):
-    mo.vstack([mo.Html({json.dumps(html, ensure_ascii=False)}), mo.md({json.dumps(head_md.strip(), ensure_ascii=False)})])
+    mo.vstack([mo.Html({C.pystr(html)}), mo.md({C.pystr(head_md.strip())})])
     return
 '''
 
@@ -268,12 +275,7 @@ def _(C1, C2, CAT_RU, FCOLS, cards, cmp_a, cmp_b, cmp_var, fonts, mo, np, plot_h
 GEN = _cells('''
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("""<a id="live-gen"></a>
-### Датчик: случайный шрифт
-
-Датчик выдаёт пропорции «нового» шрифта, распределённые так же, как у 100 шрифтов коллекции.
-Схема любого датчика: $U \\\\sim U(0, 1) \\\\xrightarrow{\\\\text{метод}} X \\\\sim F_{\\\\text{данных}}$.
-Базовый датчик даёт равномерные числа, метод превращает их в нужную величину. Код лежит в пакете `labrng`.""")
+    mo.md(''' + C.pystr("<a id=\"live-gen\"></a>\n### Датчик: случайный шрифт\n\nДатчик выдаёт пропорции «нового» шрифта, распределённые так же, как у 100 шрифтов коллекции.\nСхема любого датчика: $U \\sim U(0, 1) \\xrightarrow{\\text{метод}} X \\sim F_{\\text{данных}}$.\nБазовый датчик даёт равномерные числа, метод превращает их в нужную величину. Код лежит в пакете `labrng`.") + ''')
     return
 ''', '''
 @app.cell(hide_code=True)
