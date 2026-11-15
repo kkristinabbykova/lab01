@@ -50,7 +50,7 @@ HELPERS = r'''
             src = "data:image/png;base64," + base64.b64encode(Path(str(p)).read_bytes()).decode()
         except Exception:
             src = str(p)
-        return mo.Html(ST + f'<figure class="lab-fig"><img src="{src}" alt="" loading="lazy"></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig" tabindex="0" title="Нажмите, чтобы увеличить"><img src="{src}" alt="" loading="lazy"></figure>')
 
     def table_html(h):
         return mo.Html(ST + f'<div class="lab-tbl">{h}</div>')
@@ -70,7 +70,7 @@ HELPERS = r'''
         buf = io.BytesIO()
         f.savefig(buf, format="png", dpi=140, bbox_inches="tight")
         plt.close(f)
-        return mo.Html(ST + f'<figure class="lab-fig live"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
+        return mo.Html(ST + f'<figure class="lab-fig live" tabindex="0" title="Нажмите, чтобы увеличить"><img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" alt=""></figure>')
 
     def cards(items):
         """Карточки с числами: [(подпись, значение, пояснение), ...]."""
@@ -148,6 +148,16 @@ body, #App, .mo-app, [data-testid="app"] {{ background: var(--lab-bg) !important
 .lab-guide ul {{ margin: .2rem 0 0 1.1rem; padding: 0; }}
 .lab-fig {{ margin: .4rem 0; background: #fff; border: 1px solid var(--lab-line); border-radius: 12px; padding: .5rem; }}
 .lab-fig img {{ display: block; width: 100%; height: auto; }}
+/* рисунок увеличивается по щелчку и закрывается щелчком в любом месте */
+.lab-fig {{ cursor: zoom-in; position: relative; }}
+.lab-fig::after {{ content: "нажмите, чтобы увеличить"; position: absolute; right: .7rem; bottom: .45rem; font-size: .72rem;
+                  color: var(--lab-ink2); background: rgba(255,255,255,.85); padding: .1rem .45rem; border-radius: 999px;
+                  opacity: 0; transition: opacity .2s; pointer-events: none; }}
+.lab-fig:hover::after {{ opacity: 1; }}
+.lab-fig:focus {{ position: fixed; inset: 0; z-index: 9999; margin: 0; border: 0; border-radius: 0; padding: 2.5vh 2.5vw;
+                 background: rgba(22,24,29,.88); display: flex; align-items: center; justify-content: center; cursor: zoom-out; outline: none; }}
+.lab-fig:focus img {{ width: auto; max-width: 95vw; max-height: 95vh; background: #fff; border-radius: 10px; padding: .6rem; }}
+.lab-fig:focus::after {{ content: "щёлкните, чтобы закрыть"; opacity: 1; position: fixed; right: 1.2rem; bottom: 1rem; }}
 .lab-fig.live {{ border-color: var(--lab-acc2); }}
 .lab-tbl {{ overflow-x: auto; }}
 .lab-tbl table {{ border-collapse: collapse; font-size: .86rem; background: #fff; border: 1px solid var(--lab-line); }}

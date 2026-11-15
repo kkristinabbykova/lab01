@@ -1,7 +1,51 @@
 """Приложение «Шрифты» (доп. задание КТвД): настройка, обложка и живые блоки в стиле сайта шрифтов."""
 import json
 
+from pathlib import Path
+
 import blocks_common as C
+
+_W = Path(__file__).resolve().parent / "widgets"
+_SJ = (_W / "scatter.js").read_text(encoding="utf-8")
+_SC = (_W / "scatter.css").read_text(encoding="utf-8")
+SCATTER_CODE = (
+    "    # график с приближением (anywidget); без anywidget остаётся картинка matplotlib\n"
+    "    _SJ = " + json.dumps(_SJ, ensure_ascii=False) + "\n"
+    "    _SC = " + json.dumps(_SC, ensure_ascii=False) + "\n" + r'''
+    try:
+        import anywidget
+        import traitlets
+
+        class _Scatter(anywidget.AnyWidget):
+            _esm = _SJ
+            _css = _SC
+            points = traitlets.List([]).tag(sync=True)
+            cats = traitlets.Dict({}).tag(sync=True)
+            selected = traitlets.Unicode("").tag(sync=True)
+            xlabel = traitlets.Unicode("").tag(sync=True)
+            ylabel = traitlets.Unicode("").tag(sync=True)
+            xname = traitlets.Unicode("").tag(sync=True)
+            yname = traitlets.Unicode("").tag(sync=True)
+            labels = traitlets.Bool(False).tag(sync=True)
+            pickable = traitlets.Bool(False).tag(sync=True)
+
+        HAS_AW = True
+    except Exception:
+        HAS_AW = False
+
+    def zoom_scatter(df, xcol, ycol, cats, label_points):
+        """Точечный график с приближением: кнопки + / −, двойной щелчок, перетаскивание, подсказки."""
+        if not HAS_AW:
+            return scatter_view(df, xcol, ycol, cats, label_points)
+        d = df[df.category.isin([CAT_RU[c] for c in cats])].dropna(subset=[xcol, ycol])
+        pts = [{"f": r.family, "c": r.category, "x": round(float(getattr(r, xcol)), 4), "s": round(float(getattr(r, ycol)), 4)}
+               for r in d.itertuples()]
+        if not pts:
+            return mo.md("_Выберите хотя бы одну категорию._")
+        return mo.ui.anywidget(_Scatter(points=pts, cats={k: list(v) for k, v in CAT.items()},
+                                        xlabel=f"{FCOLS[xcol][0]}, {FCOLS[xcol][1]}", ylabel=f"{FCOLS[ycol][0]}, {FCOLS[ycol][1]}",
+                                        xname=FCOLS[xcol][0], yname=FCOLS[ycol][0], labels=bool(label_points), pickable=False))
+''')
 
 THEME = dict(head_font='Unbounded, Onest, sans-serif', bg="#fafaf7", card="#ffffff", ink="#1a1d24", ink2="#5c6170", line="#e6e5e0", acc="#2a78d6",
              acc2="#a9c8ef", soft="#f1f0eb", grid="#e6e5e0", c1="#2a78d6", c2="#eb6834", c3="#1baf7a",
@@ -12,14 +56,14 @@ CSS_FILE = "fonts.css"
 
 
 def header(title):
-    return C.header(title, CSS_FILE)
+    return C.header(title, CSS_FILE).replace('"scipy"]', '"scipy", "anywidget", "traitlets"]')
 
 
 SETUP = '''@app.cell(hide_code=True)
 def _():
     import marimo as mo
     T = ''' + json.dumps(THEME) + '''
-    STYLE = ''' + json.dumps(C.css_body(THEME), ensure_ascii=False) + '''
+    STYLE = ''' + json.dumps(C.css_body(THEME).split("\n", 1)[1], ensure_ascii=False) + '''
     ASSETS = "fonts"
 ''' + C.HELPERS + r'''
     fonts_all = pd.read_csv(io.StringIO(read_text(PUB / "fonts.csv")))
@@ -78,9 +122,10 @@ def _():
         ax.legend(fontsize=8, ncol=2)
         return plot_html(f)
 
+''' + SCATTER_CODE + r'''
     G = types.ModuleType("generators")
     exec(read_text(PUB / "generators.py"), G.__dict__)
-    return (C1, C2, C3, CAT, CAT_RU, FAMS, FCOLS, FRU, G, T, describe_cards, fit_view, fonts, scatter_view,
+    return (C1, C2, C3, CAT, CAT_RU, FAMS, FCOLS, FRU, G, T, describe_cards, fit_view, fonts, scatter_view, zoom_scatter,
             Path, PUB, base64, cards, code_block, df_html, fig, section, io, live, mo, nf, np, out_text, pd, plot_html, plt,
             read_text, scipy, stats, table_html, types)
 '''
@@ -137,16 +182,16 @@ def _(CAT, FCOLS, live, mo):
     coll_y = mo.ui.dropdown(options={v[0]: k for k, v in FCOLS.items()}, value="толщина штриха", label="По вертикали")
     coll_names = mo.ui.switch(value=False, label="подписать шрифты")
     mo.vstack([mo.Html('<a id="live-collection"></a>'),
-               live("Коллекция по категориям", "Выберите категории и любые две пропорции: точки — шрифты. "
-                    "Подписи помогают найти выбросы — например, самые жирные акцидентные.", coll_cats, coll_x, coll_y, coll_names)])
+               live("Коллекция по категориям", "Выберите категории и любые две пропорции, каждая точка это шрифт. "
+                    "График приближается кнопками «+ / −» и двойным щелчком, подписи помогают найти выбросы, например самые жирные акцидентные.", coll_cats, coll_x, coll_y, coll_names)])
     return coll_cats, coll_names, coll_x, coll_y
 ''', '''
 @app.cell(hide_code=True)
-def _(CAT_RU, FCOLS, coll_cats, coll_names, coll_x, coll_y, describe_cards, fonts, mo, scatter_view):
+def _(CAT_RU, FCOLS, coll_cats, coll_names, coll_x, coll_y, describe_cards, fonts, mo, zoom_scatter):
     _d = fonts[fonts.category.isin([CAT_RU[c] for c in coll_cats.value])]
     _x = _d[coll_x.value].dropna().to_numpy(float)
     mo.vstack([describe_cards(_x, FCOLS[coll_x.value][1]) if len(_x) else mo.md("_Выберите хотя бы одну категорию._"),
-               scatter_view(_d, coll_x.value, coll_y.value, coll_cats.value, coll_names.value)])
+               zoom_scatter(_d, coll_x.value, coll_y.value, coll_cats.value, coll_names.value)])
     return
 ''')
 
@@ -159,7 +204,7 @@ def _(FAMS, live, mo):
     fit_bins_{sfx} = mo.ui.slider(start=8, stop=40, step=2, value=20, label="Столбики", show_value=True)
     mo.vstack([mo.Html('<a id="live-fit-{sfx}"></a>'),
                live("Подбор распределения вживую", "Включайте модели и меняйте число столбиков: на графике плотности моделей, "
-                    "в таблице AIC (меньше — лучше) и расстояние Колмогорова D.", fit_fams_{sfx}, fit_bins_{sfx})])
+                    "в таблице AIC (чем меньше, тем лучше) и расстояние Колмогорова D.", fit_fams_{sfx}, fit_bins_{sfx})])
     return fit_bins_{sfx}, fit_fams_{sfx}
 '''
     view = f'''
@@ -183,13 +228,13 @@ def _(CAT, live, mo):
     return (within_cat,)
 ''', '''
 @app.cell(hide_code=True)
-def _(CAT, CAT_RU, cards, fonts, mo, scatter_view, stats, within_cat):
+def _(CAT, CAT_RU, cards, fonts, mo, stats, within_cat, zoom_scatter):
     _all = within_cat.value == "все шрифты"
     _d = fonts if _all else fonts[fonts.category == CAT_RU[within_cat.value]]
     _rho, _p = stats.spearmanr(_d.x_height, _d.stem)
-    mo.vstack([cards([("ρ Спирмена", f"{_rho:+.2f}", "сила и направление связи"), ("p", f"{_p:.4f}", "< 0.05 — связь есть"),
+    mo.vstack([cards([("ρ Спирмена", f"{_rho:+.2f}", "сила и направление связи"), ("p", f"{_p:.4f}", "меньше 0.05: связь есть"),
                       ("шрифтов", f"{len(_d)}", within_cat.value)]),
-               scatter_view(_d, "x_height", "stem", [v[0] for v in CAT.values()] if _all else [within_cat.value], not _all)])
+               zoom_scatter(_d, "x_height", "stem", [v[0] for v in CAT.values()] if _all else [within_cat.value], not _all)])
     return
 ''')
 
@@ -215,7 +260,7 @@ def _(C1, C2, CAT_RU, FCOLS, cards, cmp_a, cmp_b, cmp_var, fonts, mo, np, plot_h
     _ax.hist(_b, bins=_e, color=C2, alpha=0.5, label=f"{cmp_b.value}: медиана {np.median(_b):.3f}")
     _ax.set(xlabel=f"{FCOLS[cmp_var.value][0]}, {FCOLS[cmp_var.value][1]}", ylabel="шрифтов")
     _ax.legend()
-    mo.vstack([cards([("p Манна–Уитни", f"{_mw.pvalue:.4f}", "< 0.05 — у A больше"),
+    mo.vstack([cards([("p Манна–Уитни", f"{_mw.pvalue:.4f}", "меньше 0.05: у A больше"),
                       ("P(A > B)", f"{_mw.statistic / (len(_a) * len(_b)):.2f}", "доля пар, где A больше")]), plot_html(_f)])
     return
 ''')
@@ -228,7 +273,7 @@ def _(mo):
 
 Датчик выдаёт пропорции «нового» шрифта, распределённые так же, как у 100 шрифтов коллекции.
 Схема любого датчика: $U \\\\sim U(0, 1) \\\\xrightarrow{\\\\text{метод}} X \\\\sim F_{\\\\text{данных}}$.
-Базовый датчик даёт равномерные числа, метод превращает их в нужную величину. Код — пакет `labrng`.""")
+Базовый датчик даёт равномерные числа, метод превращает их в нужную величину. Код лежит в пакете `labrng`.""")
     return
 ''', '''
 @app.cell(hide_code=True)
@@ -241,7 +286,7 @@ def _(FCOLS, G, live, mo):
                                 value="логнормальное", label="Модель (для методов через модель)")
     gen_n = mo.ui.slider(start=100, stop=10000, step=100, value=1000, label="Сколько значений", show_value=True)
     gen_seed = mo.ui.number(start=0, stop=10**6, value=2026, label="seed")
-    live("Датчик вживую", "Меняйте величину, метод, базовый датчик и модель. Справа — тройки чисел базового датчика: "
+    live("Датчик вживую", "Меняйте величину, метод, базовый датчик и модель. Справа тройки чисел базового датчика: "
          "у RANDU они ложатся на прямую.", gen_var, gen_method, gen_base, gen_family, gen_n, gen_seed)
     return gen_base, gen_family, gen_method, gen_n, gen_seed, gen_var
 ''', '''
@@ -264,8 +309,8 @@ def _(C1, C2, FCOLS, G, cards, fonts, gen_base, gen_family, gen_method, gen_n, g
     _f.tight_layout()
     mo.vstack([cards([("среднее", f"{_c['gen']['среднее']:.3f}", f"шрифты {_c['real']['среднее']:.3f}"),
                       ("СКО", f"{_c['gen']['СКО']:.3f}", f"шрифты {_c['real']['СКО']:.3f}"),
-                      ("КС p", f"{_c['ks_p']:.3f}", "> 0.05 — не отличается"),
-                      ("принято точек", f"{_info['accept']:.3f}", "1 — без отбора")]), plot_html(_f)])
+                      ("КС p", f"{_c['ks_p']:.3f}", "больше 0.05: не отличается"),
+                      ("принято точек", f"{_info['accept']:.3f}", "1 значит без отбора")]), plot_html(_f)])
     return
 ''', '''
 @app.cell(hide_code=True)

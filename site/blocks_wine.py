@@ -19,7 +19,7 @@ SETUP = '''@app.cell(hide_code=True)
 def _():
     import marimo as mo
     T = ''' + json.dumps(THEME) + '''
-    STYLE = ''' + json.dumps(C.css_body(THEME), ensure_ascii=False) + '''
+    STYLE = ''' + json.dumps(C.css_body(THEME).split("\n", 1)[1], ensure_ascii=False) + '''
     ASSETS = "wine"
 ''' + C.HELPERS + r'''
     # ---- данные: белые и красные вина (Wine Quality, UCI) ----
@@ -257,7 +257,7 @@ def _(FAMS, live, mo):
     fit_bins_{sfx} = mo.ui.slider(start=15, stop=80, step=5, value=45, label="Столбики", show_value=True)
     mo.vstack([mo.Html('<a id="live-fit-{sfx}"></a>'),
                live("Подбор распределения вживую", "Включайте и выключайте модели: на графике их плотности, в таблице AIC "
-                    "(меньше — лучше) и расстояние Колмогорова D до данных.", fit_fams_{sfx}, fit_bins_{sfx})])
+                    "(чем меньше, тем лучше) и расстояние Колмогорова D до данных.", fit_fams_{sfx}, fit_bins_{sfx})])
     return fit_bins_{sfx}, fit_fams_{sfx}
 '''
     view = f'''
@@ -302,7 +302,7 @@ def _(live, mo):
     smp_repl_{sfx} = mo.ui.switch(value=True, label="с возвращением")
     mo.vstack([mo.Html('<a id="live-sample{'' if sfx == 'ph' else '-' + sfx}"></a>'),
                live("Выборка против всех вин", "Сдвиньте n к 4500 и выключите «с возвращением»: разброс средних станет "
-                    "меньше формулы σ/√n — работает поправка на конечность совокупности.", smp_var_{sfx}, smp_n_{sfx}, smp_repl_{sfx})])
+                    "меньше формулы σ/√n: работает поправка на конечность совокупности.", smp_var_{sfx}, smp_n_{sfx}, smp_repl_{sfx})])
     return smp_n_{sfx}, smp_repl_{sfx}, smp_var_{sfx}
 '''
     view = f'''
@@ -337,7 +337,7 @@ def _(COLS, RU2COL, cards, dep_pair_{sfx}, dep_q_{sfx}, dep_view, mo, white):
     _img, _rho, _chi2, _p, _v, _dof = dep_view(white[_ca].to_numpy(float), white[_cb].to_numpy(float), dep_q_{sfx}.value,
                                               f"{{_a}}, {{COLS[_ca][1]}}", f"{{_b}}, {{COLS[_cb][1]}}")
     mo.vstack([cards([("ρ Спирмена", f"{{_rho:+.2f}}", "сила и направление"), ("χ²", f"{{_chi2:.0f}}", f"df = {{_dof}}"),
-                      ("p", f"{{_p:.1e}}", "< 0.05 — связь есть"), ("V Крамера", f"{{_v:.2f}}", "0 — нет связи, 1 — полная")]), _img])
+                      ("p", f"{{_p:.1e}}", "меньше 0.05: связь есть"), ("V Крамера", f"{{_v:.2f}}", "0 нет связи, 1 полная")]), _img])
     return
 '''
     return _cells(ui, view)
@@ -352,7 +352,7 @@ def _(live, mo):
     gen_round = mo.ui.switch(value=True, label="округлять до 0.01, как прибор")
     mo.vstack([mo.Html('<a id="live-gen"></a>'),
                live("Датчик pH вживую", "Тот же датчик, что в разделе 6: θ + e^(μ + σZ). Меняйте метод, объём, seed и "
-                    "округление — посмотрите, как меняется критерий Колмогорова–Смирнова.", gen_method, gen_n, gen_seed, gen_round)])
+                    "округление и посмотрите, как меняется критерий Колмогорова–Смирнова.", gen_method, gen_n, gen_seed, gen_round)])
     return gen_method, gen_n, gen_round, gen_seed
 ''', '''
 @app.cell(hide_code=True)
@@ -378,7 +378,7 @@ def _(C1, C2, cards, gen_method, gen_n, gen_ph, gen_round, gen_seed, grid_edges,
         _ax[1].set(aspect="equal", xlim=(-1.05, 1.05), ylim=(-1.05, 1.05), title="Точки полярного метода")
     _f.tight_layout()
     mo.vstack([cards([("среднее", f"{_x.mean():.3f}", f"данные {ph.mean():.3f}"), ("СКО", f"{_x.std(ddof=1):.3f}", f"данные {ph.std(ddof=1):.3f}"),
-                      ("КС p", f"{_ks.pvalue:.3f}", "> 0.05 — не отличается"), ("принято точек", f"{_acc:.3f}", "теория π/4 = 0.785" if _pts is not None else "без отбора")]),
+                      ("КС p", f"{_ks.pvalue:.3f}", "больше 0.05: не отличается"), ("принято точек", f"{_acc:.3f}", "теория π/4 = 0.785" if _pts is not None else "без отбора")]),
                plot_html(_f)])
     return
 ''')
@@ -390,8 +390,8 @@ def _(G, live, mo):
     algo_base = mo.ui.dropdown(options={v: k for k, v in G.BASE_RU.items()}, value=G.BASE_RU["pcg64"], label="Базовый датчик")
     algo_seed = mo.ui.number(start=0, stop=10**6, value=2026, label="seed")
     mo.vstack([mo.Html('<a id="live-algo"></a>'),
-               live("Любой из шести методов на любом базовом датчике", "Код всех алгоритмов — пакет labrng. Модель для методов "
-                    "«через модель» — логнормальная со сдвигом, как в разделе 6.", algo_method, algo_base, algo_seed)])
+               live("Любой из шести методов на любом базовом датчике", "Код всех алгоритмов лежит в пакете labrng. Модель для методов "
+                    "«через модель» логнормальная со сдвигом, как в разделе 6.", algo_method, algo_base, algo_seed)])
     return algo_base, algo_method, algo_seed
 ''', '''
 @app.cell(hide_code=True)
@@ -409,8 +409,8 @@ def _(C1, C2, G, algo_base, algo_method, algo_seed, cards, grid_edges, mo, np, p
     _ax[1].plot((6 * _u[1:-1] - 9 * _u[:-2]) % 1.0, _u[2:], ".", ms=1.5, color=C2 if algo_base.value == "randu" else C1)
     _ax[1].set(aspect="equal", xlim=(0, 1), ylim=(0, 1), title="Тройки базового датчика")
     _f.tight_layout()
-    mo.vstack([cards([("КС p", f"{_ks.pvalue:.3f}", "> 0.05 — не отличается от данных"),
-                      ("принято точек", f"{_info['accept']:.3f}", "1 — метод ничего не выбрасывает")]), plot_html(_f)])
+    mo.vstack([cards([("КС p", f"{_ks.pvalue:.3f}", "больше 0.05: не отличается от данных"),
+                      ("принято точек", f"{_info['accept']:.3f}", "1 значит метод ничего не выбрасывает")]), plot_html(_f)])
     return
 ''')
 

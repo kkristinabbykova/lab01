@@ -2,6 +2,8 @@
 function render({ model, el }) {
   const NS = "http://www.w3.org/2000/svg", SW = 640, SH = 390, pad = { l: 58, r: 16, t: 14, b: 50 };
   const P = model.get("points"), CAT = model.get("cats");
+  const XL = model.get("xlabel") || "x-height, доли кегля", YL = model.get("ylabel") || "толщина штриха, доли кегля";
+  const XN = model.get("xname") || "x-height", YN = model.get("yname") || "штрих", ALWAYS = !!model.get("labels"), PICK = model.get("pickable") !== false;
   const nf = (v, d = 3) => v.toFixed(d).replace(".", ",");
   const mk = (tag, attrs = {}) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
   const h = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; };
@@ -17,7 +19,9 @@ function render({ model, el }) {
   root.append(bar, box, legend);
   el.append(root);
 
-  const FULL = { x: [Math.min(...P.map(p => p.x)) - .01, Math.max(...P.map(p => p.x)) + .01], y: [0, Math.max(...P.map(p => p.s)) * 1.08] };
+  const xs = P.map(p => p.x), ys = P.map(p => p.s), xr = Math.max(...xs) - Math.min(...xs) || 1, yr = Math.max(...ys) - Math.min(...ys) || 1;
+  const FULL = P.length ? { x: [Math.min(...xs) - xr * .04, Math.max(...xs) + xr * .04],
+                            y: [Math.min(0, Math.min(...ys) - yr * .04), Math.max(...ys) + yr * .08] } : { x: [0, 1], y: [0, 1] };
   let V = { x: [...FULL.x], y: [...FULL.y] };
   const X = v => pad.l + (v - V.x[0]) / (V.x[1] - V.x[0]) * (SW - pad.l - pad.r);
   const Y = v => SH - pad.b - (v - V.y[0]) / (V.y[1] - V.y[0]) * (SH - pad.t - pad.b);
@@ -54,9 +58,9 @@ function render({ model, el }) {
       sc.append(mk("line", { x1: pad.l, x2: SW - pad.r, y1: Y(t), y2: Y(t), stroke: "#e6e5e0" }));
       const ty = mk("text", { x: pad.l - 8, y: Y(t) + 4, "text-anchor": "end", "font-size": 12, fill: "#5c6170" }); ty.textContent = nf(t, Math.max(2, yd)); sc.append(ty); });
     sc.append(mk("line", { x1: pad.l, x2: SW - pad.r, y1: SH - pad.b, y2: SH - pad.b, stroke: "#5c6170" }));
-    const lx = mk("text", { x: (pad.l + SW - pad.r) / 2, y: SH - 8, "text-anchor": "middle", "font-size": 13, fill: "#1a1d24" }); lx.textContent = "x-height, доли кегля"; sc.append(lx);
+    const lx = mk("text", { x: (pad.l + SW - pad.r) / 2, y: SH - 8, "text-anchor": "middle", "font-size": 13, fill: "#1a1d24" }); lx.textContent = XL; sc.append(lx);
     const cy = (pad.t + SH - pad.b) / 2;
-    const ly = mk("text", { x: 15, y: cy, "text-anchor": "middle", "font-size": 13, fill: "#1a1d24", transform: `rotate(-90 15 ${cy})` }); ly.textContent = "толщина штриха, доли кегля"; sc.append(ly);
+    const ly = mk("text", { x: 15, y: cy, "text-anchor": "middle", "font-size": 13, fill: "#1a1d24", transform: `rotate(-90 15 ${cy})` }); ly.textContent = YL; sc.append(ly);
   }
   function draw() {
     sc.replaceChildren(); tip.style.opacity = 0; axes();
@@ -68,12 +72,12 @@ function render({ model, el }) {
     vis.forEach(p => {
       const on = p.f === sel;
       const c = mk("circle", { cx: X(p.x), cy: Y(p.s), r: on ? r + 3 : r, fill: (CAT[p.c] || ["", "#999"])[1], "fill-opacity": .88,
-        stroke: on ? "#1a1d24" : "#fff", "stroke-width": on ? 2.5 : 1.2, tabindex: 0, style: "cursor:pointer" });
-      const show = () => { tip.textContent = `${p.f}: x-height ${nf(p.x)}, штрих ${nf(p.s)} · нажмите, чтобы открыть`;
+        stroke: on ? "#1a1d24" : "#fff", "stroke-width": on ? 2.5 : 1.2, tabindex: 0, style: PICK ? "cursor:pointer" : "" });
+      const show = () => { tip.textContent = `${p.f}: ${XN} ${nf(p.x)}, ${YN} ${nf(p.s)}` + (PICK ? " · нажмите, чтобы открыть" : "");
         const b = sc.getBoundingClientRect(), kk = b.width / SW;
         tip.style.left = `${X(p.x) * kk + 12}px`; tip.style.top = `${Y(p.s) * kk - 12}px`; tip.style.opacity = 1; };
       const hide = () => { tip.style.opacity = 0; };
-      const pick = e => { e.stopPropagation(); model.set("selected", p.f); model.save_changes(); draw(); };
+      const pick = e => { if (!PICK) return; e.stopPropagation(); model.set("selected", p.f); model.save_changes(); draw(); };
       c.addEventListener("mouseenter", show); c.addEventListener("focus", show);
       c.addEventListener("mouseleave", hide); c.addEventListener("blur", hide);
       c.addEventListener("click", pick); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") pick(e); });
@@ -81,7 +85,7 @@ function render({ model, el }) {
       g.append(c);
     });
     const boxes = [];
-    const labelled = (k > 1.5 && vis.length <= 30) ? [...vis] : vis.filter(p => p.f === sel);
+    const labelled = (ALWAYS || (k > 1.5 && vis.length <= 30)) ? [...vis] : vis.filter(p => p.f === sel);
     labelled.sort((a, b) => (b.f === sel) - (a.f === sel) || b.s - a.s).forEach(p => {
       const t = mk("text", { x: X(p.x) + r + 4, y: Y(p.s) + 4, "font-size": p.f === sel ? 13 : 11, "font-weight": p.f === sel ? 650 : 400,
         fill: "#1a1d24", "pointer-events": "none", stroke: "#fff", "stroke-width": 3, "paint-order": "stroke" });

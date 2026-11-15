@@ -185,7 +185,7 @@ def _():
     T = ''' + json.dumps(dict(bg="#f6f7f5", card="#ffffff", ink="#1a1d24", ink2="#5c6170", line="#dcdfd8", acc="#2a78d6",
                               acc2="#a9c8ef", soft="#eceee9", grid="#e6e5e0", c1="#2a78d6", c2="#eb6834", c3="#1baf7a",
                               cover="", cover_ink="", head_font="Golos Text")) + '''
-    STYLE = ''' + json.dumps(CSS, ensure_ascii=False) + '''
+    STYLE = ''' + json.dumps(CSS.split("\n", 1)[1], ensure_ascii=False) + '''
 ''' + C.HELPERS + r'''
     import html as htmlmod
     fonts_all = pd.read_csv(io.StringIO(read_text(PUB / "fonts.csv")))
